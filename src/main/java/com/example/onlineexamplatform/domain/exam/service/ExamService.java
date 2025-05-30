@@ -73,4 +73,10 @@ public class ExamService {
 
 		return UpdateExamResponseDto.from(exam);
 	}
+
+	@Transactional
+	public void deleteExamById(Long examId) {
+
+		examRepository.findByIdOrElseThrow(examId);
+	}
 }

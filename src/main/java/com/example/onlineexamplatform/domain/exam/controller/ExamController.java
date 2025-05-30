@@ -3,6 +3,7 @@ package com.example.onlineexamplatform.domain.exam.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -72,6 +73,14 @@ public class ExamController {
 		UpdateExamResponseDto exam = examService.updateExamById(examId, requestDto);
 
 		return ApiResponse.onSuccess(SuccessStatus.UPDATE_EXAM, exam);
+	}
+
+	@DeleteMapping("/{examId}")
+	public ResponseEntity<ApiResponse<Void>> deleteExamById(@PathVariable Long examId) {
+
+		examService.deleteExamById(examId);
+
+		return ApiResponse.onSuccess(SuccessStatus.DELETE_EXAM);
 	}
 
 }
