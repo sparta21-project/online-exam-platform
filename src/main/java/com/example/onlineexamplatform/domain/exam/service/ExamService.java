@@ -6,11 +6,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.onlineexamplatform.domain.exam.dto.request.CreateExamRequestDto;
+import com.example.onlineexamplatform.domain.exam.dto.request.UpdateExamRequestDto;
 import com.example.onlineexamplatform.domain.exam.dto.response.ExamResponseDto;
 import com.example.onlineexamplatform.domain.exam.dto.response.GetExamListReponseDto;
+import com.example.onlineexamplatform.domain.exam.dto.response.UpdateExamResponseDto;
 import com.example.onlineexamplatform.domain.exam.entity.Exam;
 import com.example.onlineexamplatform.domain.exam.repository.ExamRepository;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -52,12 +55,22 @@ public class ExamService {
 			.map(GetExamListReponseDto::toDto)
 			.toList();
 	}
-	
+
 	// TODO 캐시 적용
 	public ExamResponseDto findExamById(Long examId) {
 
 		Exam exam = examRepository.findByIdOrElseThrow(examId);
 
 		return ExamResponseDto.from(exam);
+	}
+
+	@Transactional
+	public UpdateExamResponseDto updateExamById(Long examId, @Valid UpdateExamRequestDto requestDto) {
+
+		Exam exam = examRepository.findByIdOrElseThrow(examId);
+
+		exam.updateExam(requestDto);
+
+		return UpdateExamResponseDto.from(exam);
 	}
 }

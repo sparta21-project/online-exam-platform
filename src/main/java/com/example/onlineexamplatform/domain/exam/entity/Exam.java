@@ -3,6 +3,7 @@ package com.example.onlineexamplatform.domain.exam.entity;
 import java.time.LocalDateTime;
 
 import com.example.onlineexamplatform.common.entity.BaseEntity;
+import com.example.onlineexamplatform.domain.exam.dto.request.UpdateExamRequestDto;
 import com.example.onlineexamplatform.domain.user.entity.User;
 
 import jakarta.persistence.Column;
@@ -49,4 +50,11 @@ public class Exam extends BaseEntity {
 	@JoinColumn(name = "user_id")
 	private User user;
 
+	public void updateExam(UpdateExamRequestDto requestDto) {
+		this.title = requestDto.getTitle();
+		this.description = requestDto.getDescription();
+		this.filePath = requestDto.getFilePath();
+		this.startTime = requestDto.getStartTime();
+		this.endTime = requestDto.getEndTime();
+	}
 }

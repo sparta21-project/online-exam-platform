@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,8 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.onlineexamplatform.common.code.SuccessStatus;
 import com.example.onlineexamplatform.common.response.ApiResponse;
 import com.example.onlineexamplatform.domain.exam.dto.request.CreateExamRequestDto;
+import com.example.onlineexamplatform.domain.exam.dto.request.UpdateExamRequestDto;
 import com.example.onlineexamplatform.domain.exam.dto.response.ExamResponseDto;
 import com.example.onlineexamplatform.domain.exam.dto.response.GetExamListReponseDto;
+import com.example.onlineexamplatform.domain.exam.dto.response.UpdateExamResponseDto;
 import com.example.onlineexamplatform.domain.exam.service.ExamService;
 
 import jakarta.validation.Valid;
@@ -59,6 +62,14 @@ public class ExamController {
 		ExamResponseDto exam = examService.findExamById(examId);
 
 		return ApiResponse.onSuccess(SuccessStatus.FIND_EXAM, exam);
+	}
+
+	@PatchMapping("/{examId}")
+	public ResponseEntity<ApiResponse<UpdateExamResponseDto>> updateExamById(
+		@PathVariable Long examId,
+		@Valid @RequestBody UpdateExamRequestDto requestDto) {
+
+		examService.updateExamById(examId, requestDto);
 	}
 
 }
