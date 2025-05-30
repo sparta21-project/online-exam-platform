@@ -24,9 +24,9 @@ public class ExamController {
 
 	@PostMapping
 	public ResponseEntity<ApiResponse<ExamResponseDto>> createExam(
-		@Valid @RequestBody CreateExamRequestDto requestDto) {
+		@Valid @RequestBody CreateExamRequestDto requestDto, Long userId) {
 
-		ExamResponseDto exam = examService.createExam(requestDto);
+		ExamResponseDto exam = examService.createExam(requestDto, userId);
 
 		return ApiResponse.onSuccess(SuccessStatus.CREATE_EXAM, exam);
 	}
