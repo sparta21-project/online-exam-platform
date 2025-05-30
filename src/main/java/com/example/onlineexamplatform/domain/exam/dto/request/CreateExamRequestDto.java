@@ -22,7 +22,7 @@ public class CreateExamRequestDto {
 	@Size(max = 1000)
 	private String description;
 
-	@NotBlank(message = "시험 설명은 필수입니다.")
+	@NotBlank(message = "시험 파일 경로는 필수입니다.")
 	@Size(max = 1024)
 	private String filePath;
 
