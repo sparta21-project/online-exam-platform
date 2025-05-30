@@ -12,8 +12,12 @@ public enum SuccessStatus implements BaseCode {
 	SIGNUP_SUCCESS(HttpStatus.CREATED, "1001", "회원가입이 완료되었습니다."),
 	LOGIN_SUCCESS(HttpStatus.OK, "1002", "로그인 성공"),
 
-	// 9000 : 답안 작성 성공 코드
-	SAVE_ANSWER_SUCCESS(HttpStatus.CREATED, "9001", "답안 작성 성공.");
+	// 8000 : 시험답안 작성 성공 코드
+	SAVE_EXAM_ANSWER_SUCCESS(HttpStatus.OK, "8001", "관리자용 답안 생성 성공."),
+	UPDATE_EXAM_ANSWER_SUCCESS(HttpStatus.OK, "8002", "관리자용 답안 수정 성공"),
+
+	// 9000 : 유저답안 작성 성공 코드
+	SAVE_ANSWER_SUCCESS(HttpStatus.CREATED, "9001", "제출용 답안 작성 성공.");
 	;
 
 	private final HttpStatus httpStatus;

@@ -4,11 +4,13 @@ import com.example.onlineexamplatform.common.entity.BaseEntity;
 import com.example.onlineexamplatform.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Exam extends BaseEntity {

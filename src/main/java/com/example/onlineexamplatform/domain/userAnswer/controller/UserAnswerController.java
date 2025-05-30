@@ -17,8 +17,8 @@ public class UserAnswerController {
     private final UserAnswerService userAnswerService;
 
     @PostMapping("/{answerSheetId}")
-    public ResponseEntity<ApiResponse<Void>> saveAnswer(@PathVariable Long answerSheetId, @RequestBody SaveAnswerRequestDto request) {
-        userAnswerService.saveAnswer(answerSheetId, request.getQuestionNumber(), request.getAnswerText());
+    public ResponseEntity<ApiResponse<Void>> saveAnswer(@PathVariable Long answerSheetId, @RequestBody SaveAnswerRequestDto requestDto) {
+        userAnswerService.saveAnswer(answerSheetId, requestDto.getQuestionNumber(), requestDto.getAnswerText());
         return ApiResponse.onSuccess(SuccessStatus.SAVE_ANSWER_SUCCESS);
     }
 
