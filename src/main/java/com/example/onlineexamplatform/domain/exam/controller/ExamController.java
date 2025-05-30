@@ -69,7 +69,9 @@ public class ExamController {
 		@PathVariable Long examId,
 		@Valid @RequestBody UpdateExamRequestDto requestDto) {
 
-		examService.updateExamById(examId, requestDto);
+		UpdateExamResponseDto exam = examService.updateExamById(examId, requestDto);
+
+		return ApiResponse.onSuccess(SuccessStatus.UPDATE_EXAM, exam);
 	}
 
 }
