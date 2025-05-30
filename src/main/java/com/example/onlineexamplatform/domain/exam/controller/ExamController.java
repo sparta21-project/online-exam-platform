@@ -56,9 +56,9 @@ public class ExamController {
 	@GetMapping("/{examId}")
 	public ResponseEntity<ApiResponse<ExamResponseDto>> findExamById(@PathVariable Long examId) {
 
-		examService.findExamById(examId);
+		ExamResponseDto exam = examService.findExamById(examId);
 
-		return ApiResponse.onSuccess(SuccessStatus.FIND_EXAM);
+		return ApiResponse.onSuccess(SuccessStatus.FIND_EXAM, exam);
 	}
 
 }
