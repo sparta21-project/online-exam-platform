@@ -34,7 +34,7 @@ public class ExamResponseDto {
 	public static ExamResponseDto from(Exam exam) {
 		return ExamResponseDto.builder()
 			.id(exam.getId())
-			.userId(exam.getUser().getId())
+			// .userId(exam.getUser().getId()) 유저 생성 시 활성화
 			.title(exam.getTitle())
 			.description(exam.getDescription())
 			.filePath(exam.getFilePath())
