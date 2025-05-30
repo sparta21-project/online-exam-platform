@@ -1,10 +1,13 @@
 package com.example.onlineexamplatform.domain.exam.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.onlineexamplatform.domain.exam.dto.request.CreateExamRequestDto;
 import com.example.onlineexamplatform.domain.exam.dto.response.ExamResponseDto;
+import com.example.onlineexamplatform.domain.exam.dto.response.GetExamListReponseDto;
 import com.example.onlineexamplatform.domain.exam.entity.Exam;
 import com.example.onlineexamplatform.domain.exam.repository.ExamRepository;
 
@@ -31,6 +34,30 @@ public class ExamService {
 			.build();
 
 		examRepository.save(exam);
+		return ExamResponseDto.from(exam);
+	}
+
+	// TODO 캐시 적용
+	public List<GetExamListReponseDto> getExamList() {
+		return examRepository.findAll()
+			.stream()
+			.map(GetExamListReponseDto::toDto)
+			.toList();
+	}
+
+	// TODO 레디스 적용 적용
+	public List<GetExamListReponseDto> searchExamByTitle(String examTile) {
+		return examRepository.findByExamTile(examTile)
+			.stream()
+			.map(GetExamListReponseDto::toDto)
+			.toList();
+	}
+	
+	// TODO 캐시 적용
+	public ExamResponseDto findExamById(Long examId) {
+
+		Exam exam = examRepository.findByIdOrElseThrow(examId);
+
 		return ExamResponseDto.from(exam);
 	}
 }
