@@ -22,7 +22,17 @@ public class UserAnswer {
     @Column(nullable = false)
     private String answerText;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "answer_sheet_id")
     private AnswerSheet answerSheet;
+
+    public UserAnswer(AnswerSheet answerSheet, int questionNumber, String answerText) {
+        this.answerSheet = answerSheet;
+        this.questionNumber = questionNumber;
+        this.answerText = answerText;
+    }
+
+    public void updateAnswer(String answerText) {
+        this.answerText = answerText;
+    }
 }

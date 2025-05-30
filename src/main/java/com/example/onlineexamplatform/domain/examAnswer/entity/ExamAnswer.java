@@ -10,12 +10,16 @@ public class ExamAnswer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private int questionNumber;
 
+    @Column(nullable = false)
     private int questionScore;
 
+    @Column(nullable = false)
     private String correctAnswer;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "exam_id")
     private Exam exam;
 }

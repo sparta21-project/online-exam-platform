@@ -1,6 +1,7 @@
 package com.example.onlineexamplatform.domain.userAnswer.controller;
 
 
+import com.example.onlineexamplatform.common.code.SuccessStatus;
 import com.example.onlineexamplatform.common.response.ApiResponse;
 import com.example.onlineexamplatform.domain.userAnswer.dto.SaveAnswerRequestDto;
 import com.example.onlineexamplatform.domain.userAnswer.service.UserAnswerService;
@@ -17,9 +18,8 @@ public class UserAnswerController {
 
     @PostMapping("/{answerSheetId}")
     public ResponseEntity<ApiResponse<Void>> saveAnswer(@PathVariable Long answerSheetId, @RequestBody SaveAnswerRequestDto request) {
-        UserAnswerService.saveAnswer(answerSheetId, request.getQuestionNumber(), request.getAnswerText());
-
+        userAnswerService.saveAnswer(answerSheetId, request.getQuestionNumber(), request.getAnswerText());
+        return ApiResponse.onSuccess(SuccessStatus.SAVE_ANSWER_SUCCESS);
     }
-
 
 }
