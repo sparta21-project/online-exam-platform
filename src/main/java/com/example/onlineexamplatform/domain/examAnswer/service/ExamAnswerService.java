@@ -4,6 +4,7 @@ import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
 import com.example.onlineexamplatform.domain.exam.entity.Exam;
 import com.example.onlineexamplatform.domain.examAnswer.dto.ExamAnswerResponseDto;
+import com.example.onlineexamplatform.domain.examAnswer.dto.SaveExamAnswerDto;
 import com.example.onlineexamplatform.domain.examAnswer.entity.ExamAnswer;
 import com.example.onlineexamplatform.domain.examAnswer.repository.ExamAnswerRepository;
 import jakarta.validation.constraints.Min;
@@ -14,7 +15,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,36 +28,26 @@ public class ExamAnswerService {
 
     private final ExamRepository examRepository;
 
-    public void saveExamAnswer(Long examId, int questionNumber, int questionScore, String correctAnswer) {
+    @Transactional
+    public void saveExamAnswer(Long examId, List<SaveExamAnswerDto> examAnswers) {
         Exam exam = examRepository.findById(examId)
                 .orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 
-        Optional<ExamAnswer> existExamAnswer = examAnswerRepository.findByExamIdAndQuestionNumber(exam.getId(), questionNumber);
+        Map<Integer, ExamAnswer> examAnswerMap = examAnswerRepository.findAllByExamId(examId)
+                .stream()
+                .collect(Collectors.toMap(ExamAnswer::getQuestionNumber, Function.identity()));
 
-        if(existExamAnswer.isPresent()) {
-            throw new ApiException(ErrorStatus.DUPLICATE_EXAM_ANSWER);
-        }
+        for(SaveExamAnswerDto dto : examAnswers) {
+            Integer saveExamQuestionNumber = dto.getQuestionNumber();
+            String saveExamCorrectAnswer = dto.getCorrectAnswer();
+            Integer saveExamQusetionScore = dto.getQuestionScore();
 
-        ExamAnswer examAnswer = new ExamAnswer(exam, questionNumber, questionScore, correctAnswer);
-
-        examAnswerRepository.save(examAnswer);
-    }
-
-    @Transactional
-    public void updateExamAnswer(Long examAnswerId, Integer questionNumber, Integer questionScore, String correctAnswer) {
-        ExamAnswer examAnswer = examAnswerRepository.findById(examAnswerId)
-                .orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
-
-        if(questionNumber != null) {
-            examAnswer.updateQuestionNumber(questionNumber);
-        }
-
-        if(questionScore != null) {
-            examAnswer.updateQuestionScore(questionScore);
-        }
-
-        if(correctAnswer != null) {
-            examAnswer.updateCorrectAnswer(correctAnswer);
+            if(examAnswerMap.containsKey(saveExamQuestionNumber)) {
+                examAnswerMap.get(saveExamQuestionNumber).updateExamAnswer(saveExamQusetionScore, saveExamCorrectAnswer);
+            } else {
+                ExamAnswer examAnswer = new ExamAnswer(exam, saveExamQuestionNumber, saveExamQusetionScore, saveExamCorrectAnswer);
+                examAnswerRepository.save(examAnswer);
+            }
         }
     }
 

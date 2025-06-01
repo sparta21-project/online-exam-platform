@@ -34,15 +34,8 @@ public class ExamAnswer {
         this.correctAnswer = correctAnswer;
     }
 
-    public void updateQuestionNumber(Integer questionNumber) {
-        this.questionNumber = questionNumber;
-    }
-
-    public void updateQuestionScore(Integer questionScore) {
+    public void updateExamAnswer(Integer questionScore, String correctAnswer) {
         this.questionScore = questionScore;
-    }
-
-    public void updateCorrectAnswer(String correctAnswer) {
         this.correctAnswer = correctAnswer;
     }
 }

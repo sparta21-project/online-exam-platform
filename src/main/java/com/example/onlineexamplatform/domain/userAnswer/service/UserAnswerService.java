@@ -59,4 +59,13 @@ public class UserAnswerService {
 /*
     1. Optional 사용 vs 그냥 NULL 체크
     - 명시적으로 null 일수도 있다는것을 보여줌, NPE 발생 가능성 낮춤(get 전에 isPresent 등으로 확인), IDE 에서 NULL 관련 경고 확인 가능
+
+
+    프론트에서 50개의 문항을 입력할수 있는 폼을 제공 -> 프론트를 믿지 마라..?
+    List<SaveAnswerDto> 총 갯수 = examAnswerRepository.findAllByExamId
+
+    questionNumber가 중복되서 입력되면??
+    1. List<SaveAnswerDto> 에서 questionNumber를 꺼내서 중복이 있는지 비교
+    2. toMap 에서 key 중복 오류 발생에서 처리
+
  */
