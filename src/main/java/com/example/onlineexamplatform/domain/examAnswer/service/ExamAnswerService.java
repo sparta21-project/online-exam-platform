@@ -71,4 +71,8 @@ public class ExamAnswerService {
         return examAnswerRepository.findAllByExamId(examId, pageable)
                 .map(ExamAnswerResponseDto::new);
     }
+
+    public void deleteExamAnswer(Long examAnswerId) {
+        examAnswerRepository.deleteById(examAnswerId);
+    }
 }

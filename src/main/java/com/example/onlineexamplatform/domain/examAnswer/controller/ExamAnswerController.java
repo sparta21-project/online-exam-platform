@@ -45,4 +45,10 @@ public class ExamAnswerController {
         Page<ExamAnswerResponseDto> responseDtos = examAnswerService.getAllExamAnswer(examId, pageable);
         return ApiResponse.onSuccess(SuccessStatus.SAVE_ANSWER_SUCCESS, responseDtos);
     }
+
+    @DeleteMapping("/{examAnswerId}")
+    public ResponseEntity<ApiResponse<Void>> deleteExamAnswer(@PathVariable Long examAnswerId) {
+        examAnswerService.deleteExamAnswer(examAnswerId);
+        return ApiResponse.onSuccess(SuccessStatus.SAVE_ANSWER_SUCCESS);
+    }
 }

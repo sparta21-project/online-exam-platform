@@ -1,16 +1,16 @@
 package com.example.onlineexamplatform.domain.userAnswer.dto;
 
-import lombok.AllArgsConstructor;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor
 public class SaveAnswerRequestDto {
-
-    private int questionNumber;
-
-    private String answerText;
+    @NotBlank
+    @Valid
+    private List<SaveAnswerDto> answers;
 
 }
