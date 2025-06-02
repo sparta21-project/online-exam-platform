@@ -23,7 +23,7 @@ public class AnswerSheetResponseDto {
     public static class Update {
         private Long examId;
         private Long userId;
-        private List<UserAnswer> answers;
+        private List<UserAnswerResponseDto> answers;
     }
 
     @Getter
@@ -31,7 +31,7 @@ public class AnswerSheetResponseDto {
     public static class Submit {
         private Long examId;
         private Long userId;
-        private List<UserAnswer> answers;
+        private List<UserAnswerResponseDto> answers;
     }
 
     @Getter
@@ -39,7 +39,7 @@ public class AnswerSheetResponseDto {
     public static class Get {
         private Long examId;
         private Long userId;
-        private List<UserAnswer> answers;
+        private List<UserAnswerResponseDto> answers;
     }
 
     @Getter
