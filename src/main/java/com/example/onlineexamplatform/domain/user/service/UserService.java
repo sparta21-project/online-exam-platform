@@ -4,11 +4,12 @@ import org.springframework.stereotype.Service;
 
 import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
-import com.example.onlineexamplatform.domain.user.dto.UserLoginRequest;
-import com.example.onlineexamplatform.domain.user.dto.UserLoginResponse;
-import com.example.onlineexamplatform.domain.user.dto.UserPasswordRequest;
-import com.example.onlineexamplatform.domain.user.dto.UserSignupRequest;
-import com.example.onlineexamplatform.domain.user.dto.UserSignupResponse;
+import com.example.onlineexamplatform.domain.user.dto.AuthLoginRequest;
+import com.example.onlineexamplatform.domain.user.dto.AuthLoginResponse;
+import com.example.onlineexamplatform.domain.user.dto.AuthPasswordRequest;
+import com.example.onlineexamplatform.domain.user.dto.AuthSignupRequest;
+import com.example.onlineexamplatform.domain.user.dto.AuthSignupResponse;
+import com.example.onlineexamplatform.domain.user.dto.UserProfileResponse;
 import com.example.onlineexamplatform.domain.user.entity.Role;
 import com.example.onlineexamplatform.domain.user.entity.User;
 import com.example.onlineexamplatform.domain.user.repository.UserRepository;
@@ -21,7 +22,7 @@ public class UserService {
 	private final UserRepository userRepository;
 
 	// 회원가입
-	public UserSignupResponse signup(UserSignupRequest request) {
+	public AuthSignupResponse signup(AuthSignupRequest request) {
 		// 이메일 중복체크
 		if (userRepository.existsByEmail(request.getEmail())) {
 			throw new ApiException(ErrorStatus.DUPLICATE_EMAIL);
@@ -42,7 +43,7 @@ public class UserService {
 		User saved = userRepository.save(user);
 
 		// Response dto 반환
-		return new UserSignupResponse(
+		return new AuthSignupResponse(
 			saved.getId(),
 			saved.getEmail(),
 			saved.getUsername(),
@@ -52,7 +53,7 @@ public class UserService {
 	}
 
 	// 로그인
-	public UserLoginResponse login(UserLoginRequest request) {
+	public AuthLoginResponse login(AuthLoginRequest request) {
 		User user = userRepository.findByEmail(request.getEmail())
 			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 
@@ -60,7 +61,7 @@ public class UserService {
 			throw new ApiException(ErrorStatus.USER_NOT_FOUND);
 		}
 
-		return new UserLoginResponse(
+		return new AuthLoginResponse(
 			user.getId(),
 			user.getEmail(),
 			user.getUsername(),
@@ -68,7 +69,7 @@ public class UserService {
 		);
 	}
 
-	public void changePassword(Long userId, UserPasswordRequest dto) {
+	public void changePassword(Long userId, AuthPasswordRequest dto) {
 		// 조회
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
@@ -81,5 +82,17 @@ public class UserService {
 		// 비밀번호 변경
 		user.setPassword(dto.getNewPassword());
 		userRepository.save(user);
+	}
+
+	public UserProfileResponse getProfile(Long userId) {
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
+
+		return new UserProfileResponse(
+			user.getId(),
+			user.getEmail(),
+			user.getUsername(),
+			user.getRole().name()
+		);
 	}
 }
