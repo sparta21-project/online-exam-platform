@@ -3,7 +3,6 @@ package com.example.onlineexamplatform.common.code;
 import org.springframework.http.HttpStatus;
 
 import com.example.onlineexamplatform.common.dto.ErrorReasonDto;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -18,7 +17,10 @@ public enum ErrorStatus implements BaseErrorCode {
 
 	//exam 에러 코드
 	EXAM_NOT_FOUND(HttpStatus.NOT_FOUND, "2001", "찾으시는 문제가 없습니다."),
-	;
+	// user-category 에러 코드
+	CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "3001", "존재하지 않는 카테고리입니다."),
+	DUPLICATE_USER_CATEGORY(HttpStatus.CONFLICT, "3002", "이미 등록된 응시 권한입니다."),
+	USER_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "3003", "응시 권한이 존재하지 않습니다.");
 
 	private final HttpStatus httpStatus;
 	private final String code;
