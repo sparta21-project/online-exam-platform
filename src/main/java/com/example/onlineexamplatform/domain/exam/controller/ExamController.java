@@ -27,21 +27,22 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/exams")
+@RequestMapping("/api")
 public class ExamController {
 
 	private final ExamService examService;
 
-	@PostMapping
+	@PostMapping("/admin/{userId}/exam")
 	public ResponseEntity<ApiResponse<ExamResponseDto>> createExam(
-		@Valid @RequestBody CreateExamRequestDto requestDto, Long userId) {
+		@PathVariable Long userId,
+		@Valid @RequestBody CreateExamRequestDto requestDto) {
 
 		ExamResponseDto exam = examService.createExam(requestDto, userId);
 
 		return ApiResponse.onSuccess(SuccessStatus.CREATE_EXAM, exam);
 	}
 
-	@GetMapping
+	@GetMapping("/admin/exam")
 	public ResponseEntity<ApiResponse<List<GetExamListReponseDto>>> getExamList() {
 
 		List<GetExamListReponseDto> examList = examService.getExamList();
@@ -49,7 +50,7 @@ public class ExamController {
 		return ApiResponse.onSuccess(SuccessStatus.FIND_EXAM, examList);
 	}
 
-	@GetMapping("/search")
+	@GetMapping("/admin/exam/search")
 	public ResponseEntity<ApiResponse<List<GetExamListReponseDto>>> searchExamByTitle(@RequestParam String examTile) {
 
 		List<GetExamListReponseDto> examList = examService.searchExamByTitle(examTile);
@@ -57,7 +58,7 @@ public class ExamController {
 		return ApiResponse.onSuccess(SuccessStatus.FIND_EXAM, examList);
 	}
 
-	@GetMapping("/{examId}")
+	@GetMapping("/admin/exam/{examId}")
 	public ResponseEntity<ApiResponse<ExamResponseDto>> findExamById(@PathVariable Long examId) {
 
 		ExamResponseDto exam = examService.findExamById(examId);
@@ -65,7 +66,7 @@ public class ExamController {
 		return ApiResponse.onSuccess(SuccessStatus.FIND_EXAM, exam);
 	}
 
-	@PatchMapping("/{examId}")
+	@PatchMapping("/admin/exam/{examId}")
 	public ResponseEntity<ApiResponse<UpdateExamResponseDto>> updateExamById(
 		@PathVariable Long examId,
 		@Valid @RequestBody UpdateExamRequestDto requestDto) {
@@ -75,7 +76,7 @@ public class ExamController {
 		return ApiResponse.onSuccess(SuccessStatus.UPDATE_EXAM, exam);
 	}
 
-	@DeleteMapping("/{examId}")
+	@DeleteMapping("/admin/exam/{examId}")
 	public ResponseEntity<ApiResponse<Void>> deleteExamById(@PathVariable Long examId) {
 
 		examService.deleteExamById(examId);

@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.onlineexamplatform.common.code.ErrorStatus;
+import com.example.onlineexamplatform.common.error.ApiException;
 import com.example.onlineexamplatform.domain.exam.dto.request.CreateExamRequestDto;
 import com.example.onlineexamplatform.domain.exam.dto.request.UpdateExamRequestDto;
 import com.example.onlineexamplatform.domain.exam.dto.response.ExamResponseDto;
@@ -12,6 +14,8 @@ import com.example.onlineexamplatform.domain.exam.dto.response.GetExamListRepons
 import com.example.onlineexamplatform.domain.exam.dto.response.UpdateExamResponseDto;
 import com.example.onlineexamplatform.domain.exam.entity.Exam;
 import com.example.onlineexamplatform.domain.exam.repository.ExamRepository;
+import com.example.onlineexamplatform.domain.user.entity.User;
+import com.example.onlineexamplatform.domain.user.repository.UserRepository;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,17 +25,23 @@ import lombok.RequiredArgsConstructor;
 public class ExamService {
 
 	private final ExamRepository examRepository;
+	private final UserRepository userRepository;
 
 	@Transactional
 	public ExamResponseDto createExam(CreateExamRequestDto requestDto, Long userId) {
 
-		// TODO 유저 정보 조회 로직 작성
+		// if (userId == null) {
+		// 	throw new IllegalArgumentException("id는 null일 수 없습니다.");
+		// }
+
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 
 		Exam exam = Exam.builder()
-			// .user(user) // 유저 부분 구현 시 활성화
-			.title(requestDto.getTitle())
+			.user(user)
+			.examTitle(requestDto.getExamTitle())
 			.description(requestDto.getDescription())
-			.filePath(requestDto.getFilePath())
+			.filePaths(requestDto.getFilePaths())
 			.startTime(requestDto.getStartTime())
 			.endTime(requestDto.getEndTime())
 			.build();
@@ -49,8 +59,8 @@ public class ExamService {
 	}
 
 	// TODO 레디스 적용 적용
-	public List<GetExamListReponseDto> searchExamByTitle(String examTile) {
-		return examRepository.findByExamTile(examTile)
+	public List<GetExamListReponseDto> searchExamByTitle(String examTitle) {
+		return examRepository.findByExamTitle(examTitle)
 			.stream()
 			.map(GetExamListReponseDto::toDto)
 			.toList();
