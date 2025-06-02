@@ -3,7 +3,7 @@ package com.example.onlineexamplatform.domain.userAnswer.service;
 import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
 import com.example.onlineexamplatform.domain.answerSheet.entity.AnswerSheet;
-import com.example.onlineexamplatform.domain.user.entity.User;
+import com.example.onlineexamplatform.domain.examAnswer.repository.ExamAnswerRepository;
 import com.example.onlineexamplatform.domain.userAnswer.dto.SaveAnswerDto;
 import com.example.onlineexamplatform.domain.userAnswer.entity.UserAnswer;
 import com.example.onlineexamplatform.domain.userAnswer.repository.UserAnswerRepository;
@@ -11,9 +11,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -24,6 +25,8 @@ public class UserAnswerService {
     private final UserAnswerRepository userAnswerRepository;
 
     private final AnswerSheetRepository answerSheetRepository;
+
+    private final ExamAnswerRepository examAnswerRepository;
 
     /*
        50개의 항목 저장
@@ -38,6 +41,25 @@ public class UserAnswerService {
         AnswerSheet answerSheet = answerSheetRepository.findById(answerSheetId)
                 .orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 
+        Set<Integer> questionNumberSet = new HashSet<>();
+
+        // 사용자 제출 답안 questionNumber 중복 체크
+        for(SaveAnswerDto dto : answers) {
+            Integer checkAnswers = dto.getQuestionNumber();
+
+            if(!questionNumberSet.add(checkAnswers)) {
+                throw new ApiException(ErrorStatus.USER_NOT_FOUND);
+            }
+        }
+
+        // 시험 문제보다 제출한 문제가 더 많을경우 예외 발생
+        int answerCount = examAnswerRepository.countByExamId(answerSheet.getExam().getId());
+
+        if(answers.size() > answerCount) {
+            throw new ApiException(ErrorStatus.USER_NOT_FOUND);
+        }
+
+        // DB에 저장된 값 한번에 불러오기 -> SELECT 1회
         Map<Integer, UserAnswer> userAnswerMap = userAnswerRepository.findAllByAnswerSheetId(answerSheetId)
                 .stream()
                 .collect(Collectors.toMap(UserAnswer::getQuestionNumber, Function.identity()));

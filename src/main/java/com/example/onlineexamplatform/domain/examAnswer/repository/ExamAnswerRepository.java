@@ -14,4 +14,6 @@ public interface ExamAnswerRepository extends JpaRepository<ExamAnswer, Long> {
     Page<ExamAnswer> findAllByExamId(Long examId, Pageable pageable);
 
     List<ExamAnswer> findAllByExamId(Long examId);
+
+    int countByExamId(Long examId);
 }
