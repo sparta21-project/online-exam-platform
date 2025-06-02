@@ -31,6 +31,7 @@ public class AuthController {
 	private final UserService userService;
 	public static final String SESSION_USER_KEY = "LOGIN_USER_ID";
 
+	// 유저 회원가입
 	@PostMapping("/signup")
 	public ResponseEntity<ApiResponse<AuthSignupResponse>> signup(
 		@RequestBody @Valid AuthSignupRequest request
@@ -39,6 +40,16 @@ public class AuthController {
 		return ApiResponse.onSuccess(SuccessStatus.SIGNUP_SUCCESS, dto);
 	}
 
+	// 관리자 회원가입
+	@PostMapping("/admin/signup")
+	public ResponseEntity<ApiResponse<AuthSignupResponse>> createAdmin(
+		@RequestBody @Valid AuthSignupRequest request
+	) {
+		AuthSignupResponse dto = userService.signupAdmin(request);
+		return ApiResponse.onSuccess(SuccessStatus.SIGNUP_SUCCESS, dto);
+	}
+
+	// 로그인
 	@PostMapping("/login")
 	public ResponseEntity<ApiResponse<AuthLoginResponse>> login(
 		@RequestBody @Valid AuthLoginRequest request,
@@ -49,6 +60,7 @@ public class AuthController {
 		return ApiResponse.onSuccess(SuccessStatus.LOGIN_SUCCESS, dto);
 	}
 
+	// 비밀번호 변경
 	@PutMapping("/password")
 	public ResponseEntity<ApiResponse<Void>> changePassword(
 		@RequestBody @Valid AuthPasswordRequest request,
@@ -56,13 +68,14 @@ public class AuthController {
 	) {
 		Long userId = (Long)session.getAttribute(SESSION_USER_KEY);
 		if (userId == null) {
-			throw new ApiException(ErrorStatus.INVALID_PASSWORD);
+			throw new ApiException(ErrorStatus.UNAUTHORIZED);
 		}
 
 		userService.changePassword(userId, request);
 		return ApiResponse.onSuccess(SuccessStatus.UPDATE_PASSWORD);
 	}
 
+	// 로그아웃
 	@DeleteMapping("/logout")
 	public ResponseEntity<ApiResponse<Void>> logout(HttpSession session) {
 		Long userId = (Long)session.getAttribute(SESSION_USER_KEY);

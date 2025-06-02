@@ -21,8 +21,9 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 	private final UserRepository userRepository;
 
-	// 회원가입
+	// 유저 회원가입
 	public AuthSignupResponse signup(AuthSignupRequest request) {
+
 		// 이메일 중복체크
 		if (userRepository.existsByEmail(request.getEmail())) {
 			throw new ApiException(ErrorStatus.DUPLICATE_EMAIL);
@@ -52,13 +53,40 @@ public class UserService {
 
 	}
 
+	// 관리자 회원가입
+	public AuthSignupResponse signupAdmin(AuthSignupRequest request) {
+		if (userRepository.existsByEmail(request.getEmail())) {
+			throw new ApiException(ErrorStatus.DUPLICATE_EMAIL);
+		}
+
+		User user = new User(
+			request.getEmail(),
+			request.getPassword(),
+			request.getUsername(),
+			Role.ADMIN
+		);
+
+		User saved = userRepository.save(user);
+
+		return new AuthSignupResponse(
+			saved.getId(),
+			saved.getEmail(),
+			saved.getUsername(),
+			saved.getRole().name()
+		);
+	}
+
 	// 로그인
 	public AuthLoginResponse login(AuthLoginRequest request) {
 		User user = userRepository.findByEmail(request.getEmail())
 			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 
+		if (user.isWithdraw()) {
+			throw new ApiException(ErrorStatus.USER_DEACTIVATE);
+		}
+
 		if (!request.getPassword().equals(user.getPassword())) {
-			throw new ApiException(ErrorStatus.USER_NOT_FOUND);
+			throw new ApiException(ErrorStatus.USER_NOT_MATCH);
 		}
 
 		return new AuthLoginResponse(
@@ -69,10 +97,15 @@ public class UserService {
 		);
 	}
 
+	// 비밀번호 수정
 	public void changePassword(Long userId, AuthPasswordRequest dto) {
 		// 조회
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
+
+		if (user.isWithdraw()) {
+			throw new ApiException(ErrorStatus.USER_DEACTIVATE);
+		}
 
 		// 현재 비밀번호 검증
 		if (!dto.getOldPassword().equals(user.getPassword())) {
@@ -84,9 +117,14 @@ public class UserService {
 		userRepository.save(user);
 	}
 
+	// 프로필 조회
 	public UserProfileResponse getProfile(Long userId) {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
+
+		if (user.isWithdraw()) {
+			throw new ApiException(ErrorStatus.USER_DEACTIVATE);
+		}
 
 		return new UserProfileResponse(
 			user.getId(),
@@ -94,5 +132,18 @@ public class UserService {
 			user.getUsername(),
 			user.getRole().name()
 		);
+	}
+
+	// 회원탈퇴
+	public void delete(Long userId) {
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
+
+		if (user.isWithdraw()) {
+			throw new ApiException(ErrorStatus.ALREADY_WITHDRAWN);
+		}
+
+		user.withdraw();
+		userRepository.save(user);
 	}
 }
