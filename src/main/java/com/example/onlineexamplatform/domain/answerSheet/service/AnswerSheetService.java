@@ -1,28 +1,28 @@
 package com.example.onlineexamplatform.domain.answerSheet.service;
 
-import com.example.onlineexamplatform.domain.answerSheet.dto.response.AnswerSheetResponse;
+import com.example.onlineexamplatform.domain.answerSheet.dto.response.AnswerSheetResponseDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class AnswerSheetService {
-    public AnswerSheetResponse.Create createAnswerSheet() {
+    public AnswerSheetResponseDto.Create createAnswerSheet() {
         return null;
     }
 
-    public AnswerSheetResponse.Create updateAnswerSheet() {
+    public AnswerSheetResponseDto.Create updateAnswerSheet() {
         return null;
     }
 
-    public AnswerSheetResponse.Get getAnswerSheet() {
+    public AnswerSheetResponseDto.Get getAnswerSheet() {
         return null;
     }
 
     public void deleteAnswerSheet() {
     }
 
-    public List<AnswerSheetResponse.Applicant> getExamApplicants() {
+    public List<AnswerSheetResponseDto.Applicant> getExamApplicants() {
         return null;
     }
 }
