@@ -1,6 +1,7 @@
 package com.example.onlineexamplatform.domain.answerSheet.entity;
 
 import com.example.onlineexamplatform.common.entity.BaseEntity;
+import com.example.onlineexamplatform.domain.answerSheet.enums.AnswerSheetStatus;
 import com.example.onlineexamplatform.domain.exam.entity.Exam;
 import com.example.onlineexamplatform.domain.user.entity.User;
 import com.example.onlineexamplatform.domain.userAnswer.entity.UserAnswer;
@@ -32,4 +33,6 @@ public class AnswerSheet extends BaseEntity {
 
     @Column(nullable = false)
     private int score;
+
+    private AnswerSheetStatus status;
 }
