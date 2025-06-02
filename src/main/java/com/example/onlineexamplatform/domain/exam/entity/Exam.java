@@ -1,34 +1,61 @@
 package com.example.onlineexamplatform.domain.exam.entity;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import com.example.onlineexamplatform.common.entity.BaseEntity;
+import com.example.onlineexamplatform.domain.exam.dto.request.UpdateExamRequestDto;
 import com.example.onlineexamplatform.domain.user.entity.User;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
+@Builder
+@Getter
 @Entity
+@Table(name = "exam")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Exam extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    private String title;
+	@Column(nullable = false)
+	private String examTitle;
 
-    private String description;
+	@Column(nullable = false)
+	private String description;
 
-    private String filePath;
+	@Column(nullable = false)
+	private List<String> filePaths;
 
-    private LocalDateTime startTime;
+	@Column(nullable = false)
+	private LocalDateTime startTime;
 
-    private LocalDateTime endTime;
+	@Column(nullable = false)
+	private LocalDateTime endTime;
 
-    @ManyToOne
-    @JoinColumn(name="")
-    private User user;
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	private User user;
 
+	public void updateExam(UpdateExamRequestDto requestDto) {
+		this.examTitle = requestDto.getExamTitle();
+		this.description = requestDto.getDescription();
+		this.filePaths = requestDto.getFilePaths();
+		this.startTime = requestDto.getStartTime();
+		this.endTime = requestDto.getEndTime();
+	}
 }
