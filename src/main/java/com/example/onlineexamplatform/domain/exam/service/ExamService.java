@@ -88,5 +88,7 @@ public class ExamService {
 	public void deleteExamById(Long examId) {
 
 		examRepository.findByIdOrElseThrow(examId);
+
+		examRepository.deleteById(examId);
 	}
 }
