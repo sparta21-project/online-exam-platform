@@ -6,6 +6,7 @@ import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
 import com.example.onlineexamplatform.domain.user.dto.UserLoginRequest;
 import com.example.onlineexamplatform.domain.user.dto.UserLoginResponse;
+import com.example.onlineexamplatform.domain.user.dto.UserPasswordRequest;
 import com.example.onlineexamplatform.domain.user.dto.UserSignupRequest;
 import com.example.onlineexamplatform.domain.user.dto.UserSignupResponse;
 import com.example.onlineexamplatform.domain.user.entity.Role;
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 	private final UserRepository userRepository;
 
+	// 회원가입
 	public UserSignupResponse signup(UserSignupRequest request) {
 		// 이메일 중복체크
 		if (userRepository.existsByEmail(request.getEmail())) {
@@ -49,6 +51,7 @@ public class UserService {
 
 	}
 
+	// 로그인
 	public UserLoginResponse login(UserLoginRequest request) {
 		User user = userRepository.findByEmail(request.getEmail())
 			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
@@ -65,4 +68,18 @@ public class UserService {
 		);
 	}
 
+	public void changePassword(Long userId, UserPasswordRequest dto) {
+		// 조회
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
+
+		// 현재 비밀번호 검증
+		if (!dto.getOldPassword().equals(user.getPassword())) {
+			throw new ApiException(ErrorStatus.INVALID_PASSWORD);
+		}
+
+		// 비밀번호 변경
+		user.setPassword(dto.getNewPassword());
+		userRepository.save(user);
+	}
 }

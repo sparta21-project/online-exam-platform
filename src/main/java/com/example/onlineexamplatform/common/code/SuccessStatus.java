@@ -20,6 +20,7 @@ public enum SuccessStatus implements BaseCode {
 	GET_REVIEW_SUCCESS(HttpStatus.OK, "1007", "리뷰 불러오기 성공."),
 	GET_RECOMMEND_SUCCESS(HttpStatus.OK, "1008", "추천목록 불러오기 성공."),
 	REISSUE_SUCCESS(HttpStatus.OK, "1009", "어세스 토큰 재발급 성공."),
+	UPDATE_PASSWORD(HttpStatus.OK, "1010", "비밀번호 변경 성공"),
 
 	// 2000: 시험 성공 코드
 	FIND_EXAM(HttpStatus.OK, "2000", "시험 조회 성공."),
