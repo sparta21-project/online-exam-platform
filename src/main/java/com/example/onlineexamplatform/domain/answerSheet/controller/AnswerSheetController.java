@@ -2,13 +2,14 @@ import com.example.onlineexamplatform.common.response.ApiResponse;
 import com.example.onlineexamplatform.domain.answerSheet.dto.request.AnswerSheetRequest;
 import com.example.onlineexamplatform.domain.answerSheet.dto.response.AnswerSheetResponse;
 import com.example.onlineexamplatform.domain.answerSheet.service.AnswerSheetService;
-import com.example.onlineexamplatform.domain.user.controller.UserController;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.example.onlineexamplatform.domain.user.controller.UserController.SESSION_USER_KEY;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,7 +24,7 @@ public class AnswerSheetController {
             @PathVariable Long examId,
             HttpServletRequest request
     ) {
-        Long userId = (Long) request.getSession().getAttribute(UserController.SESSION_USER_KEY);
+        Long userId = (Long) request.getSession().getAttribute(SESSION_USER_KEY);
         AnswerSheetResponse response = answerSheetService.createAnswerSheet(examId, userId);
         return ApiResponse.onSuccess(SuccessStatus.CREATED, response);
     }
@@ -36,7 +37,7 @@ public class AnswerSheetController {
             @RequestBody AnswerSheetRequest.Update requestDto,
             HttpServletRequest request
     ) {
-        Long userId = (Long) request.getSession().getAttribute(UserController.SESSION_USER_KEY);
+        Long userId = (Long) request.getSession().getAttribute(SESSION_USER_KEY);
         AnswerSheetResponse response = answerSheetService.updateAnswerSheet(examId, answerSheetId, requestDto, userId);
         return ApiResponse.onSuccess(SuccessStatus.OK, response);
     }
@@ -48,7 +49,7 @@ public class AnswerSheetController {
             @PathVariable Long answerSheetId,
             HttpServletRequest request
     ) {
-        Long userId = (Long) request.getSession().getAttribute(UserController.SESSION_USER_KEY);
+        Long userId = (Long) request.getSession().getAttribute(SESSION_USER_KEY);
         AnswerSheetResponse response = answerSheetService.getAnswerSheet(examId, answerSheetId, userId);
         return ApiResponse.onSuccess(SuccessStatus.OK, response);
     }
@@ -60,7 +61,7 @@ public class AnswerSheetController {
             @PathVariable Long answerSheetId,
             HttpServletRequest request
     ) {
-        Long userId = (Long) request.getSession().getAttribute(UserController.SESSION_USER_KEY);
+        Long userId = (Long) request.getSession().getAttribute(SESSION_USER_KEY);
         answerSheetService.deleteAnswerSheet(examId, answerSheetId, userId);
         return ApiResponse.onSuccess(SuccessStatus.NO_CONTENT);
     }
@@ -73,7 +74,7 @@ public class AnswerSheetController {
             @RequestBody AnswerSheetRequest.Submit requestDto,
             HttpServletRequest request
     ) {
-        Long userId = (Long) request.getSession().getAttribute(UserController.SESSION_USER_KEY);
+        Long userId = (Long) request.getSession().getAttribute(SESSION_USER_KEY);
         AnswerSheetResponse response = answerSheetService.submitAnswerSheet(examId, answerSheetId, requestDto, userId);
         return ApiResponse.onSuccess(SuccessStatus.OK, response);
     }
@@ -84,7 +85,7 @@ public class AnswerSheetController {
             @PathVariable Long examId,
             HttpServletRequest request
     ) {
-        Long userId = (Long) request.getSession().getAttribute(UserController.SESSION_USER_KEY);
+        Long userId = (Long) request.getSession().getAttribute(SESSION_USER_KEY);
         List<AnswerSheetResponse.Applicant> response = answerSheetService.getExamApplicants(examId, userId);
         return ApiResponse.onSuccess(SuccessStatus.OK, response);
     }
