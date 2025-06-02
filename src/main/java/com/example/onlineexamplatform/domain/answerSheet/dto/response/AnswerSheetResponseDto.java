@@ -10,7 +10,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class AnswerSheetResponse {
+public class AnswerSheetResponseDto {
 
     @Getter
     @RequiredArgsConstructor
@@ -18,7 +18,6 @@ public class AnswerSheetResponse {
         private Long answerSheetId;
         private LocalDateTime createdAt;
     }
-
     @Getter
     @RequiredArgsConstructor
     public static class Update {
