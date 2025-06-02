@@ -1,9 +1,11 @@
 package com.example.onlineexamplatform.common.code;
 
+import org.springframework.http.HttpStatus;
+
 import com.example.onlineexamplatform.common.dto.ReasonDto;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
@@ -19,11 +21,11 @@ public enum SuccessStatus implements BaseCode {
 	GET_RECOMMEND_SUCCESS(HttpStatus.OK, "1008", "추천목록 불러오기 성공."),
 	REISSUE_SUCCESS(HttpStatus.OK, "1009", "어세스 토큰 재발급 성공."),
 
-	// 2000: 도서 성공 코드
-	FIND_BOOK(HttpStatus.OK, "2000", "도서 조회 성공."),
-	CREATE_BOOK(HttpStatus.CREATED, "2001", "도서 생성 성공."),
-	UPDATE_BOOK(HttpStatus.OK, "2002", "도서 수정 성공."),
-	DELETE_BOOK(HttpStatus.OK, "2003", "도서 삭제 성공."),
+	// 2000: 시험 성공 코드
+	FIND_EXAM(HttpStatus.OK, "2000", "시험 조회 성공."),
+	CREATE_EXAM(HttpStatus.CREATED, "2001", "시험 생성 성공."),
+	UPDATE_EXAM(HttpStatus.OK, "2002", "시험 수정 성공."),
+	DELETE_EXAM(HttpStatus.OK, "2003", "시험 삭제 성공."),
 
 	// 4000 : 좋아요 성공 코드
 	CREATE_LIKE(HttpStatus.CREATED, "4001", "좋아요 성공"),
