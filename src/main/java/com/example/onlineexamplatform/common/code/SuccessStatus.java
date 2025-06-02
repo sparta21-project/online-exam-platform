@@ -44,7 +44,14 @@ public enum SuccessStatus implements BaseCode {
 
 	// 7000 : 검색 성공 코드
 	SEARCH_SUCCESS(HttpStatus.OK, "7001", "검색에 성공했습니다."),
-	POPULAR_SEARCH_SUCCESS(HttpStatus.OK, "7002", "인기 검색어 호출에 성공했습니다.");
+	POPULAR_SEARCH_SUCCESS(HttpStatus.OK, "7002", "인기 검색어 호출에 성공했습니다."),
+
+	// 9000 : 응시 권한 성공 코드
+	USERCATEGORY_CREATE_SUCCESS(HttpStatus.CREATED, "9001", "응시 권한 생성에 성공했습니다."),
+	USERCATEGORY_GET_SUCCESS(HttpStatus.OK, "9002", "응시 권한 목록 조회에 성공했습니다."),
+	USERCATEGORY_DELETE_SUCCESS(HttpStatus.OK, "9003", "응시 권한 삭제에 성공했습니다.");
+
+
 
 	private final HttpStatus httpStatus;
 	private final String code;
