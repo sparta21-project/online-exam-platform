@@ -18,8 +18,8 @@ public class GetExamListReponseDto {
 	public static GetExamListReponseDto toDto(Exam exam) {
 		return new GetExamListReponseDto(
 			exam.getId(),
-			// exam.getId(), // 유저 부분 구현 시 활성화
-			exam.getTitle()
+			exam.getUser().getId(),
+			exam.getExamTitle()
 		);
 	}
 

@@ -14,6 +14,6 @@ public interface ExamRepository extends JpaRepository<Exam, Long> {
 		return findById(id).orElseThrow(() -> new ApiException(ErrorStatus.EXAM_NOT_FOUND));
 	}
 
-	List<Exam> findByExamTile(String title);
+	List<Exam> findByExamTitle(String examTitle);
 
 }
