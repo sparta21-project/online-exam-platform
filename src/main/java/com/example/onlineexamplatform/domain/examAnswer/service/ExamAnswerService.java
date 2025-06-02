@@ -7,16 +7,13 @@ import com.example.onlineexamplatform.domain.examAnswer.dto.ExamAnswerResponseDt
 import com.example.onlineexamplatform.domain.examAnswer.dto.SaveExamAnswerDto;
 import com.example.onlineexamplatform.domain.examAnswer.entity.ExamAnswer;
 import com.example.onlineexamplatform.domain.examAnswer.repository.ExamAnswerRepository;
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -32,6 +29,17 @@ public class ExamAnswerService {
     public void saveExamAnswer(Long examId, List<SaveExamAnswerDto> examAnswers) {
         Exam exam = examRepository.findById(examId)
                 .orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
+
+        Set<Integer> questionNumberSet = new HashSet<>();
+
+        // 사용자 제출 답안 questionNumber 중복 체크
+        for(SaveExamAnswerDto dto : examAnswers) {
+            Integer checkExamAnswers = dto.getQuestionNumber();
+
+            if(!questionNumberSet.add(checkExamAnswers)) {
+                throw new ApiException(ErrorStatus.USER_NOT_FOUND);
+            }
+        }
 
         Map<Integer, ExamAnswer> examAnswerMap = examAnswerRepository.findAllByExamId(examId)
                 .stream()
