@@ -2,6 +2,8 @@ import com.example.onlineexamplatform.common.response.ApiResponse;
 import com.example.onlineexamplatform.domain.answerSheet.dto.request.AnswerSheetRequest;
 import com.example.onlineexamplatform.domain.answerSheet.dto.response.AnswerSheetResponse;
 import com.example.onlineexamplatform.domain.answerSheet.service.AnswerSheetService;
+import com.example.onlineexamplatform.domain.user.controller.UserController;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +19,12 @@ public class AnswerSheetController {
 
     //빈 답안지 생성 (시험 응시)
     @PostMapping("/answersheet")
-    public ResponseEntity<ApiResponse<AnswerSheetResponse.Create>> createAnswerSheet(@PathVariable Long examId) {
-        AnswerSheetResponse response = answerSheetService.createAnswerSheet(examId);
+    public ResponseEntity<ApiResponse<AnswerSheetResponse.Create>> createAnswerSheet(
+            @PathVariable Long examId,
+            HttpServletRequest request
+    ) {
+        Long userId = (Long) request.getSession().getAttribute(UserController.SESSION_USER_KEY);
+        AnswerSheetResponse response = answerSheetService.createAnswerSheet(examId, userId);
         return ApiResponse.onSuccess(SuccessStatus.CREATED, response);
     }
 
@@ -27,8 +33,11 @@ public class AnswerSheetController {
     public ResponseEntity<ApiResponse<AnswerSheetResponse.Update>> updateAnswerSheet(
             @PathVariable Long examId,
             @PathVariable Long answerSheetId,
-            @RequestBody AnswerSheetRequest.Update request) {
-        AnswerSheetResponse response = answerSheetService.updateAnswerSheet(examId, answerSheetId, request);
+            @RequestBody AnswerSheetRequest.Update requestDto,
+            HttpServletRequest request
+    ) {
+        Long userId = (Long) request.getSession().getAttribute(UserController.SESSION_USER_KEY);
+        AnswerSheetResponse response = answerSheetService.updateAnswerSheet(examId, answerSheetId, requestDto, userId);
         return ApiResponse.onSuccess(SuccessStatus.OK, response);
     }
 
@@ -36,8 +45,11 @@ public class AnswerSheetController {
     @GetMapping("/answersheet/{answerSheetId}")
     public ResponseEntity<ApiResponse<AnswerSheetResponse.Get>> getAnswerSheet(
             @PathVariable Long examId,
-            @PathVariable Long answerSheetId) {
-        AnswerSheetResponse response = answerSheetService.getAnswerSheet(examId, answerSheetId);
+            @PathVariable Long answerSheetId,
+            HttpServletRequest request
+    ) {
+        Long userId = (Long) request.getSession().getAttribute(UserController.SESSION_USER_KEY);
+        AnswerSheetResponse response = answerSheetService.getAnswerSheet(examId, answerSheetId, userId);
         return ApiResponse.onSuccess(SuccessStatus.OK, response);
     }
 
@@ -45,8 +57,11 @@ public class AnswerSheetController {
     @DeleteMapping("/answersheet/{answerSheetId}")
     public ResponseEntity<ApiResponse<Void>> deleteAnswerSheet(
             @PathVariable Long examId,
-            @PathVariable Long answerSheetId) {
-        answerSheetService.deleteAnswerSheet(examId, answerSheetId);
+            @PathVariable Long answerSheetId,
+            HttpServletRequest request
+    ) {
+        Long userId = (Long) request.getSession().getAttribute(UserController.SESSION_USER_KEY);
+        answerSheetService.deleteAnswerSheet(examId, answerSheetId, userId);
         return ApiResponse.onSuccess(SuccessStatus.NO_CONTENT);
     }
 
@@ -55,16 +70,22 @@ public class AnswerSheetController {
     public ResponseEntity<ApiResponse<AnswerSheetResponse.Submit>> submitAnswerSheet(
             @PathVariable Long examId,
             @PathVariable Long answerSheetId,
-            @RequestBody AnswerSheetRequest.Submit request) {
-        AnswerSheetResponse response = answerSheetService.submitAnswerSheet(examId, answerSheetId, request);
+            @RequestBody AnswerSheetRequest.Submit requestDto,
+            HttpServletRequest request
+    ) {
+        Long userId = (Long) request.getSession().getAttribute(UserController.SESSION_USER_KEY);
+        AnswerSheetResponse response = answerSheetService.submitAnswerSheet(examId, answerSheetId, requestDto, userId);
         return ApiResponse.onSuccess(SuccessStatus.OK, response);
     }
 
     //시험 응시자 조회
     @GetMapping("/applicants")
     public ResponseEntity<ApiResponse<List<AnswerSheetResponse.Applicant>>> getExamApplicants(
-            @PathVariable Long examId) {
-        List<AnswerSheetResponse.Applicant> response = answerSheetService.getExamApplicants(examId);
+            @PathVariable Long examId,
+            HttpServletRequest request
+    ) {
+        Long userId = (Long) request.getSession().getAttribute(UserController.SESSION_USER_KEY);
+        List<AnswerSheetResponse.Applicant> response = answerSheetService.getExamApplicants(examId, userId);
         return ApiResponse.onSuccess(SuccessStatus.OK, response);
     }
 }
