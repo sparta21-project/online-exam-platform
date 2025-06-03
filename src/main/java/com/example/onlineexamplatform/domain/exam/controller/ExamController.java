@@ -35,7 +35,7 @@ public class ExamController {
 
 	private final ExamService examService;
 
-	@PostMapping("/admin/{userId}/exam")
+	@PostMapping("/admin/{userId}/exams")
 	public ResponseEntity<ApiResponse<ExamResponseDto>> createExam(
 		@PathVariable Long userId,
 		@Valid @RequestBody CreateExamRequestDto requestDto) {
@@ -45,7 +45,7 @@ public class ExamController {
 		return ApiResponse.onSuccess(SuccessStatus.CREATE_EXAM, exam);
 	}
 
-	@GetMapping("/admin/exam")
+	@GetMapping("/admin/exams")
 	public ResponseEntity<ApiResponse<PageResponse<GetExamListResponseDto>>> getExamList(
 		@PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
@@ -57,7 +57,7 @@ public class ExamController {
 		return ApiResponse.onSuccess(SuccessStatus.FIND_EXAM, response);
 	}
 
-	@GetMapping("/admin/exam/search")
+	@GetMapping("/admin/exams/search")
 	public ResponseEntity<ApiResponse<PageResponse<GetExamListResponseDto>>> searchExamByTitle(
 		@PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable,
 		@RequestParam String examTile) {
@@ -69,7 +69,7 @@ public class ExamController {
 		return ApiResponse.onSuccess(SuccessStatus.FIND_EXAM, response);
 	}
 
-	@GetMapping("/admin/exam/{examId}")
+	@GetMapping("/admin/exams/{examId}")
 	public ResponseEntity<ApiResponse<ExamResponseDto>> findExamById(@PathVariable Long examId) {
 
 		ExamResponseDto exam = examService.findExamById(examId);
@@ -77,7 +77,7 @@ public class ExamController {
 		return ApiResponse.onSuccess(SuccessStatus.FIND_EXAM, exam);
 	}
 
-	@PatchMapping("/admin/exam/{examId}")
+	@PatchMapping("/admin/exams/{examId}")
 	public ResponseEntity<ApiResponse<UpdateExamResponseDto>> updateExamById(
 		@PathVariable Long examId,
 		@Valid @RequestBody UpdateExamRequestDto requestDto) {
