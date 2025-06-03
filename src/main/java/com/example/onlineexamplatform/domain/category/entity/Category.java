@@ -1,14 +1,23 @@
 package com.example.onlineexamplatform.domain.category.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
+@NoArgsConstructor
 public class Category {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Enumerated(EnumType.STRING)
-    private CategoryName categoryType;
+    @Column(nullable = false, unique = true)
+    private CategoryType categoryType;
+
+    public Category(CategoryType categoryType) {
+        this.categoryType = categoryType;
+    }
 }
