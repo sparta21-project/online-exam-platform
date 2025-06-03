@@ -18,7 +18,7 @@ public class CreateExamRequestDto {
 
 	@NotBlank(message = "시험 제목은 필수입니다.")
 	@Size(max = 100)
-	private String examTitle;
+	private String title;
 
 	@NotBlank(message = "시험 설명은 필수입니다.")
 	@Size(max = 1000)
@@ -26,7 +26,7 @@ public class CreateExamRequestDto {
 
 	@NotEmpty(message = "시험 파일 경로는 필수입니다.")
 	@Size(max = 1024)
-	private List<String> filePaths;
+	private List<String> paths;
 
 	@NotNull(message = "시험 시작 시간은 필수입니다.")
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")

@@ -19,7 +19,7 @@ public class GetExamListResponseDto {
 		return new GetExamListResponseDto(
 			exam.getId(),
 			exam.getUser().getId(),
-			exam.getExamTitle()
+			exam.getTitle()
 		);
 	}
 
