@@ -52,9 +52,9 @@ public class Exam extends BaseEntity {
 	private User user;
 
 	public void updateExam(UpdateExamRequestDto requestDto) {
-		this.title = requestDto.getExamTitle();
+		this.title = requestDto.getTitle();
 		this.description = requestDto.getDescription();
-		this.paths = requestDto.getFilePaths();
+		this.paths = requestDto.getPaths();
 		this.startTime = requestDto.getStartTime();
 		this.endTime = requestDto.getEndTime();
 	}

@@ -39,9 +39,9 @@ public class ExamService {
 
 		Exam exam = Exam.builder()
 			.user(user)
-			.title(requestDto.getExamTitle())
+			.title(requestDto.getTitle())
 			.description(requestDto.getDescription())
-			.paths(requestDto.getFilePaths())
+			.paths(requestDto.getPaths())
 			.startTime(requestDto.getStartTime())
 			.endTime(requestDto.getEndTime())
 			.build();
