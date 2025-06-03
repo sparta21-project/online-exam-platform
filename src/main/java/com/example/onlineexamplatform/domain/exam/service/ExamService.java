@@ -30,10 +30,6 @@ public class ExamService {
 	@Transactional
 	public ExamResponseDto createExam(CreateExamRequestDto requestDto, Long userId) {
 
-		// if (userId == null) {
-		// 	throw new IllegalArgumentException("id는 null일 수 없습니다.");
-		// }
-
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 
