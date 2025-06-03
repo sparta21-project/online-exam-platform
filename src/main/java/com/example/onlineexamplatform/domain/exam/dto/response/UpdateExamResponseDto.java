@@ -36,7 +36,7 @@ public class UpdateExamResponseDto {
 			.userId(exam.getUser().getId())
 			.examTitle(exam.getExamTitle())
 			.description(exam.getDescription())
-			.filePaths(exam.getFilePaths())
+//			.filePaths(exam.getFilePaths())
 			.startTime(exam.getStartTime())
 			.endTime(exam.getEndTime())
 			.updatedAt(exam.getUpdatedAt())

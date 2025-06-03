@@ -41,7 +41,7 @@ public class ExamService {
 			.user(user)
 			.examTitle(requestDto.getExamTitle())
 			.description(requestDto.getDescription())
-			.filePaths(requestDto.getFilePaths())
+//			.filePaths(requestDto.getFilePaths())
 			.startTime(requestDto.getStartTime())
 			.endTime(requestDto.getEndTime())
 			.build();

@@ -3,6 +3,7 @@ package com.example.onlineexamplatform.domain.examAnswer.service;
 import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
 import com.example.onlineexamplatform.domain.exam.entity.Exam;
+import com.example.onlineexamplatform.domain.exam.repository.ExamRepository;
 import com.example.onlineexamplatform.domain.examAnswer.dto.ExamAnswerResponseDto;
 import com.example.onlineexamplatform.domain.examAnswer.dto.SaveExamAnswerDto;
 import com.example.onlineexamplatform.domain.examAnswer.entity.ExamAnswer;
