@@ -18,22 +18,22 @@ public class UpdateExamRequestDto {
 
 	@NotBlank(message = "시험 제목은 필수입니다.")
 	@Size(max = 100)
-	private String title;
+	private final String title;
 
 	@NotBlank(message = "시험 설명은 필수입니다.")
 	@Size(max = 1000)
-	private String description;
+	private final String description;
 
 	@NotEmpty(message = "시험 파일 경로는 필수입니다.")
 	@Size(max = 1024)
-	private List<String> paths;
+	private final List<String> paths;
 
 	@NotNull(message = "시험 시작 시간은 필수입니다.")
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-	private LocalDateTime startTime;
+	private final LocalDateTime startTime;
 
 	@NotNull(message = "시험 시작 시간은 필수입니다.")
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-	private LocalDateTime endTime;
+	private final LocalDateTime endTime;
 
 }
