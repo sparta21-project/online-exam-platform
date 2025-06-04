@@ -33,10 +33,25 @@ public class User extends BaseEntity {
 	@Column(nullable = false)
 	private Role role;
 
+	@Column(nullable = false)
+	private Boolean isWithdraw = false;
+
 	public User(String email, String password, String username, Role role) {
 		this.email = email;
 		this.password = password;
 		this.username = username;
 		this.role = role;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public void withdraw() {
+		this.isWithdraw = true;
+	}
+
+	public boolean isWithdraw() {
+		return Boolean.TRUE.equals(this.isWithdraw);
 	}
 }

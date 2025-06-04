@@ -16,15 +16,15 @@ public class UserAnswer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "answer_sheet_id")
+    private AnswerSheet answerSheet;
+
     @Column(nullable = false)
     private int questionNumber;
 
     @Column(nullable = false)
     private String answerText;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "answer_sheet_id")
-    private AnswerSheet answerSheet;
 
     public UserAnswer(AnswerSheet answerSheet, int questionNumber, String answerText) {
         this.answerSheet = answerSheet;

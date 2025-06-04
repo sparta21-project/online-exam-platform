@@ -14,6 +14,9 @@ public enum ErrorStatus implements BaseErrorCode {
 	USER_DEACTIVATE(HttpStatus.FORBIDDEN, "1002", "비활성화된 계정입니다."),
 	USER_NOT_MATCH(HttpStatus.UNAUTHORIZED, "1003", "로그인 정보가 일치하지 않습니다."),
 	DUPLICATE_EMAIL(HttpStatus.CONFLICT, "1004", "이미 사용중인 이메일입니다."),
+	INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "1005", "현재 비밀번호가 일치하지 않습니다."),
+	UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "1006", "로그인이 필요합니다."),
+	ALREADY_WITHDRAWN(HttpStatus.BAD_REQUEST, "1007", "이미 탈퇴한 회원입니다."),
 
 	//exam 에러 코드
 	EXAM_NOT_FOUND(HttpStatus.NOT_FOUND, "2001", "찾으시는 문제가 없습니다."),
