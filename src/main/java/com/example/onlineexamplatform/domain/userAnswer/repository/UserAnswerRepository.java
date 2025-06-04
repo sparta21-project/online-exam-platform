@@ -11,4 +11,7 @@ import java.util.Optional;
 @Repository
 public interface UserAnswerRepository extends JpaRepository<UserAnswer, Long> {
     List<UserAnswer> findAllByAnswerSheetId(Long answerSheetId);
+    Optional<UserAnswer> findByAnswerSheetAndQuestionNumber(AnswerSheet answerSheet, int questionNumber);
+    List<UserAnswer> findAllByAnswerSheet(AnswerSheet answerSheet);
+
 }

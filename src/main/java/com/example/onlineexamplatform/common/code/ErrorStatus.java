@@ -26,10 +26,13 @@ public enum ErrorStatus implements BaseErrorCode {
 	DUPLICATE_USER_CATEGORY(HttpStatus.CONFLICT, "3002", "이미 등록된 응시 권한입니다."),
 	USER_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "3003", "응시 권한이 존재하지 않습니다."),
 
+	//answerSheet 에러 코드
+	ANSWER_SHEET_NOT_FOUND(HttpStatus.NOT_FOUND, "3001", "답안지 정보가 없습니다."),
+	ACCESS_DENIED(HttpStatus.UNAUTHORIZED, "3002", "답안지를 조회할 권한이 없습니다."),
+
 	// examAnswer 에러
 	DUPLICATE_EXAM_ANSWER(HttpStatus.CONFLICT, "9001", "답안이 이미 존재합니다."),
 	;
-
 
 	private final HttpStatus httpStatus;
 	private final String code;

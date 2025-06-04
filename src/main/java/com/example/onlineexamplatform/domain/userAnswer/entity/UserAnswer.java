@@ -2,7 +2,6 @@ package com.example.onlineexamplatform.domain.userAnswer.entity;
 
 import com.example.onlineexamplatform.domain.answerSheet.entity.AnswerSheet;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,7 +25,7 @@ public class UserAnswer {
     @Column(nullable = false)
     private String answerText;
 
-    public UserAnswer(AnswerSheet answerSheet, Integer questionNumber, String answerText) {
+    public UserAnswer(AnswerSheet answerSheet, int questionNumber, String answerText) {
         this.answerSheet = answerSheet;
         this.questionNumber = questionNumber;
         this.answerText = answerText;
