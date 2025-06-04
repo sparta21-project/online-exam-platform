@@ -29,23 +29,23 @@ public class ExamFile extends BaseEntity {
 	private Long id;
 
 	@Column(nullable = false)
-	private String name;
+	private String fileName;
 
 	@Column(nullable = false)
 	private String path;
 
-	@Column
-	private String type;
+	@Column(nullable = false)
+	private String fileType;
 
-	@Column
-	private int size;
+	@Column(nullable = false)
+	private Long size;
 
 	@ManyToOne
 	@JoinColumn(name = "exam_id")
 	private Exam exam;
 
-	public void updateExamFile(String name, String path) {
-		this.name = name;
+	public void updateExamFile(String fileName, String path) {
+		this.fileName = fileName;
 		this.path = path;
 	}
 }
