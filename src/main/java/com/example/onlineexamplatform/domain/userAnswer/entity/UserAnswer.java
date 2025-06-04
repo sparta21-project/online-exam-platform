@@ -21,12 +21,12 @@ public class UserAnswer {
     private AnswerSheet answerSheet;
 
     @Column(nullable = false)
-    private int questionNumber;
+    private Integer questionNumber;
 
     @Column(nullable = false)
     private String answerText;
 
-    public UserAnswer(AnswerSheet answerSheet, int questionNumber, String answerText) {
+    public UserAnswer(AnswerSheet answerSheet, Integer questionNumber, String answerText) {
         this.answerSheet = answerSheet;
         this.questionNumber = questionNumber;
         this.answerText = answerText;

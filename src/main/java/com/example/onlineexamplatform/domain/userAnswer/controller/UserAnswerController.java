@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/userAnswers")
+@RequestMapping("/user-answers")
 public class UserAnswerController {
 
     private final UserAnswerService userAnswerService;
