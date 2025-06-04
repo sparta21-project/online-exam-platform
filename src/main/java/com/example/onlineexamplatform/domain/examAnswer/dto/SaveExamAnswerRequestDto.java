@@ -1,7 +1,7 @@
 package com.example.onlineexamplatform.domain.examAnswer.dto;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 public class SaveExamAnswerRequestDto {
 
-    @NotBlank
+    @NotNull
     @Valid
     private List<SaveExamAnswerDto> examAnswers;
 }

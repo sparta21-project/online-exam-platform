@@ -29,7 +29,7 @@ public class ExamAnswerService {
     @Transactional
     public void saveExamAnswer(Long examId, List<SaveExamAnswerDto> examAnswers) {
         Exam exam = examRepository.findById(examId)
-                .orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorStatus.EXAM_NOT_FOUND));
 
         Set<Integer> questionNumberSet = new HashSet<>();
 
@@ -38,7 +38,7 @@ public class ExamAnswerService {
             Integer checkExamAnswers = dto.getQuestionNumber();
 
             if(!questionNumberSet.add(checkExamAnswers)) {
-                throw new ApiException(ErrorStatus.USER_NOT_FOUND);
+                throw new ApiException(ErrorStatus.DUPLICATE_QUESTION_NUMBER);
             }
         }
 
@@ -62,7 +62,7 @@ public class ExamAnswerService {
 
     public ExamAnswerResponseDto getExamAnswer(Long examAnswerId) {
         ExamAnswer examAnswer = examAnswerRepository.findById(examAnswerId)
-                .orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorStatus.EXAM_ANSWER_NOT_FOUND));
 
         return new ExamAnswerResponseDto(examAnswer.getExam().getId(),
                 examAnswer.getQuestionNumber(),

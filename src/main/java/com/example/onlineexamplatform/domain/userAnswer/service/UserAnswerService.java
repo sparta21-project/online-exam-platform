@@ -3,6 +3,7 @@ package com.example.onlineexamplatform.domain.userAnswer.service;
 import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
 import com.example.onlineexamplatform.domain.answerSheet.entity.AnswerSheet;
+import com.example.onlineexamplatform.domain.answerSheet.repository.AnswerSheetRepository;
 import com.example.onlineexamplatform.domain.examAnswer.repository.ExamAnswerRepository;
 import com.example.onlineexamplatform.domain.userAnswer.dto.SaveAnswerDto;
 import com.example.onlineexamplatform.domain.userAnswer.entity.UserAnswer;
@@ -40,7 +41,7 @@ public class UserAnswerService {
     @Transactional
     public void saveAnswer(Long answerSheetId, List<SaveAnswerDto> answers) {
         AnswerSheet answerSheet = answerSheetRepository.findById(answerSheetId)
-                .orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
 
         Set<Integer> questionNumberSet = new HashSet<>();
 
@@ -49,7 +50,7 @@ public class UserAnswerService {
             Integer checkAnswers = dto.getQuestionNumber();
 
             if(!questionNumberSet.add(checkAnswers)) {
-                throw new ApiException(ErrorStatus.USER_NOT_FOUND);
+                throw new ApiException(ErrorStatus.DUPLICATE_QUESTION_NUMBER);
             }
         }
 
@@ -57,7 +58,7 @@ public class UserAnswerService {
         int answerCount = examAnswerRepository.countByExamId(answerSheet.getExam().getId());
 
         if(answers.size() > answerCount) {
-            throw new ApiException(ErrorStatus.USER_NOT_FOUND);
+            throw new ApiException(ErrorStatus.EXCEED_USER_ANSWER);
         }
 
         // DB에 저장된 값 한번에 불러오기 -> SELECT 1회

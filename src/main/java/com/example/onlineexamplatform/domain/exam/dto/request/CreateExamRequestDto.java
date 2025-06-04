@@ -24,9 +24,9 @@ public class CreateExamRequestDto {
 	@Size(max = 1000)
 	private String description;
 
-	@NotEmpty(message = "시험 파일 경로는 필수입니다.")
-	@Size(max = 1024)
-	private List<String> filePaths;
+//	@NotEmpty(message = "시험 파일 경로는 필수입니다.")
+//	@Size(max = 1024)
+//	private List<String> filePaths;
 
 	@NotNull(message = "시험 시작 시간은 필수입니다.")
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")

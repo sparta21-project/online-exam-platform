@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/examAnswers")
+@RequestMapping("/exam-answers")
 public class ExamAnswerController {
 
     private final ExamAnswerService examAnswerService;
@@ -29,18 +29,18 @@ public class ExamAnswerController {
     @GetMapping("/{examAnswerId}")
     public ResponseEntity<ApiResponse<ExamAnswerResponseDto>> getExamAnswer(@PathVariable Long examAnswerId) {
         ExamAnswerResponseDto responseDto = examAnswerService.getExamAnswer(examAnswerId);
-        return ApiResponse.onSuccess(SuccessStatus.SAVE_ANSWER_SUCCESS, responseDto);
+        return ApiResponse.onSuccess(SuccessStatus.GET_EXAM_ANSWER_SUCCESS, responseDto);
     }
 
-    @GetMapping("/{examId}")
+    @GetMapping("/{examId}/exams")
     public ResponseEntity<ApiResponse<Page<ExamAnswerResponseDto>>> getAllExamAnswer(@PathVariable Long examId, @PageableDefault Pageable pageable) {
         Page<ExamAnswerResponseDto> responseDtos = examAnswerService.getAllExamAnswer(examId, pageable);
-        return ApiResponse.onSuccess(SuccessStatus.SAVE_ANSWER_SUCCESS, responseDtos);
+        return ApiResponse.onSuccess(SuccessStatus.GET_EXAM_ANSWER_SUCCESS, responseDtos);
     }
 
     @DeleteMapping("/{examAnswerId}")
     public ResponseEntity<ApiResponse<Void>> deleteExamAnswer(@PathVariable Long examAnswerId) {
         examAnswerService.deleteExamAnswer(examAnswerId);
-        return ApiResponse.onSuccess(SuccessStatus.SAVE_ANSWER_SUCCESS);
+        return ApiResponse.onSuccess(SuccessStatus.DELETE_EXAM_ANSWER_SUCCESS);
     }
 }

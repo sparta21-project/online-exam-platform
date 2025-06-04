@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 public class SaveAnswerRequestDto {
-    @NotBlank
+    @NotNull
     @Valid
     private List<SaveAnswerDto> answers;
 
