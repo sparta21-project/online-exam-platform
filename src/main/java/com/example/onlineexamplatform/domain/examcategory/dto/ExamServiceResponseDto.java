@@ -1,19 +1,18 @@
 package com.example.onlineexamplatform.domain.examcategory.dto;
 
-import com.example.onlineexamplatform.domain.examcategory.entity.ExamCategory;
-
+import com.example.onlineexamplatform.domain.category.entity.CategoryType;
 import lombok.Getter;
 
 @Getter
 public class ExamServiceResponseDto {
 
-	private final Long id;
-	private final Long examId;
-	private final ExamCategory categoryType;
+    private final Long id;
+    private final Long examId;
+    private final CategoryType categoryType;
 
-	public ExamServiceResponseDto(Long id, Long examId, ExamCategory categoryType) {
-		this.id = id;
-		this.examId = examId;
-		this.categoryType = categoryType;
-	}
+    public ExamServiceResponseDto(Long id, Long examId, CategoryType categoryType) {
+        this.id = id;
+        this.examId = examId;
+        this.categoryType = categoryType;
+    }
 }
