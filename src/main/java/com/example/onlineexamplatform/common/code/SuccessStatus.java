@@ -46,7 +46,15 @@ public enum SuccessStatus implements BaseCode {
 
 	// 7000 : 검색 성공 코드
 	SEARCH_SUCCESS(HttpStatus.OK, "7001", "검색에 성공했습니다."),
-	POPULAR_SEARCH_SUCCESS(HttpStatus.OK, "7002", "인기 검색어 호출에 성공했습니다.");
+	POPULAR_SEARCH_SUCCESS(HttpStatus.OK, "7002", "인기 검색어 호출에 성공했습니다."),
+
+	// 8000 : 답안지 성공 코드
+	CREATE_ANSWER_SHEET_SUCCESS(HttpStatus.CREATED, "8001", "답안지가 생성되었습니다."),
+	SAVE_ANSWERS_SUCCESS(HttpStatus.OK, "8002", "답안이 저장되었습니다."),
+	GET_ANSWERS_SUCCESS(HttpStatus.OK, "8003", "답안 조회가 완료되었습니다."),
+	DELETE_ANSWER_SHEET_SUCCESS(HttpStatus.NOT_FOUND, "8004", "답안지가 삭제되었습니다."),
+	SUBMIT_ANSWER_SUCCESS(HttpStatus.OK, "8005", "답안이 제출되었습니다."),
+	GET_APPLICANTS_SUCCESS(HttpStatus.OK, "8006", "응시자 조회가 완료되었습니다.");ㄴㄴ
 
 	private final HttpStatus httpStatus;
 	private final String code;

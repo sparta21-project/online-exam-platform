@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserAnswerRequestDto {
-    private Long questionId;
-    private int userAnswer;
+    private int questionNumber;
+    private String answerText;
 }

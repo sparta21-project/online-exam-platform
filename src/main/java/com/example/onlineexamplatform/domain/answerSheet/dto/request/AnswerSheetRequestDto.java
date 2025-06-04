@@ -13,13 +13,13 @@ public class AnswerSheetRequestDto {
     @Getter
     @RequiredArgsConstructor
     public static class Update {
-        private List<UserAnswerRequestDto> answers;
+        private final List<UserAnswerRequestDto> answers;
     }
 
     @Getter
     @RequiredArgsConstructor
     public static class Submit {
-        private List<UserAnswerRequestDto> answers;
+        private final List<UserAnswerRequestDto> answers;
 
     }
 }

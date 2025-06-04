@@ -14,38 +14,32 @@ public class AnswerSheetResponseDto {
 
     @Getter
     @RequiredArgsConstructor
-    public static class Create {
-        private Long answerSheetId;
-        private LocalDateTime createdAt;
-    }
-    @Getter
-    @RequiredArgsConstructor
     public static class Update {
-        private Long examId;
-        private Long userId;
-        private List<UserAnswerResponseDto> answers;
+        private final Long examId;
+        private final Long userId;
+        private final List<UserAnswerResponseDto> answers;
     }
 
     @Getter
     @RequiredArgsConstructor
     public static class Submit {
-        private Long examId;
-        private Long userId;
-        private List<UserAnswerResponseDto> answers;
+        private final Long examId;
+        private final Long userId;
+        private final List<UserAnswerResponseDto> answers;
     }
 
     @Getter
     @RequiredArgsConstructor
     public static class Get {
-        private Long examId;
-        private Long userId;
-        private List<UserAnswerResponseDto> answers;
+        private final Long examId;
+        private final Long userId;
+        private final List<UserAnswerResponseDto> answers;
     }
 
     @Getter
     @RequiredArgsConstructor
     public static class Applicant {
-        private String username;
-        private String email;
+        private final String username;
+        private final String email;
     }
 }
