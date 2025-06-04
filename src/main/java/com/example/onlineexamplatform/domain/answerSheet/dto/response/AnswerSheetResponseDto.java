@@ -1,5 +1,6 @@
 package com.example.onlineexamplatform.domain.answerSheet.dto.response;
 
+import com.example.onlineexamplatform.domain.answerSheet.enums.AnswerSheetStatus;
 import com.example.onlineexamplatform.domain.userAnswer.entity.UserAnswer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,6 +35,7 @@ public class AnswerSheetResponseDto {
         private final Long examId;
         private final Long userId;
         private final List<UserAnswerResponseDto> answers;
+        private final AnswerSheetStatus status;
     }
 
     @Getter

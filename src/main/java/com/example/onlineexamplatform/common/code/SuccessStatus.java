@@ -54,7 +54,7 @@ public enum SuccessStatus implements BaseCode {
 	GET_ANSWERS_SUCCESS(HttpStatus.OK, "8003", "답안 조회가 완료되었습니다."),
 	DELETE_ANSWER_SHEET_SUCCESS(HttpStatus.NOT_FOUND, "8004", "답안지가 삭제되었습니다."),
 	SUBMIT_ANSWER_SUCCESS(HttpStatus.OK, "8005", "답안이 제출되었습니다."),
-	GET_APPLICANTS_SUCCESS(HttpStatus.OK, "8006", "응시자 조회가 완료되었습니다.");ㄴㄴ
+	GET_APPLICANTS_SUCCESS(HttpStatus.OK, "8006", "응시자 조회가 완료되었습니다.");
 
 	private final HttpStatus httpStatus;
 	private final String code;

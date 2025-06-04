@@ -11,6 +11,7 @@ import com.example.onlineexamplatform.domain.answerSheet.enums.AnswerSheetStatus
 import com.example.onlineexamplatform.domain.answerSheet.repository.AnswerSheetRepository;
 import com.example.onlineexamplatform.domain.exam.entity.Exam;
 import com.example.onlineexamplatform.domain.exam.repository.ExamRepository;
+import com.example.onlineexamplatform.domain.user.entity.Role;
 import com.example.onlineexamplatform.domain.user.entity.User;
 import com.example.onlineexamplatform.domain.user.repository.UserRepository;
 import com.example.onlineexamplatform.domain.userAnswer.entity.UserAnswer;
@@ -18,6 +19,8 @@ import com.example.onlineexamplatform.domain.userAnswer.repository.UserAnswerRep
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+
 import java.util.List;
 import java.util.Optional;
 
@@ -83,13 +86,45 @@ public class AnswerSheetService {
         );
     }
 
-    public AnswerSheetResponseDto.Get getAnswerSheet() {
-        return null;
+    //답안지 조회 (본인)
+    @Transactional(readOnly = true)
+    public AnswerSheetResponseDto.Get getAnswerSheet(Long examId, Long answerSheetId, Long userId) {
+        Exam exam = examRepository.findByIdOrElseThrow(examId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
+
+        AnswerSheet answerSheet = answerSheetRepository.findById(answerSheetId)
+                .orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
+
+        //본인이나 관리자가 아니면 에러
+        if (!answerSheet.getExam().getId().equals(exam.getId()) ||
+                !(answerSheet.getUser().getId().equals(user.getId()) || user.getRole().equals(Role.ADMIN))) {
+            throw new ApiException(ErrorStatus.ACCESS_DENIED);
+        }
+
+        List<UserAnswer> userAnswers = userAnswerRepository.findAllByAnswerSheet(answerSheet);
+
+        List<UserAnswerResponseDto> answerDtos = userAnswers.stream()
+                .map(UserAnswerResponseDto::toUserAnswerResponseDto)
+                .toList();
+
+        return new AnswerSheetResponseDto.Get(
+                exam.getId(),
+                user.getId(),
+                answerDtos,
+                answerSheet.getStatus()
+        );
     }
 
+    //답안지 삭제
     public void deleteAnswerSheet() {
     }
 
+    //답안 최종 제출
+    public AnswerSheetResponseDto.Submit submitAnswerSheet() {
+        return null;
+    }
+    //시험 응시자 조회
     public List<AnswerSheetResponseDto.Applicant> getExamApplicants() {
         return null;
     }
