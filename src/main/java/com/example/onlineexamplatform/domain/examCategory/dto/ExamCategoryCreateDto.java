@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Getter
-public class ExamCategoryCreateRequestDto {
+public class ExamCategoryCreateDto {
 
     @NotNull(message = "ID는 필수입니다.")
     private Long examId;

@@ -33,6 +33,7 @@ public enum ErrorStatus implements BaseErrorCode {
 	// userAnswer 에러
 	DUPLICATE_QUESTION_NUMBER(HttpStatus.CONFLICT, "8001", "중복된 문제 번호가 존재합니다."),
 	EXCEED_USER_ANSWER(HttpStatus.BAD_REQUEST, "8002", "제출한 답안의 수가 출제 문제의 수보다 많습니다."),
+
 	// examAnswer 에러
 	DUPLICATE_EXAM_ANSWER(HttpStatus.CONFLICT, "9001", "답안이 이미 존재합니다."),
 	EXAM_ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "9002", "답안이 없습니다."),

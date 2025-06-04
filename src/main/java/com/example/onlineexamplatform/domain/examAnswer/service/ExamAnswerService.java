@@ -60,6 +60,7 @@ public class ExamAnswerService {
         }
     }
 
+    @Transactional(readOnly = true)
     public ExamAnswerResponseDto getExamAnswer(Long examAnswerId) {
         ExamAnswer examAnswer = examAnswerRepository.findById(examAnswerId)
                 .orElseThrow(() -> new ApiException(ErrorStatus.EXAM_ANSWER_NOT_FOUND));
@@ -70,11 +71,13 @@ public class ExamAnswerService {
                 examAnswer.getCorrectAnswer());
     }
 
+    @Transactional(readOnly = true)
     public Page<ExamAnswerResponseDto> getAllExamAnswer(Long examId, Pageable pageable) {
         return examAnswerRepository.findAllByExamId(examId, pageable)
                 .map(ExamAnswerResponseDto::new);
     }
 
+    @Transactional
     public void deleteExamAnswer(Long examAnswerId) {
         examAnswerRepository.deleteById(examAnswerId);
     }

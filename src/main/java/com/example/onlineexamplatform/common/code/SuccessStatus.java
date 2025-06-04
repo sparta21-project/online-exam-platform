@@ -29,7 +29,7 @@ public enum SuccessStatus implements BaseCode {
 	DELETE_EXAM(HttpStatus.OK, "2003", "시험 삭제 성공."),
 
 	// 3000 : 유저답안 작성 성공 코드
-	SAVE_ANSWER_SUCCESS(HttpStatus.CREATED, "3001", "제출용 답안 작성 성공."),
+	SAVE_USER_ANSWER_SUCCESS(HttpStatus.CREATED, "3001", "제출용 답안 작성 성공."),
 
 	// 4000 : 시험답안 성공 코드
 	SAVE_EXAM_ANSWER_SUCCESS(HttpStatus.OK, "4001", "관리자용 답안 생성 성공."),
@@ -37,10 +37,10 @@ public enum SuccessStatus implements BaseCode {
 	GET_EXAM_ANSWER_SUCCESS(HttpStatus.OK, "4003", "관리자용 답안 조회 성공"),
 	DELETE_EXAM_ANSWER_SUCCESS(HttpStatus.OK, "4004", "관리자용 답안 삭제 성공"),
 
-	// 5000 : 어드민 성공 코드
-	BOOK_ADD_ACCEPT_SUCCESS(HttpStatus.OK, "5001", "도서 추가 요청 승인 성공"),
-	REVIEW_PIN_SUCCESS(HttpStatus.OK, "5002", "리뷰 상단 고정 성공"),
-	REVIEW_UNPIN_SUCCESS(HttpStatus.OK, "5003", "리뷰 상단 고정 해제 성공"),
+	// 5000 : 시험 권한 성공 코드
+	CREATE_EXAM_CATEGORY(HttpStatus.CREATED, "5001", "시험 권한 생성 성공"),
+	GET_EXAM_CATEGORY(HttpStatus.OK, "5002", "시험 권한 조회 성공"),
+	DELETE_EXAM_CATEGORY(HttpStatus.OK, "5003", "시험 권한 삭제 성공"),
 
 	// 6000 : 리뷰 성공 코드
 	CREATE_REVIEW(HttpStatus.CREATED, "6001", "리뷰 등록이 완료되었습니다."),
