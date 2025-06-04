@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -77,6 +78,7 @@ public class AnswerSheetService {
 
         List<UserAnswerResponseDto> answerDtos = userAnswers.stream()
                 .map(UserAnswerResponseDto::toUserAnswerResponseDto)
+                .sorted(Comparator.comparing(UserAnswerResponseDto::getQuestionNumber))
                 .toList();
 
         return new AnswerSheetResponseDto.Update(
@@ -106,6 +108,7 @@ public class AnswerSheetService {
 
         List<UserAnswerResponseDto> answerDtos = userAnswers.stream()
                 .map(UserAnswerResponseDto::toUserAnswerResponseDto)
+                .sorted(Comparator.comparing(UserAnswerResponseDto::getQuestionNumber))
                 .toList();
 
         return new AnswerSheetResponseDto.Get(
