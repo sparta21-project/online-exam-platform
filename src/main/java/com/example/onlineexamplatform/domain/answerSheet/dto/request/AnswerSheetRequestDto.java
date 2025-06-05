@@ -9,17 +9,5 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class AnswerSheetRequestDto {
-
-    @Getter
-    @RequiredArgsConstructor
-    public static class Update {
-        private final List<UserAnswerRequestDto> answers;
-    }
-
-    @Getter
-    @RequiredArgsConstructor
-    public static class Submit {
-        private final List<UserAnswerRequestDto> answers;
-
-    }
+    private final List<UserAnswerRequestDto> answers;
 }

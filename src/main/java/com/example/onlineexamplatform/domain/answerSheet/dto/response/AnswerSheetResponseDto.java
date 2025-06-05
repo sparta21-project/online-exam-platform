@@ -18,6 +18,7 @@ public class AnswerSheetResponseDto {
     public static class Update {
         private final Long examId;
         private final Long userId;
+        private final AnswerSheetStatus status;
         private final List<UserAnswerResponseDto> answers;
     }
 
@@ -26,6 +27,7 @@ public class AnswerSheetResponseDto {
     public static class Submit {
         private final Long examId;
         private final Long userId;
+        private final AnswerSheetStatus status;
         private final List<UserAnswerResponseDto> answers;
     }
 

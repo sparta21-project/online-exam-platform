@@ -37,7 +37,7 @@ public class AnswerSheetController {
     @PatchMapping("/answersheet")
     public ResponseEntity<ApiResponse<AnswerSheetResponseDto.Update>> updateAnswerSheet(
             @PathVariable Long examId,
-            @RequestBody AnswerSheetRequestDto.Update requestDto,
+            @RequestBody AnswerSheetRequestDto requestDto,
             HttpServletRequest request
     ) {
         Long userId = (Long) request.getSession().getAttribute(SESSION_USER_KEY);
@@ -69,18 +69,18 @@ public class AnswerSheetController {
         return ApiResponse.onSuccess(SuccessStatus.DELETE_ANSWER_SHEET_SUCCESS);
     }
 
-//    //답안 최종 제출
-//    @PostMapping("/answersheet/{answerSheetId}")
-//    public ResponseEntity<ApiResponse<AnswerSheetResponseDto.Submit>> submitAnswerSheet(
-//            @PathVariable Long examId,
-//            @PathVariable Long answerSheetId,
-//            @RequestBody AnswerSheetRequestDto.Submit requestDto,
-//            HttpServletRequest request
-//    ) {
-//        Long userId = (Long) request.getSession().getAttribute(SESSION_USER_KEY);
-//        AnswerSheetResponseDto.Submit responseDto = answerSheetService.submitAnswerSheet(examId, answerSheetId, requestDto, userId);
-//        return ApiResponse.onSuccess(SuccessStatus.SUBMIT_ANSWER_SUCCESS, responseDto);
-//    }
+    //답안 최종 제출
+    @PostMapping("/answersheet/{answerSheetId}")
+    public ResponseEntity<ApiResponse<AnswerSheetResponseDto.Submit>> submitAnswerSheet(
+            @PathVariable Long examId,
+            @PathVariable Long answerSheetId,
+            @RequestBody AnswerSheetRequestDto requestDto,
+            HttpServletRequest request
+    ) {
+        Long userId = (Long) request.getSession().getAttribute(SESSION_USER_KEY);
+        AnswerSheetResponseDto.Submit responseDto = answerSheetService.submitAnswerSheet(examId, answerSheetId, requestDto, userId);
+        return ApiResponse.onSuccess(SuccessStatus.SUBMIT_ANSWER_SUCCESS, responseDto);
+    }
 
 //    //시험 응시자 조회
 //    @GetMapping("/applicants")
