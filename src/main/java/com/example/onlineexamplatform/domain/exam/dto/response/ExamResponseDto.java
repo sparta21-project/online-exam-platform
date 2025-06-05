@@ -31,15 +31,15 @@ public class ExamResponseDto {
 
 	public static ExamResponseDto from(Exam exam) {
 		return ExamResponseDto.builder()
-			.id(exam.getId())
-			.userId(exam.getUser().getId())
-			.title(exam.getTitle())
-			.description(exam.getDescription())
-			.startTime(exam.getStartTime())
-			.endTime(exam.getEndTime())
-			.createdAt(exam.getCreatedAt())
-			.updatedAt(exam.getUpdatedAt())
-			.build();
+				.id(exam.getId())
+				.userId(exam.getUser().getId())
+				.title(exam.getTitle())
+				.description(exam.getDescription())
+				.startTime(exam.getStartTime())
+				.endTime(exam.getEndTime())
+				.createdAt(exam.getCreatedAt())
+				.updatedAt(exam.getUpdatedAt())
+				.build();
 
 	}
 }
