@@ -31,6 +31,10 @@ public enum SuccessStatus implements BaseCode {
 	// 3000 : 유저답안 작성 성공 코드
 	SAVE_USER_ANSWER_SUCCESS(HttpStatus.CREATED, "3001", "제출용 답안 작성 성공."),
 
+	// 4000 : S3 성공 코드
+	SUCCESS_FILE_UPLOAD(HttpStatus.OK, "4001", "파일 업로드 성공"),
+	SUCCESS_FILE_DELETE(HttpStatus.NO_CONTENT, "4002", "파일 삭제 성공"),
+
 	// 4000 : 시험답안 성공 코드
 	SAVE_EXAM_ANSWER_SUCCESS(HttpStatus.OK, "4001", "관리자용 답안 생성 성공."),
 	UPDATE_EXAM_ANSWER_SUCCESS(HttpStatus.OK, "4002", "관리자용 답안 수정 성공"),
@@ -64,7 +68,6 @@ public enum SuccessStatus implements BaseCode {
 	USERCATEGORY_CREATE_SUCCESS(HttpStatus.CREATED, "9001", "응시 권한 생성에 성공했습니다."),
 	USERCATEGORY_GET_SUCCESS(HttpStatus.OK, "9002", "응시 권한 목록 조회에 성공했습니다."),
 	USERCATEGORY_DELETE_SUCCESS(HttpStatus.OK, "9003", "응시 권한 삭제에 성공했습니다.");
-
 
 	private final HttpStatus httpStatus;
 	private final String code;

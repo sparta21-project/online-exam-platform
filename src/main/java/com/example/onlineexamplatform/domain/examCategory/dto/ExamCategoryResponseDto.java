@@ -22,7 +22,7 @@ public class ExamCategoryResponseDto {
     public ExamCategoryResponseDto(ExamCategory examCategory) {
         this.id = examCategory.getId();
         this.examId = examCategory.getExam().getId();
-        this.examTitle = examCategory.getExam().getExamTitle();
+        this.examTitle = examCategory.getExam().getTitle();
         this.categoryId = examCategory.getCategory().getId();
         this.categoryType = examCategory.getCategory().getCategoryType();
     }

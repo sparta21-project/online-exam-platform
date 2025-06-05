@@ -1,7 +1,7 @@
 package com.example.onlineexamplatform.domain.exam.service;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,7 +10,7 @@ import com.example.onlineexamplatform.common.error.ApiException;
 import com.example.onlineexamplatform.domain.exam.dto.request.CreateExamRequestDto;
 import com.example.onlineexamplatform.domain.exam.dto.request.UpdateExamRequestDto;
 import com.example.onlineexamplatform.domain.exam.dto.response.ExamResponseDto;
-import com.example.onlineexamplatform.domain.exam.dto.response.GetExamListReponseDto;
+import com.example.onlineexamplatform.domain.exam.dto.response.GetExamListResponseDto;
 import com.example.onlineexamplatform.domain.exam.dto.response.UpdateExamResponseDto;
 import com.example.onlineexamplatform.domain.exam.entity.Exam;
 import com.example.onlineexamplatform.domain.exam.repository.ExamRepository;
@@ -30,18 +30,15 @@ public class ExamService {
 	@Transactional
 	public ExamResponseDto createExam(CreateExamRequestDto requestDto, Long userId) {
 
-		// if (userId == null) {
-		// 	throw new IllegalArgumentException("id는 null일 수 없습니다.");
-		// }
-
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 
 		Exam exam = Exam.builder()
 			.user(user)
-			.examTitle(requestDto.getExamTitle())
+			.title(requestDto.getTitle())
 			.description(requestDto.getDescription())
 //			.filePaths(requestDto.getFilePaths())
+			.paths(requestDto.getPaths())
 			.startTime(requestDto.getStartTime())
 			.endTime(requestDto.getEndTime())
 			.build();
@@ -51,19 +48,15 @@ public class ExamService {
 	}
 
 	// TODO 캐시 적용
-	public List<GetExamListReponseDto> getExamList() {
-		return examRepository.findAll()
-			.stream()
-			.map(GetExamListReponseDto::toDto)
-			.toList();
+	public Page<GetExamListResponseDto> getExamList(Pageable pageable) {
+		return examRepository.findAll(pageable)
+			.map(GetExamListResponseDto::toDto);
 	}
 
 	// TODO 레디스 적용 적용
-	public List<GetExamListReponseDto> searchExamByTitle(String examTitle) {
-		return examRepository.findByExamTitle(examTitle)
-			.stream()
-			.map(GetExamListReponseDto::toDto)
-			.toList();
+	public Page<GetExamListResponseDto> searchExamByTitle(Pageable pageable, String examTitle) {
+		return examRepository.findByTitle(pageable, examTitle)
+			.map(GetExamListResponseDto::toDto);
 	}
 
 	// TODO 캐시 적용
