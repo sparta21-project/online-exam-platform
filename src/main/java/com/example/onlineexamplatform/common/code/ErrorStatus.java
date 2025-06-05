@@ -32,7 +32,11 @@ public enum ErrorStatus implements BaseErrorCode {
 	NOT_EXIST_FILE_EXTENSION(HttpStatus.BAD_REQUEST, "4003", "파일 확장자가 존재하지 않습니다."),
 	NOT_EXIST_FILE(HttpStatus.NOT_FOUND, "4004", "파일이 존재하지 않습니다."),
 	IO_EXCEPTION_DELETE_FILE(HttpStatus.INTERNAL_SERVER_ERROR, "4005", "파일 삭제 중 IO 예외가 발생했습니다."),
-	INVALID_URL_FORMAT(HttpStatus.BAD_REQUEST, "4006", "잘못된 URL 형식입니다.");
+	INVALID_URL_FORMAT(HttpStatus.BAD_REQUEST, "4006", "잘못된 URL 형식입니다."),
+
+	//answerSheet 에러 코드
+	ANSWER_SHEET_NOT_FOUND(HttpStatus.NOT_FOUND, "3001", "답안지 정보가 없습니다."),
+	ACCESS_DENIED(HttpStatus.UNAUTHORIZED, "3002", "답안지를 조회할 권한이 없습니다.");
 
 	private final HttpStatus httpStatus;
 	private final String code;
