@@ -1,7 +1,6 @@
 package com.example.onlineexamplatform.domain.exam.entity;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import com.example.onlineexamplatform.common.entity.BaseEntity;
 import com.example.onlineexamplatform.domain.exam.dto.request.UpdateExamRequestDto;
@@ -39,9 +38,6 @@ public class Exam extends BaseEntity {
 	private String description;
 
 	@Column(nullable = false)
-	private List<String> paths;
-
-	@Column(nullable = false)
 	private LocalDateTime startTime;
 
 	@Column(nullable = false)
@@ -54,8 +50,6 @@ public class Exam extends BaseEntity {
 	public void updateExam(UpdateExamRequestDto requestDto) {
 		this.title = requestDto.getTitle();
 		this.description = requestDto.getDescription();
-//		this.filePaths = requestDto.getFilePaths();
-		this.paths = requestDto.getPaths();
 		this.startTime = requestDto.getStartTime();
 		this.endTime = requestDto.getEndTime();
 	}
