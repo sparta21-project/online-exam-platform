@@ -2,21 +2,50 @@ package com.example.onlineexamplatform.domain.examFile.entity;
 
 import com.example.onlineexamplatform.common.entity.BaseEntity;
 import com.example.onlineexamplatform.domain.exam.entity.Exam;
-import jakarta.persistence.*;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Builder
+@Getter
 @Entity
+@Table(name = "exam_file")
+@NoArgsConstructor
+@AllArgsConstructor
 public class ExamFile extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    private String type;
+	@Column(nullable = false)
+	private String fileName;
 
-    private String path;
+	@Column(nullable = false)
+	private String path;
 
-    private int size;
+	@Column(nullable = false)
+	private String fileType;
 
-    @ManyToOne
-    private Exam exam;
+	@Column(nullable = false)
+	private Long size;
+
+	@ManyToOne
+	@JoinColumn(name = "exam_id")
+	private Exam exam;
+
+	public void updateExamFile(String fileName, String path) {
+		this.fileName = fileName;
+		this.path = path;
+	}
 }

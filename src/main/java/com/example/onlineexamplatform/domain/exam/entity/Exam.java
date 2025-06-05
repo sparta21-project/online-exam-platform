@@ -33,13 +33,13 @@ public class Exam extends BaseEntity {
 	private Long id;
 
 	@Column(nullable = false)
-	private String examTitle;
+	private String title;
 
 	@Column(nullable = false)
 	private String description;
 
 	@Column(nullable = false)
-	private List<String> filePaths;
+	private List<String> paths;
 
 	@Column(nullable = false)
 	private LocalDateTime startTime;
@@ -52,9 +52,9 @@ public class Exam extends BaseEntity {
 	private User user;
 
 	public void updateExam(UpdateExamRequestDto requestDto) {
-		this.examTitle = requestDto.getExamTitle();
+		this.title = requestDto.getTitle();
 		this.description = requestDto.getDescription();
-		this.filePaths = requestDto.getFilePaths();
+		this.paths = requestDto.getPaths();
 		this.startTime = requestDto.getStartTime();
 		this.endTime = requestDto.getEndTime();
 	}

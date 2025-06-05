@@ -1,7 +1,7 @@
 package com.example.onlineexamplatform.domain.exam.repository;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.onlineexamplatform.common.code.ErrorStatus;
@@ -14,6 +14,6 @@ public interface ExamRepository extends JpaRepository<Exam, Long> {
 		return findById(id).orElseThrow(() -> new ApiException(ErrorStatus.EXAM_NOT_FOUND));
 	}
 
-	List<Exam> findByExamTitle(String examTitle);
+	Page<Exam> findByTitle(Pageable pageable, String examTitle);
 
 }

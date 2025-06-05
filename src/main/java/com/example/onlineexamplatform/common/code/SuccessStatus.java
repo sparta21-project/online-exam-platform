@@ -28,11 +28,9 @@ public enum SuccessStatus implements BaseCode {
 	UPDATE_EXAM(HttpStatus.OK, "2002", "시험 수정 성공."),
 	DELETE_EXAM(HttpStatus.OK, "2003", "시험 삭제 성공."),
 
-	// 4000 : 좋아요 성공 코드
-	CREATE_LIKE(HttpStatus.CREATED, "4001", "좋아요 성공"),
-	GET_INFO_LIKE(HttpStatus.OK, "4002", "좋아요 조회 성공"),
-	DELETE_LIKE(HttpStatus.OK, "4003", "좋아요 취소 성공."),
-	GET_RANKING_LIKE(HttpStatus.OK, "4101", "랭킹 조회 성공"),
+	// 4000 : S3 성공 코드
+	SUCCESS_FILE_UPLOAD(HttpStatus.OK, "4001", "파일 업로드 성공"),
+	SUCCESS_FILE_DELETE(HttpStatus.NO_CONTENT, "4002", "파일 삭제 성공"),
 
 	// 5000 : 어드민 성공 코드
 	BOOK_ADD_ACCEPT_SUCCESS(HttpStatus.OK, "5001", "도서 추가 요청 승인 성공"),
@@ -61,7 +59,6 @@ public enum SuccessStatus implements BaseCode {
 	USERCATEGORY_CREATE_SUCCESS(HttpStatus.CREATED, "9001", "응시 권한 생성에 성공했습니다."),
 	USERCATEGORY_GET_SUCCESS(HttpStatus.OK, "9002", "응시 권한 목록 조회에 성공했습니다."),
 	USERCATEGORY_DELETE_SUCCESS(HttpStatus.OK, "9003", "응시 권한 삭제에 성공했습니다.");
-
 
 	private final HttpStatus httpStatus;
 	private final String code;
