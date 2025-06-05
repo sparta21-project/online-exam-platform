@@ -120,7 +120,26 @@ public class AnswerSheetService {
     }
 
     //답안지 삭제
-    public void deleteAnswerSheet() {
+    @Transactional
+    public void deleteAnswerSheet(Long examId, Long answerSheetId, Long userId) {
+        examRepository.findByIdOrElseThrow(examId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
+        AnswerSheet answerSheet = answerSheetRepository.findById(answerSheetId)
+                .orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
+
+        //시험 아이디와 답안지 시험 아이디 불일치
+        if(!examId.equals(answerSheet.getExam().getId())){
+            throw new ApiException(ErrorStatus.ACCESS_DENIED);
+        }
+
+        //관리자만 삭제 가능
+        if (!user.getRole().equals(Role.ADMIN)) {
+            throw new ApiException(ErrorStatus.ACCESS_DENIED);
+        }
+
+        userAnswerRepository.deleteAllByAnswerSheet(answerSheet);
+        answerSheetRepository.delete(answerSheet);
     }
 
     //답안 최종 제출

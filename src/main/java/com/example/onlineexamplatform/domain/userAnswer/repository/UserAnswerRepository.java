@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface UserAnswerRepository extends JpaRepository<UserAnswer, Long> {
     Optional<UserAnswer> findByAnswerSheetAndQuestionNumber(AnswerSheet answerSheet, int questionNumber);
     List<UserAnswer> findAllByAnswerSheet(AnswerSheet answerSheet);
+    void deleteAllByAnswerSheet(AnswerSheet answerSheet);
 }

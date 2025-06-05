@@ -57,17 +57,17 @@ public class AnswerSheetController {
         return ApiResponse.onSuccess(SuccessStatus.GET_ANSWERS_SUCCESS, responseDto);
     }
 
-//    //답안지 삭제
-//    @DeleteMapping("/answersheet/{answerSheetId}")
-//    public ResponseEntity<ApiResponse<Void>> deleteAnswerSheet(
-//            @PathVariable Long examId,
-//            @PathVariable Long answerSheetId,
-//            HttpServletRequest request
-//    ) {
-//        Long userId = (Long) request.getSession().getAttribute(SESSION_USER_KEY);
-//        answerSheetService.deleteAnswerSheet(examId, answerSheetId, userId);
-//        return ApiResponse.onSuccess(SuccessStatus.DELETE_ANSWER_SHEET_SUCCESS);
-//    }
+    //답안지 삭제
+    @DeleteMapping("/answersheet/{answerSheetId}")
+    public ResponseEntity<ApiResponse<Void>> deleteAnswerSheet(
+            @PathVariable Long examId,
+            @PathVariable Long answerSheetId,
+            HttpServletRequest request
+    ) {
+        Long userId = (Long) request.getSession().getAttribute(SESSION_USER_KEY);
+        answerSheetService.deleteAnswerSheet(examId, answerSheetId, userId);
+        return ApiResponse.onSuccess(SuccessStatus.DELETE_ANSWER_SHEET_SUCCESS);
+    }
 
 //    //답안 최종 제출
 //    @PostMapping("/answersheet/{answerSheetId}")
