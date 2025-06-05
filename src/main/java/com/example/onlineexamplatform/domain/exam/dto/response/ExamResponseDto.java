@@ -18,11 +18,11 @@ public class ExamResponseDto {
 
 	private final Long userId;
 
-	private final String examTitle;
+	private final String title;
 
 	private final String description;
 
-	private final List<String> filePaths;
+	private final List<String> paths;
 
 	private final LocalDateTime startTime;
 
@@ -36,9 +36,9 @@ public class ExamResponseDto {
 		return ExamResponseDto.builder()
 			.id(exam.getId())
 			.userId(exam.getUser().getId())
-			.examTitle(exam.getExamTitle())
+			.title(exam.getTitle())
 			.description(exam.getDescription())
-			.filePaths(exam.getFilePaths())
+			.paths(exam.getPaths())
 			.startTime(exam.getStartTime())
 			.endTime(exam.getEndTime())
 			.createdAt(exam.getCreatedAt())
