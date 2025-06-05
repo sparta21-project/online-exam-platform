@@ -1,7 +1,6 @@
 package com.example.onlineexamplatform.domain.exam.dto.response;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import com.example.onlineexamplatform.domain.exam.entity.Exam;
 
@@ -22,8 +21,6 @@ public class ExamResponseDto {
 
 	private final String description;
 
-	private final List<String> paths;
-
 	private final LocalDateTime startTime;
 
 	private final LocalDateTime endTime;
@@ -38,7 +35,6 @@ public class ExamResponseDto {
 			.userId(exam.getUser().getId())
 			.title(exam.getTitle())
 			.description(exam.getDescription())
-			.paths(exam.getPaths())
 			.startTime(exam.getStartTime())
 			.endTime(exam.getEndTime())
 			.createdAt(exam.getCreatedAt())
