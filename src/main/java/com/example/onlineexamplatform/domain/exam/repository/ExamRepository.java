@@ -14,6 +14,6 @@ public interface ExamRepository extends JpaRepository<Exam, Long> {
 		return findById(id).orElseThrow(() -> new ApiException(ErrorStatus.EXAM_NOT_FOUND));
 	}
 
-	Page<Exam> findByExamTitle(Pageable pageable, String examTitle);
+	Page<Exam> findByTitle(Pageable pageable, String examTitle);
 
 }

@@ -54,7 +54,7 @@ public class ExamService {
 
 	// TODO 레디스 적용 적용
 	public Page<GetExamListResponseDto> searchExamByTitle(Pageable pageable, String examTitle) {
-		return examRepository.findByExamTitle(pageable, examTitle)
+		return examRepository.findByTitle(pageable, examTitle)
 			.map(GetExamListResponseDto::toDto);
 	}
 
