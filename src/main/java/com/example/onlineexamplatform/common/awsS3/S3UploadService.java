@@ -29,7 +29,7 @@ public class S3UploadService {
 	@Value("${aws.s3.bucket-name}")
 	private String bucketName;
 
-	// [public 메서드] 외부에서 사용, S3에 저장된 이미지 객체의 public url을 반환
+	// 외부에서 사용, S3에 저장된 이미지 객체의 path를 반환
 	public List<String> upload(List<MultipartFile> files) {
 		// 각 파일을 업로드하고 url을 리스트로 반환
 		return files.stream()
@@ -37,13 +37,13 @@ public class S3UploadService {
 			.toList();
 	}
 
-	// [private 메서드] validateFile메서드를 호출하여 유효성 검증 후 uploadImageToS3메서드에 데이터를 반환하여 S3에 파일 업로드, public url을 받아 서비스 로직에 반환
+	// validateFile 메서드를 호출하여 유효성 검증 후 uploadImageToS3메서드에 데이터를 반환하여 S3에 파일 업로드, path를 받아 서비스 로직에 반환
 	private String uploadImage(MultipartFile file) {
 		validateFile(file.getOriginalFilename()); // 파일 유효성 검증
-		return uploadImageToS3(file); // 이미지를 S3에 업로드하고, 저장된 파일의 public url을 서비스 로직에 반환
+		return uploadImageToS3(file); // 이미지를 S3에 업로드하고, 저장된 파일의 path를 서비스 로직에 반환
 	}
 
-	// [private 메서드] 파일 유효성 검증
+	// 파일 유효성 검증
 	private void validateFile(String filename) {
 		// 파일 존재 유무 검증
 		if (filename == null || filename.isEmpty()) {
@@ -64,7 +64,7 @@ public class S3UploadService {
 		}
 	}
 
-	// [private 메서드] 직접적으로 S3에 업로드
+	// 직접적으로 S3에 업로드
 	private String uploadImageToS3(MultipartFile file) {
 		// 원본 파일 명
 		String originalFilename = file.getOriginalFilename();
@@ -89,7 +89,7 @@ public class S3UploadService {
 			throw new ApiException(ErrorStatus.IO_EXCEPTION_UPLOAD_FILE);
 		}
 
-		// public url 반환
+		// path 반환
 		return s3FileName;
 	}
 
