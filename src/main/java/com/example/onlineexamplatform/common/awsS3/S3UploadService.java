@@ -31,7 +31,7 @@ public class S3UploadService {
 
 	// 외부에서 사용, S3에 저장된 이미지 객체의 path를 반환
 	public List<String> upload(List<MultipartFile> files) {
-		// 각 파일을 업로드하고 url을 리스트로 반환
+		// 각 파일을 업로드하고 path를 리스트로 반환
 		return files.stream()
 			.map(this::uploadImage)
 			.toList();
