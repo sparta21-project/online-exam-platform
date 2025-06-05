@@ -37,7 +37,6 @@ public class ExamService {
 			.user(user)
 			.title(requestDto.getTitle())
 			.description(requestDto.getDescription())
-			.paths(requestDto.getPaths())
 			.startTime(requestDto.getStartTime())
 			.endTime(requestDto.getEndTime())
 			.build();
