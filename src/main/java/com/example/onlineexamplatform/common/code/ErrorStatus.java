@@ -3,6 +3,7 @@ package com.example.onlineexamplatform.common.code;
 import org.springframework.http.HttpStatus;
 
 import com.example.onlineexamplatform.common.dto.ErrorReasonDto;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -23,7 +24,15 @@ public enum ErrorStatus implements BaseErrorCode {
 	// user-category 에러 코드
 	CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "3001", "존재하지 않는 카테고리입니다."),
 	DUPLICATE_USER_CATEGORY(HttpStatus.CONFLICT, "3002", "이미 등록된 응시 권한입니다."),
-	USER_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "3003", "응시 권한이 존재하지 않습니다.");
+	USER_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "3003", "응시 권한이 존재하지 않습니다."),
+
+	//exam-file 업로드 에러코드
+	IO_EXCEPTION_UPLOAD_FILE(HttpStatus.INTERNAL_SERVER_ERROR, "4001", "파일 업로드 중 IO 예외가 발생했습니다."),
+	INVALID_FILE_EXTENSION(HttpStatus.BAD_REQUEST, "4002", "허용되지 않은 파일 확장자입니다."),
+	NOT_EXIST_FILE_EXTENSION(HttpStatus.BAD_REQUEST, "4003", "파일 확장자가 존재하지 않습니다."),
+	NOT_EXIST_FILE(HttpStatus.NOT_FOUND, "4004", "파일이 존재하지 않습니다."),
+	IO_EXCEPTION_DELETE_FILE(HttpStatus.INTERNAL_SERVER_ERROR, "4005", "파일 삭제 중 IO 예외가 발생했습니다."),
+	INVALID_URL_FORMAT(HttpStatus.BAD_REQUEST, "4006", "잘못된 URL 형식입니다.");
 
 	private final HttpStatus httpStatus;
 	private final String code;
