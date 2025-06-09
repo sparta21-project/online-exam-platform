@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Table(name = "user_answer")
 @NoArgsConstructor
 public class UserAnswer {
 
@@ -14,12 +15,15 @@ public class UserAnswer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int questionNumber;
-
-    private String answerText;
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "answer_sheet_id")
     private AnswerSheet answerSheet;
+
+    @Column(nullable = false)
+    private Integer questionNumber;
+
+    @Column(nullable = false)
+    private String answerText;
 
     public UserAnswer(AnswerSheet answerSheet, int questionNumber, String answerText) {
         this.answerSheet = answerSheet;
@@ -30,5 +34,4 @@ public class UserAnswer {
     public void updateAnswer(String answerText) {
         this.answerText = answerText;
     }
-
 }

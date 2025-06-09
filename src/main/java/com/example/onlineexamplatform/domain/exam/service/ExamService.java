@@ -40,7 +40,7 @@ public class ExamService {
 	public ExamResponseDto<ExamFileResponseDto> createExam(CreateExamRequestDto requestDto, Long userId) {
 
 		User user = userRepository.findById(userId)
-			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
+				.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 
 		Exam exam = examRepository.save(Exam.builder()
 			.user(user)
