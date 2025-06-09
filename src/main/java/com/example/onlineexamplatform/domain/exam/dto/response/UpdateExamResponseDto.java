@@ -29,14 +29,14 @@ public class UpdateExamResponseDto {
 
 	public static UpdateExamResponseDto from(Exam exam) {
 		return UpdateExamResponseDto.builder()
-			.id(exam.getId())
-			.userId(exam.getUser().getId())
-			.title(exam.getTitle())
-			.description(exam.getDescription())
-			.startTime(exam.getStartTime())
-			.endTime(exam.getEndTime())
-			.updatedAt(exam.getUpdatedAt())
-			.build();
+				.id(exam.getId())
+				.userId(exam.getUser().getId())
+				.title(exam.getTitle())
+				.description(exam.getDescription())
+				.startTime(exam.getStartTime())
+				.endTime(exam.getEndTime())
+				.updatedAt(exam.getUpdatedAt())
+				.build();
 
 	}
 }
