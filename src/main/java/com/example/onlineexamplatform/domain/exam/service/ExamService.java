@@ -31,16 +31,15 @@ public class ExamService {
 	public ExamResponseDto createExam(CreateExamRequestDto requestDto, Long userId) {
 
 		User user = userRepository.findById(userId)
-			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
+				.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 
 		Exam exam = Exam.builder()
-			.user(user)
-			.title(requestDto.getTitle())
-			.description(requestDto.getDescription())
-			.paths(requestDto.getPaths())
-			.startTime(requestDto.getStartTime())
-			.endTime(requestDto.getEndTime())
-			.build();
+				.user(user)
+				.title(requestDto.getTitle())
+				.description(requestDto.getDescription())
+				.startTime(requestDto.getStartTime())
+				.endTime(requestDto.getEndTime())
+				.build();
 
 		examRepository.save(exam);
 		return ExamResponseDto.from(exam);
