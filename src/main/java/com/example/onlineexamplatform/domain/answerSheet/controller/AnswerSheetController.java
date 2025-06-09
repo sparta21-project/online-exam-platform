@@ -17,7 +17,7 @@ import static com.example.onlineexamplatform.domain.user.controller.UserControll
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/exam/{examId}")
+@RequestMapping("/api/exams/{examId}")
 public class AnswerSheetController {
 
     private final AnswerSheetService answerSheetService;
@@ -82,14 +82,14 @@ public class AnswerSheetController {
         return ApiResponse.onSuccess(SuccessStatus.SUBMIT_ANSWER_SUCCESS, responseDto);
     }
 
-//    //시험 응시자 조회
-//    @GetMapping("/applicants")
-//    public ResponseEntity<ApiResponse<List<AnswerSheetResponseDto.Applicant>>> getExamApplicants(
-//            @PathVariable Long examId,
-//            HttpServletRequest request
-//    ) {
-//        Long userId = (Long) request.getSession().getAttribute(SESSION_USER_KEY);
-//        List<AnswerSheetResponseDto.Applicant> responseDto = answerSheetService.getExamApplicants(examId, userId);
-//        return ApiResponse.onSuccess(SuccessStatus.GET_APPLICANTS_SUCCESS, responseDto);
-//    }
+    //시험 응시자 조회
+    @GetMapping("/applicants")
+    public ResponseEntity<ApiResponse<List<AnswerSheetResponseDto.Applicant>>> getExamApplicants(
+            @PathVariable Long examId,
+            HttpServletRequest request
+    ) {
+        Long userId = (Long) request.getSession().getAttribute(SESSION_USER_KEY);
+        List<AnswerSheetResponseDto.Applicant> responseDto = answerSheetService.getExamApplicants(examId, userId);
+        return ApiResponse.onSuccess(SuccessStatus.GET_APPLICANTS_SUCCESS, responseDto);
+    }
 }

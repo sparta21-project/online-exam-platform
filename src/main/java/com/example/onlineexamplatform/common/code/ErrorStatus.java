@@ -36,7 +36,8 @@ public enum ErrorStatus implements BaseErrorCode {
 
 	//answerSheet 에러 코드
 	ANSWER_SHEET_NOT_FOUND(HttpStatus.NOT_FOUND, "3001", "답안지 정보가 없습니다."),
-	ACCESS_DENIED(HttpStatus.UNAUTHORIZED, "3002", "답안지를 조회할 권한이 없습니다.");
+	ACCESS_DENIED(HttpStatus.UNAUTHORIZED, "3002", "답안지를 조회할 권한이 없습니다."),
+	ANSWER_SUBMITTED(HttpStatus.BAD_REQUEST, "3003", "이미 제출된 답안지입니다.");
 
 	private final HttpStatus httpStatus;
 	private final String code;

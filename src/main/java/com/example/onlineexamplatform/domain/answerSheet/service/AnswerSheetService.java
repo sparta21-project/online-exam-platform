@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.example.onlineexamplatform.domain.answerSheet.enums.AnswerSheetStatus.STARTED;
 
@@ -56,6 +57,10 @@ public class AnswerSheetService {
 
         AnswerSheet answerSheet = answerSheetRepository.findByExamAndUser(exam, user)
                 .orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
+
+        if (answerSheet.getStatus() == AnswerSheetStatus.SUBMITTED) {
+            throw new ApiException(ErrorStatus.ANSWER_SUBMITTED);
+        }
 
         saveUserAnswers(requestDto, exam, user, answerSheet);
 
@@ -134,6 +139,10 @@ public class AnswerSheetService {
         AnswerSheet answerSheet = answerSheetRepository.findById(answerSheetId)
                 .orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
 
+        if (answerSheet.getStatus() == AnswerSheetStatus.SUBMITTED) {
+            throw new ApiException(ErrorStatus.ANSWER_SUBMITTED);
+        }
+
         //본인이나 관리자가 아니면 에러
         if (!answerSheet.getExam().getId().equals(exam.getId()) ||
                 !(answerSheet.getUser().getId().equals(user.getId()) || user.getRole().equals(Role.ADMIN))) {
@@ -157,10 +166,24 @@ public class AnswerSheetService {
     }
 
     //시험 응시자 조회
-    public List<AnswerSheetResponseDto.Applicant> getExamApplicants() {
-        return null;
-    }
+    @Transactional(readOnly = true)
+    public List<AnswerSheetResponseDto.Applicant> getExamApplicants(Long examId, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 
+        if (!user.getRole().equals(Role.ADMIN)) {
+            throw new ApiException(ErrorStatus.ACCESS_DENIED);
+        }
+
+        List<AnswerSheet> answerSheets = answerSheetRepository.findByExamId(examId);
+        return answerSheets.stream()
+                .map(answerSheet -> new AnswerSheetResponseDto.Applicant(
+                        answerSheet.getUser().getUsername(),
+                        answerSheet.getUser().getEmail(),
+                        answerSheet.getStatus()
+                ))
+                .toList();
+    }
 
     //답안 저장 로직
     public void saveUserAnswers(AnswerSheetRequestDto requestDto, Exam exam, User user, AnswerSheet answerSheet) {

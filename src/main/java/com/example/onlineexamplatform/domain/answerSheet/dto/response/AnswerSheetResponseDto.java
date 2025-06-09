@@ -45,5 +45,6 @@ public class AnswerSheetResponseDto {
     public static class Applicant {
         private final String username;
         private final String email;
+        private final AnswerSheetStatus status;
     }
 }
