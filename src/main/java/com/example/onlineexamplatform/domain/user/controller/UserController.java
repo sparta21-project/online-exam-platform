@@ -42,6 +42,7 @@ public class UserController {
 		return ApiResponse.onSuccess(SuccessStatus.GETMYINFO_SUCCESS, dto);
 	}
 
+	// 프로필 수정
 	@PutMapping("/profile")
 	public ResponseEntity<ApiResponse<UserProfileResponse>> modifyProfile(
 		@RequestBody @Valid ProfileModifyRequestDto request,
