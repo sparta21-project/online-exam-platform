@@ -43,16 +43,9 @@ public class UserAnswerService {
         AnswerSheet answerSheet = answerSheetRepository.findById(answerSheetId)
                 .orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
 
-        Set<Integer> questionNumberSet = new HashSet<>();
-
         // 사용자 제출 답안 questionNumber 중복 체크
-        for(SaveAnswerDto dto : answers) {
-            Integer checkAnswers = dto.getQuestionNumber();
-
-            if(!questionNumberSet.add(checkAnswers)) {
-                throw new ApiException(ErrorStatus.DUPLICATE_QUESTION_NUMBER);
-            }
-        }
+        if(answers.size() != answers.stream().map(SaveAnswerDto::getQuestionNumber).distinct().count()) {
+            throw new ApiException(ErrorStatus.DUPLICATE_QUESTION_NUMBER); }
 
         // 시험 문제보다 제출한 문제가 더 많을경우 예외 발생
         int answerCount = examAnswerRepository.countByExamId(answerSheet.getExam().getId());

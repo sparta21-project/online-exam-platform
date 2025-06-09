@@ -31,16 +31,9 @@ public class ExamAnswerService {
         Exam exam = examRepository.findById(examId)
                 .orElseThrow(() -> new ApiException(ErrorStatus.EXAM_NOT_FOUND));
 
-        Set<Integer> questionNumberSet = new HashSet<>();
-
         // 사용자 제출 답안 questionNumber 중복 체크
-        for(SaveExamAnswerDto dto : examAnswers) {
-            Integer checkExamAnswers = dto.getQuestionNumber();
-
-            if(!questionNumberSet.add(checkExamAnswers)) {
-                throw new ApiException(ErrorStatus.DUPLICATE_QUESTION_NUMBER);
-            }
-        }
+        if(examAnswers.size() != examAnswers.stream().map(SaveExamAnswerDto::getQuestionNumber).distinct().count()) {
+            throw new ApiException(ErrorStatus.DUPLICATE_QUESTION_NUMBER); }
 
         Map<Integer, ExamAnswer> examAnswerMap = examAnswerRepository.findAllByExamId(examId)
                 .stream()
@@ -49,12 +42,12 @@ public class ExamAnswerService {
         for(SaveExamAnswerDto dto : examAnswers) {
             Integer saveExamQuestionNumber = dto.getQuestionNumber();
             String saveExamCorrectAnswer = dto.getCorrectAnswer();
-            Integer saveExamQusetionScore = dto.getQuestionScore();
+            Integer saveExamQuestionScore = dto.getQuestionScore();
 
             if(examAnswerMap.containsKey(saveExamQuestionNumber)) {
-                examAnswerMap.get(saveExamQuestionNumber).updateExamAnswer(saveExamQusetionScore, saveExamCorrectAnswer);
+                examAnswerMap.get(saveExamQuestionNumber).updateExamAnswer(saveExamQuestionScore, saveExamCorrectAnswer);
             } else {
-                ExamAnswer examAnswer = new ExamAnswer(exam, saveExamQuestionNumber, saveExamQusetionScore, saveExamCorrectAnswer);
+                ExamAnswer examAnswer = new ExamAnswer(exam, saveExamQuestionNumber, saveExamQuestionScore, saveExamCorrectAnswer);
                 examAnswerRepository.save(examAnswer);
             }
         }
