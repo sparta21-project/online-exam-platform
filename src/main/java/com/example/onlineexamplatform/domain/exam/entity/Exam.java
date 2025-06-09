@@ -38,6 +38,12 @@ public class Exam extends BaseEntity {
 	private String description;
 
 	@Column(nullable = false)
+	private Long totalQuestionsNum;
+
+	@Column(nullable = false)
+	private LocalDateTime currentTime;
+
+	@Column(nullable = false)
 	private LocalDateTime startTime;
 
 	@Column(nullable = false)

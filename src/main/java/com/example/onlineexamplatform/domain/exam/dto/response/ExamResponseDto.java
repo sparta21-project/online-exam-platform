@@ -3,6 +3,7 @@ package com.example.onlineexamplatform.domain.exam.dto.response;
 import java.time.LocalDateTime;
 
 import com.example.onlineexamplatform.domain.exam.entity.Exam;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -21,12 +22,21 @@ public class ExamResponseDto {
 
 	private final String description;
 
+	private final Long totalQuestionsNum;
+
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+	private final LocalDateTime currentTime;
+
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private final LocalDateTime startTime;
 
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private final LocalDateTime endTime;
 
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private final LocalDateTime createdAt;
 
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private final LocalDateTime updatedAt;
 
 	public static ExamResponseDto from(Exam exam) {
