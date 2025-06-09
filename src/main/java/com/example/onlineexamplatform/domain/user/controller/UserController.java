@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
-public class UserController {
+public class 	UserController {
 
 	private final UserService userService;
 	public static final String SESSION_USER_KEY = "LOGIN_USER_ID";

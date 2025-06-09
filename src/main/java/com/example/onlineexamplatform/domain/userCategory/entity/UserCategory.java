@@ -1,5 +1,6 @@
 package com.example.onlineexamplatform.domain.userCategory.entity;
 
+import com.example.onlineexamplatform.common.entity.BaseEntity;
 import com.example.onlineexamplatform.domain.category.entity.Category;
 import com.example.onlineexamplatform.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -17,7 +18,7 @@ import lombok.NoArgsConstructor;
  * 하나의 카테고리도 여러 사용자와 매핑될 수 있으므로 다대다(N:N) 관계를
  * 중간 엔티티(UserCategory)로 표현
  */
-public class UserCategory {
+public class UserCategory extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
