@@ -25,10 +25,6 @@ public class UpdateExamRequestDto {
 	@NotNull(message = "전체 문항수는 필수입니다.")
 	private final Long totalQuestionsNum;
 
-	@NotNull(message = "현재 시간은 필수입니다.")
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-	private final LocalDateTime currentTime;
-
 	@NotNull(message = "시험 시작 시간은 필수입니다.")
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private final LocalDateTime startTime;

@@ -25,15 +25,12 @@ public class UpdateExamResponseDto {
 	private final Long totalQuestionsNum;
 
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-	private final LocalDateTime currentTime;
-
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private final LocalDateTime startTime;
 
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private final LocalDateTime endTime;
 
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private final LocalDateTime updatedAt;
 
 	public static UpdateExamResponseDto from(Exam exam) {
@@ -43,7 +40,6 @@ public class UpdateExamResponseDto {
 			.title(exam.getTitle())
 			.description(exam.getDescription())
 			.totalQuestionsNum(exam.getTotalQuestionsNum())
-			.currentTime(exam.getCurrentTime())
 			.startTime(exam.getStartTime())
 			.endTime(exam.getEndTime())
 			.updatedAt(exam.getUpdatedAt())

@@ -1,7 +1,11 @@
 package com.example.onlineexamplatform.common.awsS3;
 
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -13,24 +17,30 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
+import com.example.onlineexamplatform.domain.examFile.dto.response.ExamFileResponseDto;
+import com.example.onlineexamplatform.domain.examFile.entity.ExamFile;
+import com.example.onlineexamplatform.domain.examFile.repository.ExamFileRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest;
+import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class S3UploadService {
 
+	private final ExamFileRepository examFileRepository;
 	private final S3Client s3Client;
 
 	@Value("${aws.s3.bucket-name}")
 	private String bucketName;
 
 	// 외부에서 사용, S3에 저장된 이미지 객체의 path를 반환
-	public List<String> upload(List<MultipartFile> files) {
+	public List<ExamFileResponseDto> upload(List<MultipartFile> files) {
 		// 각 파일을 업로드하고 path를 리스트로 반환
 		return files.stream()
 			.map(this::uploadImage)
@@ -38,7 +48,7 @@ public class S3UploadService {
 	}
 
 	// validateFile 메서드를 호출하여 유효성 검증 후 uploadImageToS3메서드에 데이터를 반환하여 S3에 파일 업로드, path를 받아 서비스 로직에 반환
-	private String uploadImage(MultipartFile file) {
+	private ExamFileResponseDto uploadImage(MultipartFile file) {
 		validateFile(file.getOriginalFilename()); // 파일 유효성 검증
 		return uploadImageToS3(file); // 이미지를 S3에 업로드하고, 저장된 파일의 path를 서비스 로직에 반환
 	}
@@ -65,7 +75,7 @@ public class S3UploadService {
 	}
 
 	// 직접적으로 S3에 업로드
-	private String uploadImageToS3(MultipartFile file) {
+	private ExamFileResponseDto uploadImageToS3(MultipartFile file) {
 		// 원본 파일 명
 		String originalFilename = file.getOriginalFilename();
 		// 확장자 명
@@ -82,15 +92,73 @@ public class S3UploadService {
 				.contentType("image/" + extension) // 이미지 MIME 타입
 				.contentLength(file.getSize()) // 파일 크기
 				.build();
+
 			// S3에 이미지 업로드
 			s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(inputStream, file.getSize()));
+
 		} catch (Exception exception) {
 			log.error(exception.getMessage(), exception);
 			throw new ApiException(ErrorStatus.IO_EXCEPTION_UPLOAD_FILE);
 		}
 
+		// ExamFile Entity에 업로드된 파일 정보 저장
+		ExamFile examFile = ExamFile.builder()
+			.fileName(file.getOriginalFilename())
+			.path(s3FileName)
+			.fileType(file.getContentType())
+			.size(file.getSize())
+			.build();
+
+		// 시험파일 DB에 저장
+		examFileRepository.save(examFile);
+
 		// path 반환
-		return s3FileName;
+		return ExamFileResponseDto.of(examFile);
+	}
+
+	public List<ExamFile> findAllByImageId(List<Long> examFileIds) {
+		List<ExamFile> examFiles = examFileRepository.findAllById(examFileIds);
+		if (examFiles.isEmpty())
+			throw new ApiException(ErrorStatus.IMAGE_ID_MISSING);
+		return examFiles;
+
+	}
+
+	// 이미지의 path를 이용하여 S3에서 해당 이미지를 제거, getKeyFromImageAddress 메서드를 호출하여 삭제에 필요한 key 획득
+	public void delete(List<String> imagePaths) {
+		List<String> keys = imagePaths.stream()
+			.map(this::getKeyFromImagePaths)
+			.toList();
+
+		try {
+			// S3에서 파일을 삭제하기 위한 요청 객체 생성
+			DeleteObjectsRequest deleteObjectsRequest = DeleteObjectsRequest.builder()
+				.bucket(bucketName) // S3 버킷 이름 지정
+				.delete(delete -> delete.objects(
+					// S3 객체들을 삭제할 객체 목록을 생성
+					keys.stream()
+						.map(key -> ObjectIdentifier.builder().key(key).build())
+						.toList()
+				))
+				.build();
+			s3Client.deleteObjects(deleteObjectsRequest); // S3에서 객체 삭제
+		} catch (Exception exception) {
+			log.error(exception.getMessage(), exception);
+			throw new ApiException(ErrorStatus.IO_EXCEPTION_DELETE_FILE);
+		}
+	}
+
+	// 삭제에 필요한 key 반환
+	private String getKeyFromImagePaths(String imagePath) {
+		try {
+			URL url = new URI(imagePath).toURL(); // 인코딩된 주소를 Path 객체로 변환 후 Path 객체로 변환
+			String decodedKey = URLDecoder.decode(url.getPath(),
+				StandardCharsets.UTF_8);// URI에서 경로 부분을 가져와 URL 디코딩을 통해 실제 키로 변환
+			return decodedKey.substring(1); // 경로 앞에 '/'가 있으므로 이를 제거한 뒤 반환
+		} catch (Exception exception) {
+			log.error(exception.getMessage(), exception);
+			throw new ApiException(ErrorStatus.INVALID_URL_FORMAT);
+		}
 	}
 
 }
