@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class ImageDeleteRequestDto {
+public class S3ExamFileDeleteRequestDto {
 
 	private final List<String> imagePaths;
 

@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.onlineexamplatform.common.awsS3.S3UploadService;
 import com.example.onlineexamplatform.common.code.SuccessStatus;
 import com.example.onlineexamplatform.common.response.ApiResponse;
-import com.example.onlineexamplatform.domain.examFile.dto.request.ImageDeleteRequestDto;
+import com.example.onlineexamplatform.domain.examFile.dto.request.S3ExamFileDeleteRequestDto;
 import com.example.onlineexamplatform.domain.examFile.dto.response.ExamFileResponseDto;
 
 import lombok.RequiredArgsConstructor;
@@ -36,8 +36,8 @@ public class ExamFileController {
 	}
 
 	@DeleteMapping("/delete")
-	public ResponseEntity<ApiResponse<String>> s3Delete(@RequestBody ImageDeleteRequestDto imageDeleteRequestDto) {
-		s3UploadService.delete(imageDeleteRequestDto.getImagePaths());
+	public ResponseEntity<ApiResponse<String>> s3Delete(@RequestBody S3ExamFileDeleteRequestDto requestDto) {
+		s3UploadService.delete(requestDto.getImagePaths());
 		return ApiResponse.onSuccess(SuccessStatus.SUCCESS_FILE_DELETE);
 	}
 
