@@ -31,9 +31,16 @@ public class ApiResponse<T> {
 	}
 
 	// 실패 응답
+	@SuppressWarnings("unchecked")
 	public static <T> ResponseEntity<ApiResponse<T>> onFailure(BaseErrorCode code) {
-		ApiResponse<T> response = new ApiResponse<>(false, code.getReasonHttpStatus().getCode(),
-			code.getReasonHttpStatus().getMessage(), null);
-		return ResponseEntity.status(code.getReasonHttpStatus().getHttpStatus()).body(response);
+		ApiResponse<?> response = new ApiResponse<>(
+				false,
+				code.getReasonHttpStatus().getCode(),
+				code.getReasonHttpStatus().getMessage(),
+				null
+		);
+		return (ResponseEntity<ApiResponse<T>>) (ResponseEntity<?>) ResponseEntity
+				.status(code.getReasonHttpStatus().getHttpStatus())
+				.body(response);
 	}
 }

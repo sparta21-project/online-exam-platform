@@ -15,9 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
-@RequiredArgsConstructor
-
 /**
  * 이 서비스 클래스는 사용자(User)와 카테고리(Category) 간의 관계를 관리합니다.
  * 특정 사용자가 어떤 시험 카테고리에 응시할 수 있는지를 등록, 조회, 삭제하는 기능을 제공합니다.
@@ -25,12 +22,18 @@ import org.springframework.transaction.annotation.Transactional;
  * 사용자가 시험에 응시하기 전 해당 카테고리에 대한 권한이 있는지 확인
  */
 
+@Service
+@RequiredArgsConstructor
 public class UserCategoryService {
 
 	private final UserCategoryRepository userCategoryRepository;
 	private final UserRepository userRepository;
 	private final CategoryRepository categoryRepository;
-
+	/**
+	 * 관리자 전용
+	 * 특정 사용자에게 특정 시험 카테고리 응시 권한을 부여
+	 * 중복 권한 존재 시 예외 발생
+	 */
 	@Transactional
 	public UserCategoryResponse create(Long userId, UserCategoryRequest request) {
 		User user = userRepository.findById(userId)
@@ -47,7 +50,10 @@ public class UserCategoryService {
 
 		return new UserCategoryResponse(saved.getId(), user.getId(), category.getCategoryType());
 	}
-
+	/**
+	 * 사용자 본인 또는 관리자
+	 * 특정 사용자의 응시 권한 목록을 조회
+	 */
 	@Transactional(readOnly = true)
 	public List<UserCategoryResponse> getByUser(Long userId) {
 		return userCategoryRepository.findByUserId(userId).stream()
@@ -59,6 +65,11 @@ public class UserCategoryService {
 				.toList();
 	}
 
+	/**
+	 * 관리자 전용
+	 * 특정 사용자에게 부여된 응시 권한을 삭제
+	 * 권한이 없거나 잘못된 ID일 경우 예외 발생
+	 */
 	@Transactional
 	public void delete(Long userId, Long categoryId) {
 		Category category = categoryRepository.findById(categoryId)

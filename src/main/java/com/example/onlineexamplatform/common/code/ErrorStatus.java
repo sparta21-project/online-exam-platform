@@ -23,9 +23,14 @@ public enum ErrorStatus implements BaseErrorCode {
 	EXAM_NOT_FOUND(HttpStatus.NOT_FOUND, "2001", "찾으시는 문제가 없습니다."),
 
 	// user-category 에러 코드
-	CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "3001", "존재하지 않는 카테고리입니다."),
+	CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "3001", "해당 카테고리가 DB에 존재하지 않습니다."),
 	DUPLICATE_USER_CATEGORY(HttpStatus.CONFLICT, "3002", "이미 등록된 응시 권한입니다."),
 	USER_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "3003", "응시 권한이 존재하지 않습니다."),
+	UNAUTHORIZED_USER_ACCESS(HttpStatus.UNAUTHORIZED, "3004", "로그인이 필요합니다."),
+	FORBIDDEN_USER_ACCESS(HttpStatus.FORBIDDEN, "3005", "접근 권한이 없습니다."),
+	FORBIDDEN_ADMIN_ONLY(HttpStatus.FORBIDDEN, "3006", "관리자만 수행할 수 있는 작업입니다."),
+	INVALID_EXAM_CATEGORY_MAPPING(HttpStatus.BAD_REQUEST, "3007", "시험과 연결된 카테고리가 없습니다."),
+	INVALID_ENUM_VALUE(HttpStatus.BAD_REQUEST, "3008", "지원하지 않는 카테고리 타입입니다."),
 
 	//exam-file 업로드 에러코드
 	IO_EXCEPTION_UPLOAD_FILE(HttpStatus.INTERNAL_SERVER_ERROR, "4001", "파일 업로드 중 IO 예외가 발생했습니다."),

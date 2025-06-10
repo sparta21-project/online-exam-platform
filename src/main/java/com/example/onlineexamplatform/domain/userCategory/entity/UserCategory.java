@@ -7,10 +7,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Getter
-@NoArgsConstructor
-
 /**
  * 사용자와 카테고리 간의 관계를 나타내는 엔티티
  * 사용자가 어떤 시험 카테고리에 응시할 수 있는 권한을 가지고 있는지를 저장
@@ -18,6 +14,10 @@ import lombok.NoArgsConstructor;
  * 하나의 카테고리도 여러 사용자와 매핑될 수 있으므로 다대다(N:N) 관계를
  * 중간 엔티티(UserCategory)로 표현
  */
+
+@Entity
+@Getter
+@NoArgsConstructor
 public class UserCategory extends BaseEntity {
 
     @Id
