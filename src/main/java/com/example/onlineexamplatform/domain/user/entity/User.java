@@ -54,4 +54,12 @@ public class User extends BaseEntity {
 	public boolean isWithdraw() {
 		return Boolean.TRUE.equals(this.isWithdraw);
 	}
+
+	public void updateEmail(String email) {
+		this.email = email;
+	}
+
+	public void updateUsername(String username) {
+		this.username = username;
+	}
 }
