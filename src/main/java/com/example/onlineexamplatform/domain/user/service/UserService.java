@@ -9,6 +9,7 @@ import com.example.onlineexamplatform.domain.user.dto.AuthLoginResponse;
 import com.example.onlineexamplatform.domain.user.dto.AuthPasswordRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthSignupRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthSignupResponse;
+import com.example.onlineexamplatform.domain.user.dto.ProfileModifyRequestDto;
 import com.example.onlineexamplatform.domain.user.dto.UserProfileResponse;
 import com.example.onlineexamplatform.domain.user.entity.Role;
 import com.example.onlineexamplatform.domain.user.entity.User;
@@ -131,6 +132,27 @@ public class UserService {
 			user.getEmail(),
 			user.getUsername(),
 			user.getRole().name()
+		);
+	}
+
+	// 프로필 수정
+	public UserProfileResponse modifyProfile(Long userId, ProfileModifyRequestDto request) {
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
+
+		if (!request.getEmail().equals(user.getEmail())
+			&& userRepository.existsByEmail(request.getEmail())) {
+			throw new ApiException(ErrorStatus.DUPLICATE_EMAIL);
+		}
+
+		user.updateEmail(request.getEmail());
+		user.updateUsername(request.getUsername());
+
+		User saved = userRepository.save(user);
+
+		return new UserProfileResponse(
+			saved.getEmail(),
+			saved.getUsername()
 		);
 	}
 
