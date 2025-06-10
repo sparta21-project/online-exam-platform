@@ -12,7 +12,7 @@ import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.code.SuccessStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
 import com.example.onlineexamplatform.common.response.ApiResponse;
-import com.example.onlineexamplatform.domain.user.dto.ProfileModifyRequestDto;
+import com.example.onlineexamplatform.domain.user.dto.UserProfileModifyRequest;
 import com.example.onlineexamplatform.domain.user.dto.UserProfileResponse;
 import com.example.onlineexamplatform.domain.user.service.UserService;
 
@@ -45,7 +45,7 @@ public class UserController {
 	// 프로필 수정
 	@PutMapping("/profile")
 	public ResponseEntity<ApiResponse<UserProfileResponse>> modifyProfile(
-		@RequestBody @Valid ProfileModifyRequestDto request,
+		@RequestBody @Valid UserProfileModifyRequest request,
 		HttpSession session
 	) {
 		Long userId = (Long)session.getAttribute(SESSION_USER_KEY);
