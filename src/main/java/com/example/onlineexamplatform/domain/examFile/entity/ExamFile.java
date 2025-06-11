@@ -5,6 +5,7 @@ import com.example.onlineexamplatform.domain.exam.entity.Exam;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -40,12 +41,24 @@ public class ExamFile extends BaseEntity {
 	@Column(nullable = false)
 	private Long size;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "exam_id")
 	private Exam exam;
 
-	public void updateExamFile(String fileName, String path) {
-		this.fileName = fileName;
-		this.path = path;
+	// Exam과 맵핑 전 임시 시험 파일 생성 메서드
+	public static ExamFile create(ExamFile examFile) {
+		return new ExamFile(
+			examFile.getId(),
+			examFile.getFileName(),
+			examFile.getPath(),
+			examFile.getFileType(),
+			examFile.getSize(),
+			null);
 	}
+
+	// Exam과 ExamFile 맵핑 메서드
+	public void assignExam(Exam exam) {
+		this.exam = exam;
+	}
+
 }

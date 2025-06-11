@@ -24,6 +24,7 @@ import com.example.onlineexamplatform.domain.exam.dto.response.GetExamListRespon
 import com.example.onlineexamplatform.domain.exam.dto.response.UpdateExamResponseDto;
 import com.example.onlineexamplatform.domain.exam.page.PageResponse;
 import com.example.onlineexamplatform.domain.exam.service.ExamService;
+import com.example.onlineexamplatform.domain.examFile.dto.response.ExamFileResponseDto;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,11 +37,11 @@ public class ExamController {
 	private final ExamService examService;
 
 	@PostMapping("/admin/{userId}/exams")
-	public ResponseEntity<ApiResponse<ExamResponseDto>> createExam(
+	public ResponseEntity<ApiResponse<ExamResponseDto<ExamFileResponseDto>>> createExam(
 		@PathVariable Long userId,
 		@Valid @RequestBody CreateExamRequestDto requestDto) {
 
-		ExamResponseDto exam = examService.createExam(requestDto, userId);
+		ExamResponseDto exam = examService.createExam(requestDto.toCreate(), userId);
 
 		return ApiResponse.onSuccess(SuccessStatus.CREATE_EXAM, exam);
 	}
