@@ -1,19 +1,26 @@
 package com.example.onlineexamplatform.domain.exam.service;
 
+import java.util.Collections;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.onlineexamplatform.common.awsS3.S3UploadService;
 import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
 import com.example.onlineexamplatform.domain.exam.dto.request.CreateExamRequestDto;
 import com.example.onlineexamplatform.domain.exam.dto.request.UpdateExamRequestDto;
 import com.example.onlineexamplatform.domain.exam.dto.response.ExamResponseDto;
-import com.example.onlineexamplatform.domain.exam.dto.response.GetExamListReponseDto;
+import com.example.onlineexamplatform.domain.exam.dto.response.GetExamListResponseDto;
 import com.example.onlineexamplatform.domain.exam.dto.response.UpdateExamResponseDto;
 import com.example.onlineexamplatform.domain.exam.entity.Exam;
 import com.example.onlineexamplatform.domain.exam.repository.ExamRepository;
+import com.example.onlineexamplatform.domain.examFile.dto.response.ExamFileResponseDto;
+import com.example.onlineexamplatform.domain.examFile.entity.ExamFile;
+import com.example.onlineexamplatform.domain.examFile.service.ExamFileService;
 import com.example.onlineexamplatform.domain.user.entity.User;
 import com.example.onlineexamplatform.domain.user.repository.UserRepository;
 
@@ -26,44 +33,52 @@ public class ExamService {
 
 	private final ExamRepository examRepository;
 	private final UserRepository userRepository;
+	private final S3UploadService s3UploadService;
+	private final ExamFileService examFileService;
 
 	@Transactional
-	public ExamResponseDto createExam(CreateExamRequestDto requestDto, Long userId) {
-
-		// if (userId == null) {
-		// 	throw new IllegalArgumentException("id는 null일 수 없습니다.");
-		// }
+	public ExamResponseDto<ExamFileResponseDto> createExam(CreateExamRequestDto requestDto, Long userId) {
 
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 
-		Exam exam = Exam.builder()
+		Exam exam = examRepository.save(Exam.builder()
 			.user(user)
-			.examTitle(requestDto.getExamTitle())
+			.title(requestDto.getTitle())
 			.description(requestDto.getDescription())
-			.filePaths(requestDto.getFilePaths())
+			.totalQuestionsNum(requestDto.getTotalQuestionsNum())
 			.startTime(requestDto.getStartTime())
 			.endTime(requestDto.getEndTime())
-			.build();
+			.build());
 
-		examRepository.save(exam);
-		return ExamResponseDto.from(exam);
+		List<ExamFile> examFiles = Collections.emptyList();
+
+		// 이미지 매핑 (이미지가 존재할 경우에만 처리)
+		if (requestDto.getExamFileIds() != null && !requestDto.getExamFileIds().isEmpty()) { // 이미지 목록이 비어있지 않으면 처리
+			examFiles = s3UploadService.findAllByImageId(requestDto.getExamFileIds()); // 이미지 목록 조회
+			examFiles.stream()
+				.filter(examFile -> examFile.getExam() == null) // 상품과 연결되지 않은 이미지만 필터링
+				.forEach(examFile -> examFile.assignExam(exam)); // 해당 이미지를 시험에 할당
+		}
+
+		return ExamResponseDto.of(
+			exam,
+			examFiles.stream()
+				.map(ExamFileResponseDto::of)
+				.toList()
+		);
 	}
 
 	// TODO 캐시 적용
-	public List<GetExamListReponseDto> getExamList() {
-		return examRepository.findAll()
-			.stream()
-			.map(GetExamListReponseDto::toDto)
-			.toList();
+	public Page<GetExamListResponseDto> getExamList(Pageable pageable) {
+		return examRepository.findAll(pageable)
+			.map(GetExamListResponseDto::toDto);
 	}
 
 	// TODO 레디스 적용 적용
-	public List<GetExamListReponseDto> searchExamByTitle(String examTitle) {
-		return examRepository.findByExamTitle(examTitle)
-			.stream()
-			.map(GetExamListReponseDto::toDto)
-			.toList();
+	public Page<GetExamListResponseDto> searchExamByTitle(Pageable pageable, String examTitle) {
+		return examRepository.findByTitle(pageable, examTitle)
+			.map(GetExamListResponseDto::toDto);
 	}
 
 	// TODO 캐시 적용

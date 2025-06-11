@@ -15,11 +15,12 @@ public enum SuccessStatus implements BaseCode {
 	LOGIN_SUCCESS(HttpStatus.OK, "1002", "로그인 성공"),
 	LOGOUT_SUCCESS(HttpStatus.OK, "1003", "로그아웃 성공"),
 	GETMYINFO_SUCCESS(HttpStatus.OK, "1004", "내 정보 불러오기 성공"),
-	UPDATEINFO_SUCCESS(HttpStatus.OK, "1005", "업데이트 성공, 다시 로그인 해주세요."),
+	UPDATE_PROFILE_SUCCESS(HttpStatus.OK, "1005", "프로필 업데이트 성공."),
 	DELETE_SUCCESS(HttpStatus.OK, "1006", "회원 탈퇴 성공, 다시 로그인 해주세요."),
 	GET_REVIEW_SUCCESS(HttpStatus.OK, "1007", "리뷰 불러오기 성공."),
 	GET_RECOMMEND_SUCCESS(HttpStatus.OK, "1008", "추천목록 불러오기 성공."),
 	REISSUE_SUCCESS(HttpStatus.OK, "1009", "어세스 토큰 재발급 성공."),
+	UPDATE_PASSWORD(HttpStatus.OK, "1010", "비밀번호 변경 성공"),
 
 	// 2000: 시험 성공 코드
 	FIND_EXAM(HttpStatus.OK, "2000", "시험 조회 성공."),
@@ -27,16 +28,23 @@ public enum SuccessStatus implements BaseCode {
 	UPDATE_EXAM(HttpStatus.OK, "2002", "시험 수정 성공."),
 	DELETE_EXAM(HttpStatus.OK, "2003", "시험 삭제 성공."),
 
-	// 4000 : 좋아요 성공 코드
-	CREATE_LIKE(HttpStatus.CREATED, "4001", "좋아요 성공"),
-	GET_INFO_LIKE(HttpStatus.OK, "4002", "좋아요 조회 성공"),
-	DELETE_LIKE(HttpStatus.OK, "4003", "좋아요 취소 성공."),
-	GET_RANKING_LIKE(HttpStatus.OK, "4101", "랭킹 조회 성공"),
+	// 3000 : 유저답안 작성 성공 코드
+	SAVE_USER_ANSWER_SUCCESS(HttpStatus.CREATED, "3001", "제출용 답안 작성 성공."),
 
-	// 5000 : 어드민 성공 코드
-	BOOK_ADD_ACCEPT_SUCCESS(HttpStatus.OK, "5001", "도서 추가 요청 승인 성공"),
-	REVIEW_PIN_SUCCESS(HttpStatus.OK, "5002", "리뷰 상단 고정 성공"),
-	REVIEW_UNPIN_SUCCESS(HttpStatus.OK, "5003", "리뷰 상단 고정 해제 성공"),
+	// 4000 : S3 성공 코드
+	SUCCESS_FILE_UPLOAD(HttpStatus.OK, "4001", "파일 업로드 성공"),
+	SUCCESS_FILE_DELETE(HttpStatus.NO_CONTENT, "4002", "파일 삭제 성공"),
+
+	// 4000 : 시험답안 성공 코드
+	SAVE_EXAM_ANSWER_SUCCESS(HttpStatus.OK, "4001", "관리자용 답안 생성 성공."),
+	UPDATE_EXAM_ANSWER_SUCCESS(HttpStatus.OK, "4002", "관리자용 답안 수정 성공"),
+	GET_EXAM_ANSWER_SUCCESS(HttpStatus.OK, "4003", "관리자용 답안 조회 성공"),
+	DELETE_EXAM_ANSWER_SUCCESS(HttpStatus.OK, "4004", "관리자용 답안 삭제 성공"),
+
+	// 5000 : 시험 권한 성공 코드
+	CREATE_EXAM_CATEGORY(HttpStatus.CREATED, "5001", "시험 권한 생성 성공"),
+	GET_EXAM_CATEGORY(HttpStatus.OK, "5002", "시험 권한 조회 성공"),
+	DELETE_EXAM_CATEGORY(HttpStatus.OK, "5003", "시험 권한 삭제 성공"),
 
 	// 6000 : 리뷰 성공 코드
 	CREATE_REVIEW(HttpStatus.CREATED, "6001", "리뷰 등록이 완료되었습니다."),
@@ -48,12 +56,18 @@ public enum SuccessStatus implements BaseCode {
 	SEARCH_SUCCESS(HttpStatus.OK, "7001", "검색에 성공했습니다."),
 	POPULAR_SEARCH_SUCCESS(HttpStatus.OK, "7002", "인기 검색어 호출에 성공했습니다."),
 
+	// 8000 : 답안지 성공 코드
+	CREATE_ANSWER_SHEET_SUCCESS(HttpStatus.CREATED, "8001", "답안지가 생성되었습니다."),
+	SAVE_ANSWERS_SUCCESS(HttpStatus.OK, "8002", "답안이 저장되었습니다."),
+	GET_ANSWERS_SUCCESS(HttpStatus.OK, "8003", "답안 조회가 완료되었습니다."),
+	DELETE_ANSWER_SHEET_SUCCESS(HttpStatus.NOT_FOUND, "8004", "답안지가 삭제되었습니다."),
+	SUBMIT_ANSWER_SUCCESS(HttpStatus.OK, "8005", "답안이 제출되었습니다."),
+	GET_APPLICANTS_SUCCESS(HttpStatus.OK, "8006", "응시자 조회가 완료되었습니다."),
+
 	// 9000 : 응시 권한 성공 코드
 	USERCATEGORY_CREATE_SUCCESS(HttpStatus.CREATED, "9001", "응시 권한 생성에 성공했습니다."),
 	USERCATEGORY_GET_SUCCESS(HttpStatus.OK, "9002", "응시 권한 목록 조회에 성공했습니다."),
 	USERCATEGORY_DELETE_SUCCESS(HttpStatus.OK, "9003", "응시 권한 삭제에 성공했습니다.");
-
-
 
 	private final HttpStatus httpStatus;
 	private final String code;

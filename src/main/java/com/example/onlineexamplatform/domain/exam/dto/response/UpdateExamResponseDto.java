@@ -1,9 +1,9 @@
 package com.example.onlineexamplatform.domain.exam.dto.response;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import com.example.onlineexamplatform.domain.exam.entity.Exam;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -18,25 +18,28 @@ public class UpdateExamResponseDto {
 
 	private final Long userId;
 
-	private final String examTitle;
+	private final String title;
 
 	private final String description;
 
-	private final List<String> filePaths;
+	private final Long totalQuestionsNum;
 
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private final LocalDateTime startTime;
 
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private final LocalDateTime endTime;
 
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private final LocalDateTime updatedAt;
 
 	public static UpdateExamResponseDto from(Exam exam) {
 		return UpdateExamResponseDto.builder()
 			.id(exam.getId())
 			.userId(exam.getUser().getId())
-			.examTitle(exam.getExamTitle())
+			.title(exam.getTitle())
 			.description(exam.getDescription())
-			.filePaths(exam.getFilePaths())
+			.totalQuestionsNum(exam.getTotalQuestionsNum())
 			.startTime(exam.getStartTime())
 			.endTime(exam.getEndTime())
 			.updatedAt(exam.getUpdatedAt())
