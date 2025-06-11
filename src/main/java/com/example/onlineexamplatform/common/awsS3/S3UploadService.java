@@ -43,12 +43,12 @@ public class S3UploadService {
 	public List<ExamFileResponseDto> upload(List<MultipartFile> files) {
 		// 각 파일을 업로드하고 path를 리스트로 반환
 		return files.stream()
-			.map(this::uploadImage)
+			.map(this::uploadFile)
 			.toList();
 	}
 
 	// validateFile 메서드를 호출하여 유효성 검증 후 uploadImageToS3메서드에 데이터를 반환하여 S3에 파일 업로드, path를 받아 서비스 로직에 반환
-	private ExamFileResponseDto uploadImage(MultipartFile file) {
+	private ExamFileResponseDto uploadFile(MultipartFile file) {
 		validateFile(file.getOriginalFilename()); // 파일 유효성 검증
 		return uploadImageToS3(file); // 이미지를 S3에 업로드하고, 저장된 파일의 path를 서비스 로직에 반환
 	}
