@@ -68,7 +68,7 @@ public enum SuccessStatus implements BaseCode {
 	USERCATEGORY_CREATE_SUCCESS(HttpStatus.CREATED, "9001", "응시 권한 생성에 성공했습니다."),
 	USERCATEGORY_GET_SUCCESS(HttpStatus.OK, "9002", "응시 권한 목록 조회에 성공했습니다."),
 	USERCATEGORY_DELETE_SUCCESS(HttpStatus.OK, "9003", "응시 권한 삭제에 성공했습니다."),
-	USERCATEGORY_ALLOWED_USER_GET_SUCCESS(HttpStatus.OK, "9004", "해당 시험에 응시 가능한 사용자 목록 조회에 성공했습니다.");
+	USERCATEGORY_GET_USERS_BY_CATEGORY_SUCCESS(HttpStatus.OK,"9004", "응시 권한 보유 사용자 목록 조회 성공");
 
 	private final HttpStatus httpStatus;
 	private final String code;

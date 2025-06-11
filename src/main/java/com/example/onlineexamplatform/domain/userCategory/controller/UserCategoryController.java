@@ -22,10 +22,11 @@ import java.util.List;
 public class UserCategoryController {
 
 	private final UserCategoryService userCategoryService;
+	private final SessionUserUtil sessionUserUtil;
 
 	@GetMapping
 	public ResponseEntity<ApiResponse<List<UserCategoryResponse>>> getByUser(HttpSession session) {
-		Long userId = SessionUserUtil.getCurrentUserId(session);
+		Long userId = sessionUserUtil.getCurrentUserId(session);
 		List<UserCategoryResponse> responseList = userCategoryService.getByUser(userId);
 		return ApiResponse.onSuccess(SuccessStatus.USERCATEGORY_GET_SUCCESS, responseList);
 	}

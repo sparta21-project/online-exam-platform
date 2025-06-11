@@ -1,33 +1,43 @@
 package com.example.onlineexamplatform.common.util;
 
+import com.example.onlineexamplatform.common.code.ErrorStatus;
+import com.example.onlineexamplatform.common.error.ApiException;
+import com.example.onlineexamplatform.domain.user.entity.Role;
 import com.example.onlineexamplatform.domain.user.entity.User;
+import com.example.onlineexamplatform.domain.user.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
+@Component
+@RequiredArgsConstructor
 public class SessionUserUtil {
 
-	private static final String LOGIN_USER_KEY = "user";
+	private static final String LOGIN_USER_KEY = "LOGIN_USER_ID";
 
-	public static Long getCurrentUserId(HttpSession session) {
-		User user = (User) session.getAttribute(LOGIN_USER_KEY);
-		if (user == null) {
-			throw new IllegalStateException("세션에 로그인 정보가 없습니다.");
+	private final UserRepository userRepository;
+
+	public Long getCurrentUserId(HttpSession session) {
+		Object userId = session.getAttribute(LOGIN_USER_KEY);
+		if (userId == null) {
+			throw new ApiException(ErrorStatus.UNAUTHORIZED);
 		}
-		return user.getId();
+		return (Long) userId;
 	}
 
-	public static boolean isAdmin(HttpSession session) {
-		User user = (User) session.getAttribute(LOGIN_USER_KEY);
-		if (user == null) {
-			throw new IllegalStateException("세션에 로그인 정보가 없습니다.");
-		}
-		return user.getRole().equals("ADMIN");
+	public boolean isAdmin(HttpSession session) {
+		User user = getUserFromSession(session);
+		return user.getRole() == Role.ADMIN;
 	}
 
-	public static boolean isUser(HttpSession session) {
-		User user = (User) session.getAttribute(LOGIN_USER_KEY);
-		if (user == null) {
-			throw new IllegalStateException("세션에 로그인 정보가 없습니다.");
-		}
-		return user.getRole().equals("USER");
+	public boolean isUser(HttpSession session) {
+		User user = getUserFromSession(session);
+		return user.getRole() == Role.USER;
+	}
+
+	private User getUserFromSession(HttpSession session) {
+		Long userId = getCurrentUserId(session);
+		return userRepository.findById(userId)
+				.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 	}
 }
