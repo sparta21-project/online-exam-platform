@@ -50,7 +50,7 @@ public class UserController {
 
 	// 프로필 수정
 	@Operation(summary = "내 프로필 수정", description = "로그인된 사용자의 프로필 정보를 수정합니다.")
-	@Parameter(description = "프로필 수정 요청 정보", required = true)
+	@Parameter(description = "프로필 수정 요청 정보")
 	@PutMapping("/profile")
 	public ResponseEntity<ApiResponse<UserProfileModifyResponse>> modifyProfile(
 		@RequestBody @Valid UserProfileModifyRequest request,

@@ -37,7 +37,7 @@ public class AuthController {
 
 	// 유저 회원가입
 	@Operation(summary = "일반 사용자 회원가입", description = "이메일, 비밀번호, 사용자명을 입력 받아 신규 사용자 계정을 생성합니다.")
-	@Parameter(description = "회원가입 요청 정보", required = true)
+	@Parameter(description = "회원가입 요청 정보")
 	@PostMapping("/signup")
 	public ResponseEntity<ApiResponse<AuthSignupResponse>> signup(
 		@RequestBody @Valid AuthSignupRequest request
@@ -48,7 +48,7 @@ public class AuthController {
 
 	// 관리자 회원가입
 	@Operation(summary = "관리자 회원가입", description = "관리자 권한을 가진 계정을 생성합니다.")
-	@Parameter(description = "관리자 회원가입 요청 정보", required = true)
+	@Parameter(description = "관리자 회원가입 요청 정보")
 	@PostMapping("/admin/signup")
 	public ResponseEntity<ApiResponse<AuthSignupResponse>> createAdmin(
 		@RequestBody @Valid AuthSignupRequest request
@@ -59,7 +59,7 @@ public class AuthController {
 
 	// 로그인
 	@Operation(summary = "로그인", description = "이메일과 비밀번호를 검증하여 세션에 사용자 ID를 저장합니다.")
-	@Parameter(description = "로그인 요청 정보", required = true)
+	@Parameter(description = "로그인 요청 정보")
 	@PostMapping("/login")
 	public ResponseEntity<ApiResponse<AuthLoginResponse>> login(
 		@RequestBody @Valid AuthLoginRequest request,
@@ -72,7 +72,7 @@ public class AuthController {
 
 	// 비밀번호 변경
 	@Operation(summary = "비밀번호 변경", description = "로그인된 사용자의 비밀번호를 변경합니다.")
-	@Parameter(description = "비밀번호 변경 요청 정보", required = true)
+	@Parameter(description = "비밀번호 변경 요청 정보")
 	@PutMapping("/password")
 	public ResponseEntity<ApiResponse<Void>> changePassword(
 		@RequestBody @Valid AuthPasswordRequest request,
