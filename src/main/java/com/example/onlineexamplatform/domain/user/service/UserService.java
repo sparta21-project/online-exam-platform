@@ -10,6 +10,7 @@ import com.example.onlineexamplatform.domain.user.dto.AuthPasswordRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthSignupRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthSignupResponse;
 import com.example.onlineexamplatform.domain.user.dto.UserProfileModifyRequest;
+import com.example.onlineexamplatform.domain.user.dto.UserProfileModifyResponse;
 import com.example.onlineexamplatform.domain.user.dto.UserProfileResponse;
 import com.example.onlineexamplatform.domain.user.entity.Role;
 import com.example.onlineexamplatform.domain.user.entity.User;
@@ -136,7 +137,7 @@ public class UserService {
 	}
 
 	// 프로필 수정
-	public UserProfileResponse modifyProfile(Long userId, UserProfileModifyRequest request) {
+	public UserProfileModifyResponse modifyProfile(Long userId, UserProfileModifyRequest request) {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 
@@ -150,7 +151,7 @@ public class UserService {
 
 		User saved = userRepository.save(user);
 
-		return new UserProfileResponse(
+		return new UserProfileModifyResponse(
 			saved.getId(),
 			saved.getEmail(),
 			saved.getUsername(),
