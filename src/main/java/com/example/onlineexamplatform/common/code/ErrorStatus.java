@@ -26,6 +26,7 @@ public enum ErrorStatus implements BaseErrorCode {
 	CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "3001", "존재하지 않는 카테고리입니다."),
 	DUPLICATE_USER_CATEGORY(HttpStatus.CONFLICT, "3002", "이미 등록된 응시 권한입니다."),
 	USER_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "3003", "응시 권한이 존재하지 않습니다."),
+	DUPLICATE_EXAM_CATEGORY(HttpStatus.CONFLICT, "9003", "이미 등록된 응시 권한입니다."),
 
 	//exam-file 업로드 에러코드
 	IO_EXCEPTION_UPLOAD_FILE(HttpStatus.INTERNAL_SERVER_ERROR, "4001", "파일 업로드 중 IO 예외가 발생했습니다."),
