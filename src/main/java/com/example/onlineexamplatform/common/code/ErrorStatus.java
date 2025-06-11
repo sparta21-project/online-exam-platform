@@ -34,7 +34,8 @@ public enum ErrorStatus implements BaseErrorCode {
 	NOT_EXIST_FILE(HttpStatus.NOT_FOUND, "4004", "파일이 존재하지 않습니다."),
 	IO_EXCEPTION_DELETE_FILE(HttpStatus.INTERNAL_SERVER_ERROR, "4005", "파일 삭제 중 IO 예외가 발생했습니다."),
 	INVALID_URL_FORMAT(HttpStatus.BAD_REQUEST, "4006", "잘못된 URL 형식입니다."),
-	IMAGE_ID_MISSING(HttpStatus.BAD_REQUEST, "IMAGE_ID_MISSING", "이미지 ID가 누락되었습니다."),
+	IMAGE_ID_MISSING(HttpStatus.BAD_REQUEST, "4007", "이미지 ID가 누락되었습니다."),
+	FILE_ALREADY_LINKED(HttpStatus.BAD_REQUEST, "4008", "해당 파일은 이미 다른 시험에 연결되어 있습니다."),
 
 	//answerSheet 에러 코드
 	ANSWER_SHEET_NOT_FOUND(HttpStatus.NOT_FOUND, "3001", "답안지 정보가 없습니다."),
