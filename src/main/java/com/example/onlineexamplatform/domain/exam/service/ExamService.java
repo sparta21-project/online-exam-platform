@@ -40,7 +40,7 @@ public class ExamService {
 	public ExamResponseDto<ExamFileResponseDto> createExam(CreateExamRequestDto requestDto, Long userId) {
 
 		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
+			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 
 		Exam exam = examRepository.save(Exam.builder()
 			.user(user)
@@ -58,7 +58,7 @@ public class ExamService {
 			examFiles = s3UploadService.findAllByImageId(requestDto.getExamFileIds()); // 이미지 목록 조회
 			examFiles.stream()
 				.filter(examFile -> examFile.getExam() == null) // 상품과 연결되지 않은 이미지만 필터링
-				.forEach(examFile -> examFile.assignExam(exam)); // 해당 이미지를 상품에 할당
+				.forEach(examFile -> examFile.assignExam(exam)); // 해당 이미지를 시험에 할당
 		}
 
 		return ExamResponseDto.of(
