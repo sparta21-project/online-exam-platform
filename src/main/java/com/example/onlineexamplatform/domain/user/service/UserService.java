@@ -50,7 +50,7 @@ public class UserService {
 			saved.getId(),
 			saved.getEmail(),
 			saved.getUsername(),
-			saved.getRole().name()
+			saved.getRole()
 		);
 
 	}
@@ -74,7 +74,7 @@ public class UserService {
 			saved.getId(),
 			saved.getEmail(),
 			saved.getUsername(),
-			saved.getRole().name()
+			saved.getRole()
 		);
 	}
 
@@ -95,7 +95,7 @@ public class UserService {
 			user.getId(),
 			user.getEmail(),
 			user.getUsername(),
-			user.getRole().name()
+			user.getRole()
 		);
 	}
 
@@ -132,7 +132,7 @@ public class UserService {
 			user.getId(),
 			user.getEmail(),
 			user.getUsername(),
-			user.getRole().name()
+			user.getRole()
 		);
 	}
 
@@ -155,7 +155,7 @@ public class UserService {
 			saved.getId(),
 			saved.getEmail(),
 			saved.getUsername(),
-			saved.getRole().name()
+			saved.getRole()
 		);
 	}
 
