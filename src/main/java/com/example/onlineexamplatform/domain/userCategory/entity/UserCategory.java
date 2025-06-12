@@ -18,6 +18,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
+@Table(name = "user_category")
 public class UserCategory extends BaseEntity {
 
     @Id
