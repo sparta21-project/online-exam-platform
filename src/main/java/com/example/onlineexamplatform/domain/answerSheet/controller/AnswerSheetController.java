@@ -15,10 +15,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 
 import java.util.List;
 
-import static com.example.onlineexamplatform.common.code.SuccessStatus.*;
 import static com.example.onlineexamplatform.domain.user.controller.UserController.SESSION_USER_KEY;
 
-@Tag(name = "AnswerSheet", description = "유저의 시험 답안지 API")
+@Tag(name = "08-AnswerSheet", description = "유저의 시험 답안지 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/exams/{examId}")
