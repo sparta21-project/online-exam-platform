@@ -9,6 +9,8 @@ import com.example.onlineexamplatform.domain.user.dto.AuthLoginResponse;
 import com.example.onlineexamplatform.domain.user.dto.AuthPasswordRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthSignupRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthSignupResponse;
+import com.example.onlineexamplatform.domain.user.dto.UserProfileModifyRequest;
+import com.example.onlineexamplatform.domain.user.dto.UserProfileModifyResponse;
 import com.example.onlineexamplatform.domain.user.dto.UserProfileResponse;
 import com.example.onlineexamplatform.domain.user.entity.Role;
 import com.example.onlineexamplatform.domain.user.entity.User;
@@ -48,7 +50,7 @@ public class UserService {
 			saved.getId(),
 			saved.getEmail(),
 			saved.getUsername(),
-			saved.getRole().name()
+			saved.getRole()
 		);
 
 	}
@@ -72,7 +74,7 @@ public class UserService {
 			saved.getId(),
 			saved.getEmail(),
 			saved.getUsername(),
-			saved.getRole().name()
+			saved.getRole()
 		);
 	}
 
@@ -93,7 +95,7 @@ public class UserService {
 			user.getId(),
 			user.getEmail(),
 			user.getUsername(),
-			user.getRole().name()
+			user.getRole()
 		);
 	}
 
@@ -130,7 +132,30 @@ public class UserService {
 			user.getId(),
 			user.getEmail(),
 			user.getUsername(),
-			user.getRole().name()
+			user.getRole()
+		);
+	}
+
+	// 프로필 수정
+	public UserProfileModifyResponse modifyProfile(Long userId, UserProfileModifyRequest request) {
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
+
+		if (!request.getEmail().equals(user.getEmail())
+			&& userRepository.existsByEmail(request.getEmail())) {
+			throw new ApiException(ErrorStatus.DUPLICATE_EMAIL);
+		}
+
+		user.updateEmail(request.getEmail());
+		user.updateUsername(request.getUsername());
+
+		User saved = userRepository.save(user);
+
+		return new UserProfileModifyResponse(
+			saved.getId(),
+			saved.getEmail(),
+			saved.getUsername(),
+			saved.getRole()
 		);
 	}
 
