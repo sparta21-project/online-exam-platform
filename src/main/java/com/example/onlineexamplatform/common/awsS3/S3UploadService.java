@@ -6,6 +6,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -17,10 +18,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
+import com.example.onlineexamplatform.domain.exam.repository.ExamFileQueryRepository;
 import com.example.onlineexamplatform.domain.examFile.dto.response.ExamFileResponseDto;
 import com.example.onlineexamplatform.domain.examFile.entity.ExamFile;
 import com.example.onlineexamplatform.domain.examFile.repository.ExamFileRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -33,6 +36,7 @@ import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
 @RequiredArgsConstructor
 public class S3UploadService {
 
+	private final ExamFileQueryRepository examFileQueryRepository;
 	private final ExamFileRepository examFileRepository;
 	private final S3Client s3Client;
 
@@ -159,6 +163,50 @@ public class S3UploadService {
 			log.error(exception.getMessage(), exception);
 			throw new ApiException(ErrorStatus.INVALID_URL_FORMAT);
 		}
+	}
+
+	@Transactional
+	public void deleteExamFile(List<ExamFile> examFiles) {
+		// 각 ExamFile 객체의 path와 fileName을 결합해 S3에서 삭제할 키 목록 생성
+		List<String> keys = getFullKeys(examFiles);
+
+		try {
+			// [Step 2] 생성한 키 목록을 기반으로 S3에서 파일을 삭제하기 위한 요청 객체 생성
+			DeleteObjectsRequest deleteObjectsRequest = DeleteObjectsRequest.builder()
+				.bucket(bucketName)
+				.delete(delete -> delete.objects(
+					keys.stream()
+						.map(key -> ObjectIdentifier.builder().key(key).build())
+						.toList()
+				))
+				.build();
+
+			// [Step 3] S3 및 DB ExamFile 제거
+			s3Client.deleteObjects(deleteObjectsRequest);
+			examFileRepository.deleteAll(examFiles);
+
+		} catch (Exception exception) {
+			log.error(exception.getMessage(), exception);
+			throw new ApiException(ErrorStatus.IO_EXCEPTION_DELETE_FILE);
+		}
+	}
+
+	/**
+	 * [private 메서드]
+	 * ExamFile 객체의 path와 fileName을 결합하여 S3에서 삭제할 키 목록 생성
+	 */
+	private List<String> getFullKeys(List<ExamFile> examFiles) {
+		return examFiles.stream()
+			.map(ExamFile::getPath)
+			.toList();
+	}
+
+	/**
+	 * - 고아 이미지 조회
+	 * - examId가 null 인 이미지 중 createdAt이 주어진 기준(threshold)보다 오래된 것들만 조회
+	 */
+	public List<ExamFile> findOldUnlinkedExamFiles(LocalDateTime threshold) {
+		return examFileQueryRepository.findOldUnlinkedExamFiles(threshold);
 	}
 
 }
