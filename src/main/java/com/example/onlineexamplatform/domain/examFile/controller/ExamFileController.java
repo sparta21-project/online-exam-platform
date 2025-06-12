@@ -16,10 +16,11 @@ import com.example.onlineexamplatform.common.scheduler.ExamFileScheduler;
 import com.example.onlineexamplatform.domain.examFile.dto.response.ExamFileResponseDto;
 import com.example.onlineexamplatform.domain.examFile.service.S3UploadService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+@Tag(name = "03-ExamFile", description = "사용자(Admin)가 시험 생성 시 시험 파일을 S3에 업로드하는 API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/s3")
@@ -28,6 +29,7 @@ public class ExamFileController {
 	private final S3UploadService s3UploadService;
 	private final ExamFileScheduler examFileScheduler;
 
+	@Operation(summary = "시험파일 S3업로드 APi", description = "시험 생성 전 시험파일을 S3에 업로드합니다.")
 	@PostMapping("/upload")
 	public ResponseEntity<ApiResponse<List<ExamFileResponseDto>>> s3Upload(
 		@RequestPart(value = "image") List<MultipartFile> multipartFile) {
@@ -35,6 +37,7 @@ public class ExamFileController {
 		return ApiResponse.onSuccess(SuccessStatus.SUCCESS_FILE_UPLOAD, upload);
 	}
 
+	@Operation(summary = "Scheduler를 활용한 S3 고아객체 삭제 API", description = "테스트용 Scheduler 메서드 수동 호출")
 	@DeleteMapping("/delete/scheduler-test")
 	public String deleteExamFile() {
 		try {
