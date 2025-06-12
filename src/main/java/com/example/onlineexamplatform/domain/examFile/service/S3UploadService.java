@@ -1,5 +1,7 @@
 package com.example.onlineexamplatform.domain.examFile.service;
 
+import static com.example.onlineexamplatform.common.awsS3Util.MimeTypeUtil.*;
+
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
@@ -90,11 +92,15 @@ public class S3UploadService {
 
 		// 이미지 파일 -> InputStream 변환
 		try (InputStream inputStream = file.getInputStream()) {
+
+			//
+			String mimeType = getMimeType(extension);
+
 			// PutObjectRequest 객체 생성
 			software.amazon.awssdk.services.s3.model.PutObjectRequest putObjectRequest = software.amazon.awssdk.services.s3.model.PutObjectRequest.builder()
 				.bucket(bucketName) // 버킷 이름
 				.key(s3FileName) // 저장할 파일 이름
-				.contentType("application/" + extension) // 이미지 MIME 타입
+				.contentType(mimeType) // 이미지 MIME 타입
 				.contentLength(file.getSize()) // 파일 크기
 				.build();
 
