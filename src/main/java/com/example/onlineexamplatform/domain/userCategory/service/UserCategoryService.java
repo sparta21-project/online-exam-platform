@@ -5,7 +5,7 @@ import com.example.onlineexamplatform.common.error.ApiException;
 import com.example.onlineexamplatform.domain.category.entity.Category;
 import com.example.onlineexamplatform.domain.category.entity.CategoryType;
 import com.example.onlineexamplatform.domain.category.repository.CategoryRepository;
-import com.example.onlineexamplatform.domain.user.dto.UserSummaryResponse;
+import com.example.onlineexamplatform.domain.user.dto.UserProfileResponse;
 import com.example.onlineexamplatform.domain.user.entity.User;
 import com.example.onlineexamplatform.domain.user.repository.UserRepository;
 import com.example.onlineexamplatform.domain.userCategory.dto.UserCategoryRequest;
@@ -84,7 +84,7 @@ public class UserCategoryService {
 	 * 권한이 없거나 잘못된 enum값일 경우 예외 발생
 	 */
 	@Transactional(readOnly = true)
-	public List<UserSummaryResponse> getUsersByCategory(String categoryTypeStr) {
+	public List<UserProfileResponse> getUsersByCategory(String categoryTypeStr) {
 		CategoryType categoryType;
 		try {
 			categoryType = CategoryType.valueOf(categoryTypeStr.toUpperCase());
@@ -100,7 +100,12 @@ public class UserCategoryService {
 		return userCategories.stream()
 				.map(uc -> {
 					User user = uc.getUser();
-					return new UserSummaryResponse(user.getId(), user.getUsername(), user.getEmail());
+					return new UserProfileResponse(
+							user.getId(),
+							user.getEmail(),
+							user.getUsername(),
+							user.getRole()
+					);
 				})
 				.toList();
 	}

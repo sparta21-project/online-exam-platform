@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotBlank;
 public record UserCategoryRequest(
 
 		@NotBlank(message = "카테고리 타입은 필수입니다.")
-		@ValidEnum(enumClass = CategoryType.class, message = "존재하지 않는 카테고리입니다.")
+		@ValidEnum(enumClass = CategoryType.class, message = "지원하지 않는 카테고리입니다.")
 		@Schema(description = "응시 권한을 부여할 카테고리 타입", example = "MATH")
 		String categoryType
 

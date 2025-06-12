@@ -114,7 +114,7 @@ public class AuthController {
 			throw new ApiException(ErrorStatus.UNAUTHORIZED);
 		}
 
-		userService.changePassword(session.getUserid(), request);
+		userService.changePassword(session.getUserId(), request);
 		return ApiResponse.onSuccess(SuccessStatus.UPDATE_PASSWORD);
 	}
 
