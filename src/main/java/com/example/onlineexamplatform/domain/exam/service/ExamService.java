@@ -19,6 +19,7 @@ import com.example.onlineexamplatform.domain.exam.entity.Exam;
 import com.example.onlineexamplatform.domain.exam.repository.ExamRepository;
 import com.example.onlineexamplatform.domain.examFile.dto.response.ExamFileResponseDto;
 import com.example.onlineexamplatform.domain.examFile.entity.ExamFile;
+import com.example.onlineexamplatform.domain.examFile.repository.ExamFileRepository;
 import com.example.onlineexamplatform.domain.examFile.service.S3UploadService;
 import com.example.onlineexamplatform.domain.user.entity.User;
 import com.example.onlineexamplatform.domain.user.repository.UserRepository;
@@ -33,6 +34,7 @@ public class ExamService {
 	private final ExamRepository examRepository;
 	private final UserRepository userRepository;
 	private final S3UploadService s3UploadService;
+	private final ExamFileRepository examFileRepository;
 
 	@Transactional
 	public ExamResponseDto<ExamFileResponseDto> createExam(CreateExamRequestDto requestDto, Long userId) {
@@ -53,10 +55,16 @@ public class ExamService {
 
 		// 이미지 매핑 (이미지가 존재할 경우에만 처리)
 		if (requestDto.getExamFileIds() != null && !requestDto.getExamFileIds().isEmpty()) { // 이미지 목록이 비어있지 않으면 처리
+
 			examFiles = s3UploadService.findAllByImageId(requestDto.getExamFileIds()); // 이미지 목록 조회
-			examFiles.stream()
-				.filter(examFile -> examFile.getExam() == null) // 시험과 연결되지 않은 이미지만 필터링
-				.forEach(examFile -> examFile.assignExam(exam)); // 해당 이미지를 시험에 할당
+			// 이미 exam이 할당된 파일이 하나라도 있으면 예외 발생
+			boolean hasAlreadyAssigned = examFiles.stream()
+				.anyMatch(examFile -> examFile.getExam() != null);
+
+			if (hasAlreadyAssigned) {
+				throw new ApiException(ErrorStatus.FILE_ALREADY_LINKED); // 예외 처리
+			}
+			examFiles.forEach(examFile -> examFile.assignExam(exam)); // 해당 이미지를 시험에 할당
 		}
 
 		return ExamResponseDto.of(
@@ -77,11 +85,16 @@ public class ExamService {
 			.map(GetExamListResponseDto::toDto);
 	}
 
-	public ExamResponseDto findExamById(Long examId) {
+	public ExamResponseDto<ExamFileResponseDto> findExamById(Long examId) {
 
 		Exam exam = examRepository.findByIdOrElseThrow(examId);
+		List<ExamFile> examFiles = examFileRepository.findByExamId(examId);
 
-		return ExamResponseDto.from(exam);
+		List<ExamFileResponseDto> fileResponseDtos = examFiles.stream()
+			.map(ExamFileResponseDto::of)
+			.toList();
+
+		return ExamResponseDto.of(exam, fileResponseDtos);
 	}
 
 	@Transactional

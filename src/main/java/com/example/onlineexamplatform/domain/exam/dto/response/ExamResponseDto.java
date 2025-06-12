@@ -41,20 +41,6 @@ public class ExamResponseDto<T> {
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private final LocalDateTime updatedAt;
 
-	public static ExamResponseDto from(Exam exam) {
-		return ExamResponseDto.builder()
-			.id(exam.getId())
-			.userId(exam.getUser().getId())
-			.title(exam.getTitle())
-			.description(exam.getDescription())
-			.startTime(exam.getStartTime())
-			.endTime(exam.getEndTime())
-			.createdAt(exam.getCreatedAt())
-			.updatedAt(exam.getUpdatedAt())
-			.build();
-
-	}
-
 	public static <T> ExamResponseDto<T> of(Exam exam, List<T> examFiles) {
 		return new ExamResponseDto<>(
 			exam.getId(),

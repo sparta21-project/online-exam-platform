@@ -47,7 +47,7 @@ public class ExamController {
 		@PathVariable Long userId,
 		@Valid @RequestBody CreateExamRequestDto requestDto) {
 
-		ExamResponseDto exam = examService.createExam(requestDto.toCreate(), userId);
+		ExamResponseDto<ExamFileResponseDto> exam = examService.createExam(requestDto.toCreate(), userId);
 
 		return ApiResponse.onSuccess(SuccessStatus.CREATE_EXAM, exam);
 	}
@@ -82,9 +82,9 @@ public class ExamController {
 	@Operation(summary = "시험 단건 조회 API", description = "등록된 시험의 ID로 해당 시험을 단건 조회합니다")
 	@Parameter(description = "시험의 ID입니다.")
 	@GetMapping("/admin/exams/{examId}")
-	public ResponseEntity<ApiResponse<ExamResponseDto>> findExamById(@PathVariable Long examId) {
+	public ResponseEntity<ApiResponse<ExamResponseDto<ExamFileResponseDto>>> findExamById(@PathVariable Long examId) {
 
-		ExamResponseDto exam = examService.findExamById(examId);
+		ExamResponseDto<ExamFileResponseDto> exam = examService.findExamById(examId);
 
 		return ApiResponse.onSuccess(SuccessStatus.FIND_EXAM, exam);
 	}
