@@ -1,5 +1,9 @@
 package com.example.onlineexamplatform.domain.user.controller;
 
+import java.time.Duration;
+import java.util.UUID;
+
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -7,11 +11,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.WebUtils;
 
 import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.code.SuccessStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
 import com.example.onlineexamplatform.common.response.ApiResponse;
+import com.example.onlineexamplatform.config.session.UserSession;
 import com.example.onlineexamplatform.domain.user.dto.AuthLoginRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthLoginResponse;
 import com.example.onlineexamplatform.domain.user.dto.AuthPasswordRequest;
@@ -22,18 +28,23 @@ import com.example.onlineexamplatform.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @Tag(name = "Authentication", description = "회원가입,로그인,로그아웃,비밀번호 변경 API")
 public class AuthController {
 
 	private final UserService userService;
-	public static final String SESSION_USER_KEY = "LOGIN_USER_ID";
+	private final RedisTemplate<String, UserSession> redisTemplate;
+
+	private static final String SESSION_COOKIE_NAME = "SESSION";
+	private static final Duration SESSION_TTL = Duration.ofMinutes(15);
 
 	// 유저 회원가입
 	@Operation(summary = "일반 사용자 회원가입", description = "이메일, 비밀번호, 사용자명을 입력 받아 신규 사용자 계정을 생성합니다.")
@@ -63,10 +74,30 @@ public class AuthController {
 	@PostMapping("/login")
 	public ResponseEntity<ApiResponse<AuthLoginResponse>> login(
 		@RequestBody @Valid AuthLoginRequest request,
-		HttpSession session
+		HttpServletResponse response
 	) {
+		// 인증
 		AuthLoginResponse dto = userService.login(request);
-		session.setAttribute(SESSION_USER_KEY, dto.getId());
+
+		// 세션 객체 생성
+		UserSession session = new UserSession(
+			dto.getId(),
+			dto.getUsername(),
+			dto.getRole()
+		);
+
+		// Redis 저장
+		String sessionId = UUID.randomUUID().toString();
+		String redisKey = SESSION_COOKIE_NAME + ":" + sessionId;
+		redisTemplate.opsForValue().set(redisKey, session, SESSION_TTL);
+
+		// 쿠키 발급
+		Cookie cookie = new Cookie(SESSION_COOKIE_NAME, sessionId);
+		cookie.setHttpOnly(true);
+		cookie.setPath("/");
+		cookie.setMaxAge((int)SESSION_TTL.getSeconds());
+		response.addCookie(cookie);
+
 		return ApiResponse.onSuccess(SuccessStatus.LOGIN_SUCCESS, dto);
 	}
 
@@ -76,26 +107,40 @@ public class AuthController {
 	@PutMapping("/password")
 	public ResponseEntity<ApiResponse<Void>> changePassword(
 		@RequestBody @Valid AuthPasswordRequest request,
-		HttpSession session
+		HttpServletRequest httpRequest
 	) {
-		Long userId = (Long)session.getAttribute(SESSION_USER_KEY);
-		if (userId == null) {
+		UserSession session = (UserSession)httpRequest.getAttribute("userSession");
+		if (session == null) {
 			throw new ApiException(ErrorStatus.UNAUTHORIZED);
 		}
 
-		userService.changePassword(userId, request);
+		userService.changePassword(session.getUserid(), request);
 		return ApiResponse.onSuccess(SuccessStatus.UPDATE_PASSWORD);
 	}
 
 	// 로그아웃
 	@Operation(summary = "로그아웃", description = "현재 세션을 무효화하여 로그아웃 처리합니다.")
 	@DeleteMapping("/logout")
-	public ResponseEntity<ApiResponse<Void>> logout(HttpSession session) {
-		Long userId = (Long)session.getAttribute(SESSION_USER_KEY);
-		if (userId == null) {
+	public ResponseEntity<ApiResponse<Void>> logout(HttpServletRequest httpRequest,
+		HttpServletResponse httpResponse) {
+		UserSession session = (UserSession)httpRequest.getAttribute("userSession");
+		if (session == null) {
 			throw new ApiException(ErrorStatus.UNAUTHORIZED);
 		}
-		session.invalidate();
+		Cookie cookie = WebUtils.getCookie(httpRequest, SESSION_COOKIE_NAME);
+		if (cookie != null) {
+			String sessionId = cookie.getValue();
+
+			String redisKey = SESSION_COOKIE_NAME + ":" + sessionId;
+			redisTemplate.delete(redisKey);
+
+			Cookie expired = new Cookie(SESSION_COOKIE_NAME, null);
+			expired.setPath("/");
+			expired.setHttpOnly(true);
+			expired.setMaxAge(0);
+			httpResponse.addCookie(expired);
+		}
+
 		return ApiResponse.onSuccess(SuccessStatus.LOGOUT_SUCCESS);
 	}
 
