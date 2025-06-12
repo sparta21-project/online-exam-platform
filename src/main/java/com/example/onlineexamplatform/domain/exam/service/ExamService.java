@@ -67,19 +67,16 @@ public class ExamService {
 		);
 	}
 
-	// TODO 캐시 적용
 	public Page<GetExamListResponseDto> getExamList(Pageable pageable) {
 		return examRepository.findAll(pageable)
 			.map(GetExamListResponseDto::toDto);
 	}
 
-	// TODO 레디스 적용 적용
 	public Page<GetExamListResponseDto> searchExamByTitle(Pageable pageable, String examTitle) {
 		return examRepository.findByTitle(pageable, examTitle)
 			.map(GetExamListResponseDto::toDto);
 	}
 
-	// TODO 캐시 적용
 	public ExamResponseDto findExamById(Long examId) {
 
 		Exam exam = examRepository.findByIdOrElseThrow(examId);
