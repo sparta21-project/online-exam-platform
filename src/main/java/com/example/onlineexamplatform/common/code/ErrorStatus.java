@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 public enum ErrorStatus implements BaseErrorCode {
 	// 공통 에러 코드
 	BAD_REQUEST(HttpStatus.BAD_REQUEST,"0001", "잘못된 요청입니다."),
+	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "0002", "서버 내부 오류가 발생했습니다."),
 
 	//user 에러 코드
 	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "1001", "고객 정보가 없습니다."),

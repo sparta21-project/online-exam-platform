@@ -2,6 +2,7 @@ package com.example.onlineexamplatform.common.response;
 
 import com.example.onlineexamplatform.common.code.BaseCode;
 import com.example.onlineexamplatform.common.code.BaseErrorCode;
+import com.example.onlineexamplatform.common.dto.ErrorReasonDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -43,4 +44,16 @@ public class ApiResponse<T> {
 				.status(code.getReasonHttpStatus().getHttpStatus())
 				.body(response);
 	}
+
+	public static ResponseEntity<ApiResponse<ErrorReasonDto>> onFailure(ErrorReasonDto reason) {
+		ApiResponse<ErrorReasonDto> response = new ApiResponse<>(
+				false,
+				reason.getCode(),
+				reason.getMessage(),
+				null
+		);
+		return ResponseEntity
+				.status(reason.getHttpStatus() != null ? reason.getHttpStatus() : org.springframework.http.HttpStatus.BAD_REQUEST)
+				.body(response);
+}
 }

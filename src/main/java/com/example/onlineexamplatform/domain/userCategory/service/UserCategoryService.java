@@ -41,7 +41,8 @@ public class UserCategoryService {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 
-		Category category = categoryRepository.findByCategoryType(request.categoryType())
+		CategoryType categoryType = CategoryType.valueOf(request.categoryType());
+		Category category = categoryRepository.findByCategoryType(categoryType)
 				.orElseThrow(() -> new ApiException(ErrorStatus.CATEGORY_NOT_FOUND));
 
 		if (userCategoryRepository.findByUserIdAndCategory(userId, category).isPresent()) {
@@ -49,7 +50,6 @@ public class UserCategoryService {
 		}
 
 		UserCategory saved = userCategoryRepository.save(new UserCategory(user, category));
-
 		return new UserCategoryResponse(saved.getId(), user.getId(), category.getCategoryType());
 	}
 	/**
