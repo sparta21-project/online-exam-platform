@@ -1,4 +1,4 @@
-package com.example.onlineexamplatform.common.awsS3;
+package com.example.onlineexamplatform.domain.examFile.service;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -94,7 +94,7 @@ public class S3UploadService {
 			software.amazon.awssdk.services.s3.model.PutObjectRequest putObjectRequest = software.amazon.awssdk.services.s3.model.PutObjectRequest.builder()
 				.bucket(bucketName) // 버킷 이름
 				.key(s3FileName) // 저장할 파일 이름
-				.contentType("image/" + extension) // 이미지 MIME 타입
+				.contentType("application/" + extension) // 이미지 MIME 타입
 				.contentLength(file.getSize()) // 파일 크기
 				.build();
 
