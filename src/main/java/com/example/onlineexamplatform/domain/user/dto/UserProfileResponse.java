@@ -1,5 +1,7 @@
 package com.example.onlineexamplatform.domain.user.dto;
 
+import com.example.onlineexamplatform.domain.user.entity.Role;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,5 +23,5 @@ public class UserProfileResponse {
 	private String username;
 
 	@Schema(description = "사용자 권한", example = "USER")
-	private String role;
+	private Role role;
 }
