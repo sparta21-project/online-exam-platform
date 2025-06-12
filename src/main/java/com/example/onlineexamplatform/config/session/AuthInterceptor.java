@@ -41,8 +41,10 @@ public class AuthInterceptor implements HandlerInterceptor {
 		// 어노테이션에 지정된 Role의 값이랑 세션에 있는 Role이 값이 같은지 비교
 		Role required = anno.value();
 		Role actual = session.getRole();
-		if (actual != required) {
-			// 다르면 403 Forbidden 반환
+
+		// USER = 0 , ADMIN = 1 이고 USER가 되는건 ADMIN도 되게 허용
+		if (actual.ordinal() < required.ordinal()) {
+			// 권한이 USER인데 ADMIN전용 api을 접근할 경우 403 Forbidden 반환
 			throw new ApiException(ErrorStatus.FORBIDDEN);
 		}
 
