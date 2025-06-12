@@ -11,20 +11,25 @@ import com.example.onlineexamplatform.domain.answerSheet.enums.AnswerSheetStatus
 import com.example.onlineexamplatform.domain.answerSheet.repository.AnswerSheetRepository;
 import com.example.onlineexamplatform.domain.exam.entity.Exam;
 import com.example.onlineexamplatform.domain.exam.repository.ExamRepository;
+import com.example.onlineexamplatform.domain.examAnswer.repository.ExamAnswerRepository;
+import com.example.onlineexamplatform.domain.examCategory.entity.ExamCategory;
+import com.example.onlineexamplatform.domain.examCategory.repository.ExamCategoryRepository;
 import com.example.onlineexamplatform.domain.user.entity.Role;
 import com.example.onlineexamplatform.domain.user.entity.User;
 import com.example.onlineexamplatform.domain.user.repository.UserRepository;
 import com.example.onlineexamplatform.domain.userAnswer.entity.UserAnswer;
 import com.example.onlineexamplatform.domain.userAnswer.repository.UserAnswerRepository;
+import com.example.onlineexamplatform.domain.userCategory.entity.UserCategory;
+import com.example.onlineexamplatform.domain.userCategory.repository.UserCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.example.onlineexamplatform.domain.answerSheet.enums.AnswerSheetStatus.STARTED;
 
@@ -36,6 +41,9 @@ public class AnswerSheetService {
     private final UserAnswerRepository userAnswerRepository;
     private final ExamRepository examRepository;
     private final UserRepository userRepository;
+    private final ExamAnswerRepository examAnswerRepository;
+    private final ExamCategoryRepository examCategoryRepository;
+    private final UserCategoryRepository userCategoryRepository;
 
     //빈 답안지 생성 (시험 응시)
     @Transactional
@@ -44,8 +52,26 @@ public class AnswerSheetService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 
-        AnswerSheet answerSheet = new AnswerSheet(exam, user, STARTED);
-        answerSheetRepository.save(answerSheet);
+        List<ExamCategory> examCategories = examCategoryRepository.findAllByExamId(examId);
+        List<UserCategory> userCategories = userCategoryRepository.findByUserId(userId);
+
+        boolean hasCategory = false;
+        for (ExamCategory examCategory : examCategories) {
+            for (UserCategory userCategory : userCategories) {
+                if (examCategory.getCategory().getId().equals(userCategory.getCategory().getId())) {
+                    hasCategory = true;
+                    break;
+                }
+            }
+            if (hasCategory) break;
+        }
+
+        if(hasCategory){
+            AnswerSheet answerSheet = new AnswerSheet(exam, user, STARTED);
+            answerSheetRepository.save(answerSheet);
+        } else {
+            throw new ApiException(ErrorStatus.CATEGORY_NOT_MATCHED);
+        }
     }
 
     //답안지 수정 (임시 저장 포함)
@@ -58,7 +84,7 @@ public class AnswerSheetService {
         AnswerSheet answerSheet = answerSheetRepository.findByExamAndUser(exam, user)
                 .orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
 
-        if (answerSheet.getStatus() == AnswerSheetStatus.SUBMITTED) {
+        if (answerSheet.getStatus() == AnswerSheetStatus.SUBMITTED || answerSheet.getStatus() == AnswerSheetStatus.GRADED) {
             throw new ApiException(ErrorStatus.ANSWER_SUBMITTED);
         }
 
@@ -101,8 +127,8 @@ public class AnswerSheetService {
         return new AnswerSheetResponseDto.Get(
                 exam.getId(),
                 user.getId(),
-                answerDtos,
-                answerSheet.getStatus()
+                answerSheet.getStatus(),
+                answerDtos
         );
     }
 
@@ -139,7 +165,7 @@ public class AnswerSheetService {
         AnswerSheet answerSheet = answerSheetRepository.findById(answerSheetId)
                 .orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
 
-        if (answerSheet.getStatus() == AnswerSheetStatus.SUBMITTED) {
+        if (answerSheet.getStatus() == AnswerSheetStatus.SUBMITTED || answerSheet.getStatus() == AnswerSheetStatus.GRADED) {
             throw new ApiException(ErrorStatus.ANSWER_SUBMITTED);
         }
 
@@ -184,6 +210,15 @@ public class AnswerSheetService {
                 ))
                 .toList();
     }
+
+    //답안지 채점
+    @Transactional
+    public void gradeAnswerSheet(Long answerSheetId) {
+
+    }
+
+    //답안지 상태 일괄 변경
+
 
     //답안 저장 로직
     public void saveUserAnswers(AnswerSheetRequestDto requestDto, Exam exam, User user, AnswerSheet answerSheet) {
