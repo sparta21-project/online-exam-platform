@@ -27,7 +27,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 관리자 전용 응시 권한 관리 컨트롤러 - 관리자가 특정 사용자에게 응시 권한을 부여, 조회, 삭제할 수 있음 - 모든 요청은 세션에서 ADMIN 권한 여부를 확인
+ * 관리자 전용 응시 권한 관리 컨트롤러
+ * 관리자가 특정 사용자에게 응시 권한을 부여, 조회, 삭제할 수 있음 - 모든 요청은 세션에서 ADMIN 권한 여부를 확인
  */
 @RestController
 @RequestMapping("/api/admin/user-category")

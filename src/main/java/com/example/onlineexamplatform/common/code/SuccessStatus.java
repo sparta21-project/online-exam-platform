@@ -65,6 +65,7 @@ public enum SuccessStatus implements BaseCode {
 	GET_APPLICANTS_SUCCESS(HttpStatus.OK, "8006", "응시자 조회가 완료되었습니다."),
 
 	// 9000 : 응시 권한 성공 코드
+	USER_GET_ALL_SUCCESS(HttpStatus.OK,"9000","전체 사용자 목록 조회 성공"),
 	USERCATEGORY_CREATE_SUCCESS(HttpStatus.CREATED, "9001", "응시 권한 생성에 성공했습니다."),
 	USERCATEGORY_GET_SUCCESS(HttpStatus.OK, "9002", "응시 권한 목록 조회에 성공했습니다."),
 	USERCATEGORY_DELETE_SUCCESS(HttpStatus.OK, "9003", "응시 권한 삭제에 성공했습니다."),
