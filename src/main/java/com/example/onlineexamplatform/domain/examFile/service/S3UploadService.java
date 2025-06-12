@@ -88,7 +88,7 @@ public class S3UploadService {
 		// 확장자 명
 		String extension = Objects.requireNonNull(originalFilename).substring(originalFilename.lastIndexOf(".") + 1);
 		// 변경된 파일
-		String s3FileName = UUID.randomUUID().toString().substring(0, 10) + "_" + originalFilename;
+		String s3FileName = UUID.randomUUID() + "." + extension;
 
 		// 이미지 파일 -> InputStream 변환
 		try (InputStream inputStream = file.getInputStream()) {
