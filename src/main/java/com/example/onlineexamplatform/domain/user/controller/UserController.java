@@ -41,7 +41,7 @@ public class UserController {
 		HttpServletRequest request
 	) {
 		UserSession session = (UserSession)request.getAttribute("userSession");
-		Long userId = session.getUserid();
+		Long userId = session.getUserId();
 
 		UserProfileResponse dto = userService.getProfile(userId);
 		return ApiResponse.onSuccess(SuccessStatus.GETMYINFO_SUCCESS, dto);
@@ -57,7 +57,7 @@ public class UserController {
 		HttpServletRequest request
 	) {
 		UserSession session = (UserSession)request.getAttribute("userSession");
-		Long userId = session.getUserid();
+		Long userId = session.getUserId();
 
 		UserProfileModifyResponse updated = userService.modifyProfile(userId, modifyrequest);
 		return ApiResponse.onSuccess(SuccessStatus.UPDATE_PROFILE_SUCCESS, updated);
@@ -69,7 +69,7 @@ public class UserController {
 	@DeleteMapping
 	public ResponseEntity<ApiResponse<Void>> deleteAccount(HttpServletRequest request) {
 		UserSession session = (UserSession)request.getAttribute("userSession");
-		Long userId = session.getUserid();
+		Long userId = session.getUserId();
 
 		userService.delete(userId);
 		return ApiResponse.onSuccess(SuccessStatus.DELETE_SUCCESS);
