@@ -32,7 +32,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "Exam", description = "사용자(Admin)가 시험 관리(CRUD)하는 API")
+@Tag(name = "04-Exam", description = "사용자(Admin)가 시험 관리(CRUD)하는 API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
@@ -41,7 +41,7 @@ public class ExamController {
 	private final ExamService examService;
 
 	@Operation(summary = "시험 등록", description = "Dto로 입력받은 시험과 시험파일ID를 맵핑하여 저장합니다.")
-	@Parameter(description = "유저의 ID입니다.", example = "1")
+	@Parameter(description = "유저의 ID입니다.")
 	@PostMapping("/admin/{userId}/exams")
 	public ResponseEntity<ApiResponse<ExamResponseDto<ExamFileResponseDto>>> createExam(
 		@PathVariable Long userId,
@@ -66,7 +66,7 @@ public class ExamController {
 	}
 
 	@Operation(summary = "시험 검색 조회 API", description = "등록된 시험의 제목을 검색하여 페이지네이션으로 조회합니다.")
-	@Parameter(description = "시험 검색어 입니다.", example = "시험 제목")
+	@Parameter(description = "시험 검색어 입니다.")
 	@GetMapping("/admin/exams/search")
 	public ResponseEntity<ApiResponse<PageResponse<GetExamListResponseDto>>> searchExamByTitle(
 		@PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable,
@@ -80,7 +80,7 @@ public class ExamController {
 	}
 
 	@Operation(summary = "시험 단건 조회 API", description = "등록된 시험의 ID로 해당 시험을 단건 조회합니다")
-	@Parameter(description = "시험의 ID입니다.", example = "1")
+	@Parameter(description = "시험의 ID입니다.")
 	@GetMapping("/admin/exams/{examId}")
 	public ResponseEntity<ApiResponse<ExamResponseDto>> findExamById(@PathVariable Long examId) {
 
@@ -90,7 +90,7 @@ public class ExamController {
 	}
 
 	@Operation(summary = "시험 수정 API", description = "등록된 시험의 ID로 해당 시험을 찾아 입력된 수정DTO 값을 받아 시험 정보 수정")
-	@Parameter(description = "시험의 ID입니다.", example = "1")
+	@Parameter(description = "시험의 ID입니다.")
 	@PatchMapping("/admin/exams/{examId}")
 	public ResponseEntity<ApiResponse<UpdateExamResponseDto>> updateExamById(
 		@PathVariable Long examId,
@@ -102,7 +102,7 @@ public class ExamController {
 	}
 
 	@Operation(summary = "시험 삭제 API", description = "등록된 시험의 ID로 해당 시험을 찾아 삭제")
-	@Parameter(description = "시험의 ID입니다.", example = "1")
+	@Parameter(description = "시험의 ID입니다.")
 	@DeleteMapping("/admin/exams/{examId}")
 	public ResponseEntity<ApiResponse<Void>> deleteExamById(@PathVariable Long examId) {
 
