@@ -57,7 +57,7 @@ public class ExamService {
 		if (requestDto.getExamFileIds() != null && !requestDto.getExamFileIds().isEmpty()) { // 이미지 목록이 비어있지 않으면 처리
 			examFiles = s3UploadService.findAllByImageId(requestDto.getExamFileIds()); // 이미지 목록 조회
 			examFiles.stream()
-				.filter(examFile -> examFile.getExam() == null) // 상품과 연결되지 않은 이미지만 필터링
+				.filter(examFile -> examFile.getExam() == null) // 시험과 연결되지 않은 이미지만 필터링
 				.forEach(examFile -> examFile.assignExam(exam)); // 해당 이미지를 시험에 할당
 		}
 
