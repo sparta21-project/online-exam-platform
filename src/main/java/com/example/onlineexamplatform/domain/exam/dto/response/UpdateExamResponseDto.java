@@ -34,7 +34,7 @@ public class UpdateExamResponseDto {
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private final LocalDateTime startTime;
 
-	@Schema(description = "시험 종료 시간", example = "2025-06-12 16:00")
+	@Schema(description = "수정된 시험 종료 시간", example = "2025-06-12 16:00")
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private final LocalDateTime endTime;
 
