@@ -109,9 +109,12 @@ public class ExamService {
 
 	@Transactional
 	public void deleteExamById(Long examId) {
+		Exam exam = examRepository.findByIdOrElseThrow(examId);
 
-		examRepository.findByIdOrElseThrow(examId);
+		//S3 + DB 업로드 파일 데이터 삭제
+		s3UploadService.deleteFilesByExam(exam);
 
-		examRepository.deleteById(examId);
+		// 시험 삭제
+		examRepository.delete(exam);
 	}
 }
