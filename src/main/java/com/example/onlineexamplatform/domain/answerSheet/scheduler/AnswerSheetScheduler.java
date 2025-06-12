@@ -24,7 +24,8 @@ public class AnswerSheetScheduler {
     private final ExamRepository examRepository;
 
     //종료된 시험의 답안지들 채점
-    @Scheduled(cron = "0 0 * * * *")
+    //@Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "0 */4 * * * *")
     public void gradeAnswerSheet() {
         List<Exam> endedExams = examRepository.findByEndTimeBefore(LocalDateTime.now());
 
@@ -40,7 +41,7 @@ public class AnswerSheetScheduler {
     }
 
     //종료된 시험의 모든 답안지 상태 변경
-    @Scheduled(cron = "0 */10 * * * *")
+    //@Scheduled(cron = "0 */10 * * * *")
     @Scheduled(cron = "0 */3 * * * *")
     public void changeAnswerSheetStatus() {
         List<Exam> endedExams = examRepository.findByEndTimeBefore(LocalDateTime.now());

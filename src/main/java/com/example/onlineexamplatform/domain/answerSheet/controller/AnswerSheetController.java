@@ -1,5 +1,8 @@
 package com.example.onlineexamplatform.domain.answerSheet.controller;
 
+import com.example.onlineexamplatform.common.code.ErrorStatus;
+import com.example.onlineexamplatform.common.error.ApiException;
+import com.example.onlineexamplatform.config.session.UserSession;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -39,7 +42,11 @@ public class AnswerSheetController {
             @PathVariable Long examId,
             HttpServletRequest request
     ) {
-        Long userId = (Long) request.getSession().getAttribute("userSession");
+        UserSession userSession = (UserSession) request.getAttribute("userSession");
+        if (userSession == null) {
+            throw new ApiException(ErrorStatus.USER_SESSION_NOT_FOUND);
+        }
+        Long userId = userSession.getUserid();
         answerSheetService.createAnswerSheet(examId, userId);
         return ApiResponse.onSuccess(SuccessStatus.CREATE_ANSWER_SHEET_SUCCESS);
     }
@@ -53,7 +60,11 @@ public class AnswerSheetController {
             @RequestBody AnswerSheetRequestDto requestDto,
             HttpServletRequest request
     ) {
-        Long userId = (Long) request.getSession().getAttribute("userSession");
+        UserSession userSession = (UserSession) request.getAttribute("userSession");
+        if (userSession == null) {
+            throw new ApiException(ErrorStatus.USER_SESSION_NOT_FOUND);
+        }
+        Long userId = userSession.getUserid();
         AnswerSheetResponseDto.Update responseDto = answerSheetService.updateAnswerSheet(examId, requestDto, userId);
         return ApiResponse.onSuccess(SuccessStatus.SAVE_ANSWERS_SUCCESS, responseDto);
     }
@@ -68,7 +79,11 @@ public class AnswerSheetController {
             @PathVariable Long answerSheetId,
             HttpServletRequest request
     ) {
-        Long userId = (Long) request.getSession().getAttribute("userSession");
+        UserSession userSession = (UserSession) request.getAttribute("userSession");
+        if (userSession == null) {
+            throw new ApiException(ErrorStatus.USER_SESSION_NOT_FOUND);
+        }
+        Long userId = userSession.getUserid();
         AnswerSheetResponseDto.Get responseDto = answerSheetService.getAnswerSheet(examId, answerSheetId, userId);
         return ApiResponse.onSuccess(SuccessStatus.GET_ANSWERS_SUCCESS, responseDto);
     }
@@ -83,7 +98,11 @@ public class AnswerSheetController {
             @PathVariable Long answerSheetId,
             HttpServletRequest request
     ) {
-        Long userId = (Long) request.getSession().getAttribute("userSession");
+        UserSession userSession = (UserSession) request.getAttribute("userSession");
+        if (userSession == null) {
+            throw new ApiException(ErrorStatus.USER_SESSION_NOT_FOUND);
+        }
+        Long userId = userSession.getUserid();
         answerSheetService.deleteAnswerSheet(examId, answerSheetId, userId);
         return ApiResponse.onSuccess(SuccessStatus.DELETE_ANSWER_SHEET_SUCCESS);
     }
@@ -99,7 +118,11 @@ public class AnswerSheetController {
             @RequestBody AnswerSheetRequestDto requestDto,
             HttpServletRequest request
     ) {
-        Long userId = (Long) request.getSession().getAttribute("userSession");
+        UserSession userSession = (UserSession) request.getAttribute("userSession");
+        if (userSession == null) {
+            throw new ApiException(ErrorStatus.USER_SESSION_NOT_FOUND);
+        }
+        Long userId = userSession.getUserid();
         AnswerSheetResponseDto.Submit responseDto = answerSheetService.submitAnswerSheet(examId, answerSheetId, requestDto, userId);
         return ApiResponse.onSuccess(SuccessStatus.SUBMIT_ANSWER_SUCCESS, responseDto);
     }
@@ -112,7 +135,11 @@ public class AnswerSheetController {
             @PathVariable Long examId,
             HttpServletRequest request
     ) {
-        Long userId = (Long) request.getSession().getAttribute("userSession");
+        UserSession userSession = (UserSession) request.getAttribute("userSession");
+        if (userSession == null) {
+            throw new ApiException(ErrorStatus.USER_SESSION_NOT_FOUND);
+        }
+        Long userId = userSession.getUserid();
         List<AnswerSheetResponseDto.Applicant> responseDto = answerSheetService.getExamApplicants(examId, userId);
         return ApiResponse.onSuccess(SuccessStatus.GET_APPLICANTS_SUCCESS, responseDto);
     }
