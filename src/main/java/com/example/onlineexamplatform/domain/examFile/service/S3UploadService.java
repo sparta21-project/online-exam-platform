@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
+import com.example.onlineexamplatform.domain.exam.entity.Exam;
 import com.example.onlineexamplatform.domain.exam.repository.ExamFileQueryRepository;
 import com.example.onlineexamplatform.domain.examFile.dto.response.ExamFileResponseDto;
 import com.example.onlineexamplatform.domain.examFile.entity.ExamFile;
@@ -162,6 +163,18 @@ public class S3UploadService {
 		return examFiles.stream()
 			.map(ExamFile::getPath)
 			.toList();
+	}
+
+	@Transactional
+	public void deleteFilesByExam(Exam exam) {
+		List<ExamFile> examFiles = examFileRepository.findByExamId(exam.getId());
+
+		if (examFiles.isEmpty()) {
+			log.info("시험 ID {} 에 연관된 파일이 없습니다.", exam.getId());
+			return;
+		}
+
+		deleteExamFile(examFiles);
 	}
 
 	// examFile 고아객체 조회, examId가 null 인 examFile 중 createdAt이 주어진 기준(threshold)보다 오래된 것들만 조회
