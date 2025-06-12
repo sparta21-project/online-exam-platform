@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.example.onlineexamplatform.common.awsS3.S3UploadService;
 import com.example.onlineexamplatform.domain.examFile.entity.ExamFile;
+import com.example.onlineexamplatform.domain.examFile.service.S3UploadService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

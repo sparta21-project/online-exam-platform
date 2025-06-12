@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.onlineexamplatform.common.awsS3.S3UploadService;
 import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
 import com.example.onlineexamplatform.domain.exam.dto.request.CreateExamRequestDto;
@@ -20,7 +19,7 @@ import com.example.onlineexamplatform.domain.exam.entity.Exam;
 import com.example.onlineexamplatform.domain.exam.repository.ExamRepository;
 import com.example.onlineexamplatform.domain.examFile.dto.response.ExamFileResponseDto;
 import com.example.onlineexamplatform.domain.examFile.entity.ExamFile;
-import com.example.onlineexamplatform.domain.examFile.service.ExamFileService;
+import com.example.onlineexamplatform.domain.examFile.service.S3UploadService;
 import com.example.onlineexamplatform.domain.user.entity.User;
 import com.example.onlineexamplatform.domain.user.repository.UserRepository;
 
@@ -34,7 +33,6 @@ public class ExamService {
 	private final ExamRepository examRepository;
 	private final UserRepository userRepository;
 	private final S3UploadService s3UploadService;
-	private final ExamFileService examFileService;
 
 	@Transactional
 	public ExamResponseDto<ExamFileResponseDto> createExam(CreateExamRequestDto requestDto, Long userId) {

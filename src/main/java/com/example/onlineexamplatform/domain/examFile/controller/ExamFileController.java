@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.onlineexamplatform.common.awsS3.S3UploadService;
 import com.example.onlineexamplatform.common.code.SuccessStatus;
 import com.example.onlineexamplatform.common.response.ApiResponse;
 import com.example.onlineexamplatform.common.scheduler.ExamFileScheduler;
 import com.example.onlineexamplatform.domain.examFile.dto.request.S3ExamFileDeleteRequestDto;
 import com.example.onlineexamplatform.domain.examFile.dto.response.ExamFileResponseDto;
+import com.example.onlineexamplatform.domain.examFile.service.S3UploadService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
