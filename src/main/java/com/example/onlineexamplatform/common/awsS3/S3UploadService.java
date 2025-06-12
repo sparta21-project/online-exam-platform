@@ -72,7 +72,8 @@ public class S3UploadService {
 
 		// 허용되지 않는 확장자 검증
 		String extension = URLConnection.guessContentTypeFromName(filename);
-		List<String> allowedExtentionList = Arrays.asList("image/jpg", "image/jpeg", "image/png", "image/gif");
+		List<String> allowedExtentionList = Arrays.asList("image/jpg", "image/jpeg", "image/png", "image/gif",
+			"application/pdf");
 		if (!allowedExtentionList.contains(extension)) {
 			throw new ApiException(ErrorStatus.INVALID_FILE_EXTENSION);
 		}
@@ -167,11 +168,11 @@ public class S3UploadService {
 
 	@Transactional
 	public void deleteExamFile(List<ExamFile> examFiles) {
-		// 각 ExamFile 객체의 path와 fileName을 결합해 S3에서 삭제할 키 목록 생성
+		// [1] 각 ExamFile 객체의 path를 S3에서 삭제할 키 목록 생성
 		List<String> keys = getFullKeys(examFiles);
 
 		try {
-			// [Step 2] 생성한 키 목록을 기반으로 S3에서 파일을 삭제하기 위한 요청 객체 생성
+			// [2] 생성한 키 목록을 기반으로 S3에서 파일을 삭제하기 위한 요청 객체 생성
 			DeleteObjectsRequest deleteObjectsRequest = DeleteObjectsRequest.builder()
 				.bucket(bucketName)
 				.delete(delete -> delete.objects(
@@ -181,7 +182,7 @@ public class S3UploadService {
 				))
 				.build();
 
-			// [Step 3] S3 및 DB ExamFile 제거
+			// [3] S3 및 DB ExamFile 제거
 			s3Client.deleteObjects(deleteObjectsRequest);
 			examFileRepository.deleteAll(examFiles);
 
@@ -191,20 +192,14 @@ public class S3UploadService {
 		}
 	}
 
-	/**
-	 * [private 메서드]
-	 * ExamFile 객체의 path와 fileName을 결합하여 S3에서 삭제할 키 목록 생성
-	 */
+	// ExamFile 객체의 path로 S3에서 삭제할 키 목록 생성
 	private List<String> getFullKeys(List<ExamFile> examFiles) {
 		return examFiles.stream()
 			.map(ExamFile::getPath)
 			.toList();
 	}
 
-	/**
-	 * - 고아 이미지 조회
-	 * - examId가 null 인 이미지 중 createdAt이 주어진 기준(threshold)보다 오래된 것들만 조회
-	 */
+	// examFile 고아객체 조회, examId가 null 인 examFile 중 createdAt이 주어진 기준(threshold)보다 오래된 것들만 조회
 	public List<ExamFile> findOldUnlinkedExamFiles(LocalDateTime threshold) {
 		return examFileQueryRepository.findOldUnlinkedExamFiles(threshold);
 	}
