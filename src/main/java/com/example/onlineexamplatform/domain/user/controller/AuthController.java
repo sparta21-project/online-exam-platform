@@ -13,16 +13,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.WebUtils;
 
-import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.code.SuccessStatus;
-import com.example.onlineexamplatform.common.error.ApiException;
 import com.example.onlineexamplatform.common.response.ApiResponse;
+import com.example.onlineexamplatform.config.session.CheckAuth;
 import com.example.onlineexamplatform.config.session.UserSession;
 import com.example.onlineexamplatform.domain.user.dto.AuthLoginRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthLoginResponse;
 import com.example.onlineexamplatform.domain.user.dto.AuthPasswordRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthSignupRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthSignupResponse;
+import com.example.onlineexamplatform.domain.user.entity.Role;
 import com.example.onlineexamplatform.domain.user.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -102,6 +102,7 @@ public class AuthController {
 	}
 
 	// 비밀번호 변경
+	@CheckAuth(Role.USER)
 	@Operation(summary = "비밀번호 변경", description = "로그인된 사용자의 비밀번호를 변경합니다.")
 	@Parameter(description = "비밀번호 변경 요청 정보")
 	@PutMapping("/password")
@@ -110,30 +111,28 @@ public class AuthController {
 		HttpServletRequest httpRequest
 	) {
 		UserSession session = (UserSession)httpRequest.getAttribute("userSession");
-		if (session == null) {
-			throw new ApiException(ErrorStatus.UNAUTHORIZED);
-		}
 
 		userService.changePassword(session.getUserid(), request);
 		return ApiResponse.onSuccess(SuccessStatus.UPDATE_PASSWORD);
 	}
 
 	// 로그아웃
+	@CheckAuth(Role.USER)
 	@Operation(summary = "로그아웃", description = "현재 세션을 무효화하여 로그아웃 처리합니다.")
 	@DeleteMapping("/logout")
 	public ResponseEntity<ApiResponse<Void>> logout(HttpServletRequest httpRequest,
 		HttpServletResponse httpResponse) {
-		UserSession session = (UserSession)httpRequest.getAttribute("userSession");
-		if (session == null) {
-			throw new ApiException(ErrorStatus.UNAUTHORIZED);
-		}
+
+		// 쿠키에서 세션 id 가져오기
 		Cookie cookie = WebUtils.getCookie(httpRequest, SESSION_COOKIE_NAME);
 		if (cookie != null) {
 			String sessionId = cookie.getValue();
 
+			// Redis에서 세션 삭제
 			String redisKey = SESSION_COOKIE_NAME + ":" + sessionId;
 			redisTemplate.delete(redisKey);
 
+			// 만료된 쿠키 재전송
 			Cookie expired = new Cookie(SESSION_COOKIE_NAME, null);
 			expired.setPath("/");
 			expired.setHttpOnly(true);
@@ -143,5 +142,4 @@ public class AuthController {
 
 		return ApiResponse.onSuccess(SuccessStatus.LOGOUT_SUCCESS);
 	}
-
 }
