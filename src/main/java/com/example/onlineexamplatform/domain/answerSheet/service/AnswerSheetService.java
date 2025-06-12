@@ -11,6 +11,7 @@ import com.example.onlineexamplatform.domain.answerSheet.enums.AnswerSheetStatus
 import com.example.onlineexamplatform.domain.answerSheet.repository.AnswerSheetRepository;
 import com.example.onlineexamplatform.domain.exam.entity.Exam;
 import com.example.onlineexamplatform.domain.exam.repository.ExamRepository;
+import com.example.onlineexamplatform.domain.examAnswer.entity.ExamAnswer;
 import com.example.onlineexamplatform.domain.examAnswer.repository.ExamAnswerRepository;
 import com.example.onlineexamplatform.domain.examCategory.entity.ExamCategory;
 import com.example.onlineexamplatform.domain.examCategory.repository.ExamCategoryRepository;
@@ -88,7 +89,7 @@ public class AnswerSheetService {
             throw new ApiException(ErrorStatus.ANSWER_SUBMITTED);
         }
 
-        saveUserAnswers(requestDto, exam, user, answerSheet);
+        saveUserAnswers(requestDto, answerSheet);
 
         answerSheet.updateStatus(AnswerSheetStatus.IN_PROGRESS);
 
@@ -175,7 +176,7 @@ public class AnswerSheetService {
             throw new ApiException(ErrorStatus.ACCESS_DENIED);
         }
 
-        saveUserAnswers(requestDto, exam, user, answerSheet);
+        saveUserAnswers(requestDto, answerSheet);
 
         answerSheet.updateStatus(AnswerSheetStatus.SUBMITTED);
 
@@ -214,14 +215,38 @@ public class AnswerSheetService {
     //답안지 채점
     @Transactional
     public void gradeAnswerSheet(Long answerSheetId) {
+        AnswerSheet answerSheet = answerSheetRepository.findById(answerSheetId)
+                .orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
 
+        List<UserAnswer> userAnswers = userAnswerRepository.findAllByAnswerSheet(answerSheet);
+
+        int score = 0;
+        for (UserAnswer userAnswer : userAnswers) {
+            ExamAnswer examAnswer = examAnswerRepository.findByExamAndQuestionNumber(
+                            answerSheet.getExam(),
+                            userAnswer.getQuestionNumber())
+                    .orElseThrow(() -> new ApiException(ErrorStatus.EXAM_ANSWER_NOT_FOUND));
+
+            String correctAnswer = examAnswer.getCorrectAnswer();
+
+            if (correctAnswer.equals(userAnswer.getAnswerText())) {
+                score += examAnswer.getQuestionScore();
+            }
+        }
+        answerSheet.grade(score);
     }
 
-    //답안지 상태 일괄 변경
+    //답안지 상태 변경
+    @Transactional
+    public void changeAnswerSheetStatus(Long answerSheetId) {
+        AnswerSheet answerSheet = answerSheetRepository.findById(answerSheetId)
+                .orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
 
+        answerSheet.updateStatus(AnswerSheetStatus.SUBMITTED);
+    }
 
     //답안 저장 로직
-    public void saveUserAnswers(AnswerSheetRequestDto requestDto, Exam exam, User user, AnswerSheet answerSheet) {
+    public void saveUserAnswers(AnswerSheetRequestDto requestDto, AnswerSheet answerSheet) {
         for (UserAnswerRequestDto dto : requestDto.getAnswers()) {
             int questionNumber = dto.getQuestionNumber();
             String answerText = dto.getAnswerText();
