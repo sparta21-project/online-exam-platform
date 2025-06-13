@@ -9,6 +9,9 @@ import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
 import com.example.onlineexamplatform.domain.exam.entity.Exam;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 public interface ExamRepository extends JpaRepository<Exam, Long> {
 
 	default Exam findByIdOrElseThrow(Long id) {
@@ -17,5 +20,7 @@ public interface ExamRepository extends JpaRepository<Exam, Long> {
 
 	@Query("SELECT e FROM Exam e WHERE e.title LIKE %:examTitle%")
 	Page<Exam> findByTitle(Pageable pageable, String examTitle);
+
+	List<Exam> findByEndTimeBefore(LocalDateTime now);
 
 }
