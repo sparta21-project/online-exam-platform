@@ -16,7 +16,7 @@ public class UserProfileResponse {
 	@Schema(description = "사용자 ID", example = "1")
 	private Long id;
 
-	@Schema(description = "사용자 이름", example = "김민준")
+	@Schema(description = "사용자 이메일", example = "user@example.com")
 	private String email;
 
 	@Schema(description = "사용자 이름", example = "김민준")
