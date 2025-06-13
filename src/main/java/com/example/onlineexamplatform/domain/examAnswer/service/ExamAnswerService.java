@@ -33,7 +33,8 @@ public class ExamAnswerService {
 
         // 사용자 제출 답안 questionNumber 중복 체크
         if(examAnswers.size() != examAnswers.stream().map(SaveExamAnswerDto::getQuestionNumber).distinct().count()) {
-            throw new ApiException(ErrorStatus.DUPLICATE_QUESTION_NUMBER); }
+            throw new ApiException(ErrorStatus.DUPLICATE_QUESTION_NUMBER);
+        }
 
         Map<Integer, ExamAnswer> examAnswerMap = examAnswerRepository.findAllByExamId(examId)
                 .stream()

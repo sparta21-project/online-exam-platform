@@ -1,5 +1,6 @@
 package com.example.onlineexamplatform.domain.answerSheet.controller;
 
+import com.example.onlineexamplatform.config.session.UserSession;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -31,7 +32,8 @@ public class AnswerSheetController {
 		@PathVariable Long examId,
 		HttpServletRequest request
 	) {
-		Long userId = (Long)request.getSession().getAttribute("userSession");
+		UserSession userSession = (UserSession)request.getAttribute("userSession");
+		Long userId = userSession.getUserid();
 		answerSheetService.createAnswerSheet(examId, userId);
 		return ApiResponse.onSuccess(SuccessStatus.CREATE_ANSWER_SHEET_SUCCESS);
 	}
@@ -43,7 +45,8 @@ public class AnswerSheetController {
 		@RequestBody AnswerSheetRequestDto.Update requestDto,
 		HttpServletRequest request
 	) {
-		Long userId = (Long)request.getSession().getAttribute("userSession");
+		UserSession userSession = (UserSession)request.getAttribute("userSession");
+		Long userId = userSession.getUserid();
 		AnswerSheetResponseDto.Update responseDto = answerSheetService.updateAnswerSheet(examId, requestDto, userId);
 		return ApiResponse.onSuccess(SuccessStatus.SAVE_ANSWERS_SUCCESS, responseDto);
 	}

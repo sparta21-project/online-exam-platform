@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "UserAnswer", description = "사용자(User)가 작성하는 답안 작성 API")
+@Tag(name = "01-UserAnswer", description = "사용자(User)가 작성하는 답안 작성 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user-answers")
