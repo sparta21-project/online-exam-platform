@@ -142,14 +142,4 @@ public class AuthController {
 
 		return ApiResponse.onSuccess(SuccessStatus.LOGOUT_SUCCESS);
 	}
-
-	@PostMapping("/test")
-	public void test(HttpServletRequest httpRequest,
-					 HttpServletResponse httpResponse) {
-		System.out.println("testAPI 호출");
-
-		UserSession session = (UserSession)httpRequest.getAttribute("userSession");
-		System.out.println(session.getUserid());
-
-	}
 }
