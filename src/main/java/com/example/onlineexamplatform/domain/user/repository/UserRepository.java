@@ -1,6 +1,8 @@
 package com.example.onlineexamplatform.domain.user.repository;
 
+
 import java.time.LocalDateTime;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -14,4 +16,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	boolean existsByEmail(String email);
 
 	List<User> findByIsWithdrawTrueAndWithdrawAtBefore(LocalDateTime cutoff);
+
+	// 이름 및 이메일 포함 검색
+	List<User> findByUsernameContainingAndEmailContaining(String username, String email);
+
 }

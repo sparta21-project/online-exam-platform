@@ -1,5 +1,6 @@
 package com.example.onlineexamplatform.domain.examAnswer.repository;
 
+import com.example.onlineexamplatform.domain.exam.entity.Exam;
 import com.example.onlineexamplatform.domain.examAnswer.entity.ExamAnswer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,4 +17,6 @@ public interface ExamAnswerRepository extends JpaRepository<ExamAnswer, Long> {
     List<ExamAnswer> findAllByExamId(Long examId);
 
     int countByExamId(Long examId);
+
+    Optional<ExamAnswer> findByExamAndQuestionNumber(Exam exam, Integer questionNumber);
 }
