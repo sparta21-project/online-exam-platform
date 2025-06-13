@@ -17,7 +17,7 @@ public class SessionFilter extends OncePerRequestFilter {
 	// Redis 에서 UserSession에서 객체를 조회하기 위한 RedisTemplate
 	private final RedisTemplate<String, UserSession> redisTemplate;
 	private static final String SESSION_COOKIE_NAME = "SESSION";
-	private static final Duration TTL = Duration.ofMinutes(30);
+	private static final Duration TTL = Duration.ofMinutes(15);
 
 	// RedisTemplate 주입
 	public SessionFilter(RedisTemplate<String, UserSession> redisTemplate) {
@@ -41,6 +41,8 @@ public class SessionFilter extends OncePerRequestFilter {
 				redisTemplate.expire(redisKey, TTL);
 				// 세션 정보가 유효하면 request attribute에 담아두기 (컨트롤러에서 꺼내 쓸수도 있음)
 				request.setAttribute("userSession", session);
+				request.getSession().setAttribute("userSession", session);
+				// System.out.println(session); 세션이 찍히는지 확인하는 콘솔로그
 			} else {
 				// 세션 만료되면 쿠키도 삭제
 				Cookie expired = new Cookie(SESSION_COOKIE_NAME, null);
