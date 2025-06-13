@@ -42,7 +42,7 @@ public class S3UploadService {
 	@Value("${aws.s3.bucket-name}")
 	private String bucketName;
 
-	// 외부에서 사용, S3에 저장된 이미지 객체의 path를 반환
+	// 외부에서 사용, S3에 저장된 ExamFile 객체의 path를 반환
 	public List<ExamFileResponseDto> upload(List<MultipartFile> files) {
 		// 각 파일을 업로드하고 path를 리스트로 반환
 		return files.stream()
@@ -50,10 +50,10 @@ public class S3UploadService {
 			.toList();
 	}
 
-	// validateFile 메서드를 호출하여 유효성 검증 후 uploadImageToS3메서드에 데이터를 반환하여 S3에 파일 업로드, path를 받아 서비스 로직에 반환
+	// validateFile 메서드를 호출하여 유효성 검증 후 uploadExamFileToS3메서드에 데이터를 반환하여 S3에 파일 업로드, path를 받아 서비스 로직에 반환
 	private ExamFileResponseDto uploadFile(MultipartFile file) {
 		validateFile(file.getOriginalFilename()); // 파일 유효성 검증
-		return uploadImageToS3(file); // 이미지를 S3에 업로드하고, 저장된 파일의 path를 서비스 로직에 반환
+		return uploadExamFileToS3(file); // 이미지를 S3에 업로드하고, 저장된 파일의 path를 서비스 로직에 반환
 	}
 
 	// 파일 유효성 검증
@@ -79,7 +79,7 @@ public class S3UploadService {
 	}
 
 	// 직접적으로 S3에 업로드
-	private ExamFileResponseDto uploadImageToS3(MultipartFile file) {
+	private ExamFileResponseDto uploadExamFileToS3(MultipartFile file) {
 		// 원본 파일 명
 		String originalFilename = file.getOriginalFilename();
 		// 확장자 명
@@ -124,10 +124,10 @@ public class S3UploadService {
 
 	}
 
-	public List<ExamFile> findAllByImageId(List<Long> examFileIds) {
+	public List<ExamFile> findAllByExamFileId(List<Long> examFileIds) {
 		List<ExamFile> examFiles = examFileRepository.findAllById(examFileIds);
 		if (examFiles.isEmpty())
-			throw new ApiException(ErrorStatus.IMAGE_ID_MISSING);
+			throw new ApiException(ErrorStatus.FILE_ID_MISSING);
 		return examFiles;
 
 	}
