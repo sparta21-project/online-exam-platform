@@ -32,6 +32,8 @@ public enum SuccessStatus implements BaseCode {
 
 	// 3000 : 유저답안 작성 성공 코드
 	SAVE_USER_ANSWER_SUCCESS(HttpStatus.CREATED, "3001", "제출용 답안 작성 성공."),
+	GRADE_ANSWER_SHEET_SUCCESS(HttpStatus.OK, "3002", "답안지가 일괄 채점되었습니다."),
+	UPDATE_ANSWER_SHEET_STATUS_SUCCESS(HttpStatus.OK, "3003", "답안지의 제출 상태가 일괄 변경되었습니다."),
 
 	// 4000 : S3 성공 코드
 	SUCCESS_FILE_UPLOAD(HttpStatus.OK, "4001", "파일 업로드 성공"),
