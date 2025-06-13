@@ -45,17 +45,6 @@ public class ExamFile extends BaseEntity {
 	@JoinColumn(name = "exam_id")
 	private Exam exam;
 
-	// Exam과 맵핑 전 시험 파일 고아 객체 생성 메서드
-	public static ExamFile create(ExamFile examFile) {
-		return new ExamFile(
-			examFile.getId(),
-			examFile.getFileName(),
-			examFile.getPath(),
-			examFile.getFileType(),
-			examFile.getSize(),
-			null);
-	}
-
 	// Exam과 ExamFile 맵핑 메서드
 	public void assignExam(Exam exam) {
 		this.exam = exam;
