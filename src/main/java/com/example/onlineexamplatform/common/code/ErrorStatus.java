@@ -42,6 +42,9 @@ public enum ErrorStatus implements BaseErrorCode {
 	//answerSheet 에러 코드
 	ANSWER_SHEET_NOT_FOUND(HttpStatus.NOT_FOUND, "3001", "답안지 정보가 없습니다."),
 	ACCESS_DENIED(HttpStatus.UNAUTHORIZED, "3002", "답안지를 조회할 권한이 없습니다."),
+	ANSWER_SUBMITTED(HttpStatus.BAD_REQUEST, "3003", "이미 제출된 답안지입니다."),
+	CATEGORY_NOT_MATCHED(HttpStatus.UNAUTHORIZED, "3004", "답안지 생성 권한이 없습니다."),
+	USER_SESSION_NOT_FOUND(HttpStatus.UNAUTHORIZED, "3005", "유저 세션 정보가 없습니다."),
 
 	// userAnswer 에러
 	DUPLICATE_QUESTION_NUMBER(HttpStatus.CONFLICT, "8001", "중복된 문제 번호가 존재합니다."),

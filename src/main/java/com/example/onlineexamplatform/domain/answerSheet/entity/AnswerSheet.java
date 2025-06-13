@@ -29,6 +29,7 @@ public class AnswerSheet extends BaseEntity {
     private int score;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private AnswerSheetStatus status;
 
     public AnswerSheet(Exam exam, User user, AnswerSheetStatus status){
@@ -39,5 +40,10 @@ public class AnswerSheet extends BaseEntity {
 
     public void updateStatus(AnswerSheetStatus status) {
         this.status = status;
+    }
+
+    public void grade(int score) {
+        this.score = score;
+        this.status = AnswerSheetStatus.GRADED;
     }
 }
