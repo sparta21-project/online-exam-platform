@@ -1,5 +1,7 @@
 package com.example.onlineexamplatform.domain.user.entity;
 
+import java.time.LocalDateTime;
+
 import com.example.onlineexamplatform.common.entity.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -36,6 +38,9 @@ public class User extends BaseEntity {
 	@Column(nullable = false)
 	private Boolean isWithdraw = false;
 
+	@Column
+	private LocalDateTime withdrawAt;
+
 	public User(String email, String password, String username, Role role) {
 		this.email = email;
 		this.password = password;
@@ -49,6 +54,7 @@ public class User extends BaseEntity {
 
 	public void withdraw() {
 		this.isWithdraw = true;
+		this.withdrawAt = LocalDateTime.now();
 	}
 
 	public boolean isWithdraw() {
