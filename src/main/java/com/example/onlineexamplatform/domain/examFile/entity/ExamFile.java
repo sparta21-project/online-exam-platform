@@ -2,21 +2,63 @@ package com.example.onlineexamplatform.domain.examFile.entity;
 
 import com.example.onlineexamplatform.common.entity.BaseEntity;
 import com.example.onlineexamplatform.domain.exam.entity.Exam;
-import jakarta.persistence.*;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Builder
+@Getter
 @Entity
+@Table(name = "exam_file")
+@NoArgsConstructor
+@AllArgsConstructor
 public class ExamFile extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    private String type;
+	@Column(nullable = false)
+	private String fileName;
 
-    private String path;
+	@Column(nullable = false)
+	private String path;
 
-    private int size;
+	@Column(nullable = false)
+	private String fileType;
 
-    @ManyToOne
-    private Exam exam;
+	@Column(nullable = false)
+	private Long size;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "exam_id")
+	private Exam exam;
+
+	// Exam과 맵핑 전 임시 시험 파일 생성 메서드
+	public static ExamFile create(ExamFile examFile) {
+		return new ExamFile(
+			examFile.getId(),
+			examFile.getFileName(),
+			examFile.getPath(),
+			examFile.getFileType(),
+			examFile.getSize(),
+			null);
+	}
+
+	// Exam과 ExamFile 맵핑 메서드
+	public void assignExam(Exam exam) {
+		this.exam = exam;
+	}
+
 }

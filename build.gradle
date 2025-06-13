@@ -33,6 +33,17 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // AWS S3
+    implementation 'software.amazon.awssdk:s3:2.29.50'
+
+    // Springdoc -> Spring Boot 3.5.0 버전은 2.8.9 이상의 버전과만 호환됨.
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9'
+
+
 }
 
 tasks.named('test') {

@@ -1,34 +1,59 @@
 package com.example.onlineexamplatform.domain.exam.entity;
 
-import com.example.onlineexamplatform.common.entity.BaseEntity;
-import com.example.onlineexamplatform.domain.user.entity.User;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 
+import com.example.onlineexamplatform.common.entity.BaseEntity;
+import com.example.onlineexamplatform.domain.exam.dto.request.UpdateExamRequestDto;
+import com.example.onlineexamplatform.domain.user.entity.User;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Builder
+@Getter
 @Entity
+@Table(name = "exam")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Exam extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    private String title;
+	@Column(nullable = false)
+	private String title;
 
-    private String description;
+	@Column(nullable = false)
+	private String description;
 
-    private String filePath;
+	@Column(nullable = false)
+	private Long totalQuestionsNum;
+	
+	@Column(nullable = false)
+	private LocalDateTime startTime;
 
-    private LocalDateTime startTime;
+	@Column(nullable = false)
+	private LocalDateTime endTime;
 
-    private LocalDateTime endTime;
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	private User user;
 
-    @ManyToOne
-    @JoinColumn(name="")
-    private User user;
-
+	public void updateExam(UpdateExamRequestDto requestDto) {
+		this.title = requestDto.getTitle();
+		this.description = requestDto.getDescription();
+		this.startTime = requestDto.getStartTime();
+		this.endTime = requestDto.getEndTime();
+	}
 }
