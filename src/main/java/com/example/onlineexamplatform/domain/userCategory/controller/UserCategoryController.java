@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/user-category")
 @RequiredArgsConstructor
-@Tag(name = "User UserCategory", description = "사용자 전용 응시 권한 조회 API")
+@Tag(name = "07-User UserCategory", description = "사용자 전용 응시 권한 조회 API")
 public class UserCategoryController {
 
 	private final UserCategoryService userCategoryService;

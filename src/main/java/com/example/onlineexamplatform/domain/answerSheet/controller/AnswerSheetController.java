@@ -46,7 +46,7 @@ public class AnswerSheetController {
         if (userSession == null) {
             throw new ApiException(ErrorStatus.USER_SESSION_NOT_FOUND);
         }
-        Long userId = userSession.getUserid();
+        Long userId = userSession.getUserId();
         answerSheetService.createAnswerSheet(examId, userId);
         return ApiResponse.onSuccess(SuccessStatus.CREATE_ANSWER_SHEET_SUCCESS);
     }
@@ -64,7 +64,7 @@ public class AnswerSheetController {
         if (userSession == null) {
             throw new ApiException(ErrorStatus.USER_SESSION_NOT_FOUND);
         }
-        Long userId = userSession.getUserid();
+        Long userId = userSession.getUserId();
         AnswerSheetResponseDto.Update responseDto = answerSheetService.updateAnswerSheet(examId, requestDto, userId);
         return ApiResponse.onSuccess(SuccessStatus.SAVE_ANSWERS_SUCCESS, responseDto);
     }
@@ -83,7 +83,7 @@ public class AnswerSheetController {
         if (userSession == null) {
             throw new ApiException(ErrorStatus.USER_SESSION_NOT_FOUND);
         }
-        Long userId = userSession.getUserid();
+        Long userId = userSession.getUserId();
         AnswerSheetResponseDto.Get responseDto = answerSheetService.getAnswerSheet(examId, answerSheetId, userId);
         return ApiResponse.onSuccess(SuccessStatus.GET_ANSWERS_SUCCESS, responseDto);
     }
@@ -102,7 +102,7 @@ public class AnswerSheetController {
         if (userSession == null) {
             throw new ApiException(ErrorStatus.USER_SESSION_NOT_FOUND);
         }
-        Long userId = userSession.getUserid();
+        Long userId = userSession.getUserId();
         answerSheetService.deleteAnswerSheet(examId, answerSheetId, userId);
         return ApiResponse.onSuccess(SuccessStatus.DELETE_ANSWER_SHEET_SUCCESS);
     }
@@ -122,7 +122,7 @@ public class AnswerSheetController {
         if (userSession == null) {
             throw new ApiException(ErrorStatus.USER_SESSION_NOT_FOUND);
         }
-        Long userId = userSession.getUserid();
+        Long userId = userSession.getUserId();
         AnswerSheetResponseDto.Submit responseDto = answerSheetService.submitAnswerSheet(examId, answerSheetId, requestDto, userId);
         return ApiResponse.onSuccess(SuccessStatus.SUBMIT_ANSWER_SUCCESS, responseDto);
     }
@@ -139,7 +139,7 @@ public class AnswerSheetController {
         if (userSession == null) {
             throw new ApiException(ErrorStatus.USER_SESSION_NOT_FOUND);
         }
-        Long userId = userSession.getUserid();
+        Long userId = userSession.getUserId();
         List<AnswerSheetResponseDto.Applicant> responseDto = answerSheetService.getExamApplicants(examId, userId);
         return ApiResponse.onSuccess(SuccessStatus.GET_APPLICANTS_SUCCESS, responseDto);
     }

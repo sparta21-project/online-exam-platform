@@ -27,7 +27,7 @@ public class AdminUserController {
 	private final UserService userService;
 
 	@CheckAuth(Role.ADMIN)
-	@Operation(summary = "전체 사용자 목록 조회", description = "관리자가 모든 사용자 목록을 조회합니다.")
+	@Operation(summary = "02-전체 사용자 목록 조회", description = "관리자가 모든 사용자 목록을 조회합니다.")
 	@GetMapping
 	public ResponseEntity<ApiResponse<List<UserProfileResponse>>> getAllUsers(
 			@Parameter(description = "사용자 이름 검색 필터", required = false) @RequestParam(required = false) String name,
