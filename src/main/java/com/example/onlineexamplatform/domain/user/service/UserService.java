@@ -1,5 +1,6 @@
 package com.example.onlineexamplatform.domain.user.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.example.onlineexamplatform.common.code.ErrorStatus;
@@ -15,6 +16,7 @@ import com.example.onlineexamplatform.domain.user.dto.UserProfileResponse;
 import com.example.onlineexamplatform.domain.user.entity.Role;
 import com.example.onlineexamplatform.domain.user.entity.User;
 import com.example.onlineexamplatform.domain.user.repository.UserRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
@@ -170,5 +172,22 @@ public class UserService {
 
 		user.withdraw();
 		userRepository.save(user);
+	}
+	// 사용자 목록조회 및 검색 (관리자 전용)
+	@Transactional(readOnly = true)
+	public List<UserProfileResponse> getUsersByFilter(String name, String email) {
+		String nameFilter = name != null ? name : "";
+		String emailFilter = email != null ? email : "";
+
+		List<User> users = userRepository.findByUsernameContainingAndEmailContaining(nameFilter, emailFilter);
+
+		return users.stream()
+				.map(user -> new UserProfileResponse(
+						user.getId(),
+						user.getEmail(),
+						user.getUsername(),
+						user.getRole()
+				))
+				.toList();
 	}
 }
