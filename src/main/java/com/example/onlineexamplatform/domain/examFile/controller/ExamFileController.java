@@ -13,8 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.onlineexamplatform.common.code.SuccessStatus;
 import com.example.onlineexamplatform.common.response.ApiResponse;
-import com.example.onlineexamplatform.common.scheduler.ExamFileScheduler;
 import com.example.onlineexamplatform.domain.examFile.dto.response.ExamFileResponseDto;
+import com.example.onlineexamplatform.domain.examFile.scheduler.ExamFileScheduler;
 import com.example.onlineexamplatform.domain.examFile.service.S3UploadService;
 
 import io.swagger.v3.oas.annotations.Operation;
