@@ -1,7 +1,5 @@
 package com.example.onlineexamplatform.domain.exam.controller;
 
-import java.util.List;
-
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,9 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.code.SuccessStatus;
@@ -54,11 +50,10 @@ public class ExamController {
 	private final ExamService examService;
 	private final S3UploadService s3UploadService;
 
-	@Operation(summary = "시험 등록 API", description = "S3 업로드하고 Dto로 입력받은 시험과 시험파일Id를 맵핑하여 저장합니다.")
+	@Operation(summary = "시험 등록 API", description = " Dto로 입력받은 시험과 시험파일Id를 맵핑하여 저장합니다.")
 	@CheckAuth(Role.ADMIN)
 	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<ApiResponse<ExamResponseDto<ExamFileResponseDto>>> createExam(
-		@Parameter(description = "업로드할 시험파일의 바이너리") @RequestPart(value = "examFile") List<MultipartFile> examFiles,
 		HttpServletRequest request,
 		@Valid @RequestBody CreateExamRequestDto requestDto) {
 
@@ -67,8 +62,6 @@ public class ExamController {
 			throw new ApiException(ErrorStatus.USER_SESSION_NOT_FOUND);
 		}
 		Long userId = userSession.getUserId();
-
-		s3UploadService.upload(examFiles);
 
 		ExamResponseDto<ExamFileResponseDto> exam = examService.createExam(requestDto.toCreate(), userId);
 
@@ -81,7 +74,6 @@ public class ExamController {
 	public ResponseEntity<ApiResponse<PageResponse<GetExamListResponseDto>>> getExamList(
 		@ParameterObject @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-		// 페이징 적용
 		Page<GetExamListResponseDto> examList = examService.getExamList(pageable);
 
 		PageResponse<GetExamListResponseDto> response = new PageResponse<>(examList);
