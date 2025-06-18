@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +24,7 @@ import com.example.onlineexamplatform.config.session.CheckAuth;
 import com.example.onlineexamplatform.config.session.UserSession;
 import com.example.onlineexamplatform.domain.exam.dto.request.CreateExamRequestDto;
 import com.example.onlineexamplatform.domain.exam.dto.request.UpdateExamRequestDto;
+import com.example.onlineexamplatform.domain.exam.dto.response.ExamDetailResponseDto;
 import com.example.onlineexamplatform.domain.exam.dto.response.ExamResponseDto;
 import com.example.onlineexamplatform.domain.exam.dto.response.GetExamListResponseDto;
 import com.example.onlineexamplatform.domain.exam.dto.response.UpdateExamResponseDto;
@@ -50,7 +50,7 @@ public class ExamController {
 
 	@Operation(summary = "시험 등록 API", description = " Dto로 입력받은 시험과 시험파일Id를 맵핑하여 저장합니다.")
 	@CheckAuth(Role.ADMIN)
-	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@PostMapping
 	public ResponseEntity<ApiResponse<ExamResponseDto<ExamFileResponseDto>>> createExam(
 		HttpServletRequest request,
 		@Valid @RequestBody CreateExamRequestDto requestDto) {
@@ -97,8 +97,31 @@ public class ExamController {
 	@CheckAuth(Role.ADMIN)
 	@GetMapping("/{examId}")
 	public ResponseEntity<ApiResponse<ExamResponseDto<ExamFileResponseDto>>> findExamById(
-		HttpServletRequest request,
 		@Parameter(description = "시험의 ID입니다.") @PathVariable Long examId) {
+
+		ExamResponseDto<ExamFileResponseDto> exam = examService.findExamById(examId);
+
+		return ApiResponse.onSuccess(SuccessStatus.FIND_EXAM, exam);
+	}
+
+	@Operation(summary = "시험 상세 조회 API", description = "응시자가 응시할 시험 정보와 파일을 조회합니다")
+	@CheckAuth(Role.USER)
+	@GetMapping("/{examId}/to-take")
+	public ResponseEntity<ApiResponse<ExamDetailResponseDto>> getExamDetail(
+		@Parameter(description = "시험의 ID입니다.") @PathVariable Long examId) {
+
+		ExamDetailResponseDto examDetail = examService.getExamDetail(examId);
+
+		return ApiResponse.onSuccess(SuccessStatus.FIND_EXAM, examDetail);
+	}
+
+	@Operation(summary = "시험 수정 API", description = "등록된 시험의 ID로 해당 시험을 찾아 입력된 수정DTO 값을 받아 시험 정보 수정")
+	@CheckAuth(Role.ADMIN)
+	@PatchMapping("/{examId}")
+	public ResponseEntity<ApiResponse<UpdateExamResponseDto>> updateExamById(
+		HttpServletRequest request,
+		@Parameter(description = "시험의 ID입니다.") @PathVariable Long examId,
+		@Valid @RequestBody UpdateExamRequestDto requestDto) {
 
 		UserSession userSession = (UserSession)request.getAttribute("userSession");
 		if (userSession == null) {
@@ -106,19 +129,7 @@ public class ExamController {
 		}
 		Long userId = userSession.getUserId();
 
-		ExamResponseDto<ExamFileResponseDto> exam = examService.findExamById(userId, examId);
-
-		return ApiResponse.onSuccess(SuccessStatus.FIND_EXAM, exam);
-	}
-
-	@Operation(summary = "시험 수정 API", description = "등록된 시험의 ID로 해당 시험을 찾아 입력된 수정DTO 값을 받아 시험 정보 수정")
-	@CheckAuth(Role.ADMIN)
-	@PatchMapping("/{examId}")
-	public ResponseEntity<ApiResponse<UpdateExamResponseDto>> updateExamById(
-		@Parameter(description = "시험의 ID입니다.") @PathVariable Long examId,
-		@Valid @RequestBody UpdateExamRequestDto requestDto) {
-
-		UpdateExamResponseDto exam = examService.updateExamById(examId, requestDto);
+		UpdateExamResponseDto exam = examService.updateExamById(userId, examId, requestDto);
 
 		return ApiResponse.onSuccess(SuccessStatus.UPDATE_EXAM, exam);
 	}
@@ -127,9 +138,15 @@ public class ExamController {
 	@CheckAuth(Role.ADMIN)
 	@DeleteMapping("/{examId}")
 	public ResponseEntity<ApiResponse<Void>> deleteExamById(
+		HttpServletRequest request,
 		@Parameter(description = "시험의 ID입니다.") @PathVariable Long examId) {
+		UserSession userSession = (UserSession)request.getAttribute("userSession");
+		if (userSession == null) {
+			throw new ApiException(ErrorStatus.USER_SESSION_NOT_FOUND);
+		}
+		Long userId = userSession.getUserId();
 
-		examService.deleteExamById(examId);
+		examService.deleteExamById(userId, examId);
 
 		return ApiResponse.onSuccess(SuccessStatus.DELETE_EXAM);
 	}

@@ -12,12 +12,14 @@ import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
 import com.example.onlineexamplatform.domain.exam.dto.request.CreateExamRequestDto;
 import com.example.onlineexamplatform.domain.exam.dto.request.UpdateExamRequestDto;
+import com.example.onlineexamplatform.domain.exam.dto.response.ExamDetailResponseDto;
 import com.example.onlineexamplatform.domain.exam.dto.response.ExamResponseDto;
 import com.example.onlineexamplatform.domain.exam.dto.response.GetExamListResponseDto;
 import com.example.onlineexamplatform.domain.exam.dto.response.UpdateExamResponseDto;
 import com.example.onlineexamplatform.domain.exam.entity.Exam;
 import com.example.onlineexamplatform.domain.exam.repository.ExamRepository;
 import com.example.onlineexamplatform.domain.examFile.dto.response.ExamFileResponseDto;
+import com.example.onlineexamplatform.domain.examFile.dto.response.ExamFileS3PreSignedURLDto;
 import com.example.onlineexamplatform.domain.examFile.entity.ExamFile;
 import com.example.onlineexamplatform.domain.examFile.repository.ExamFileRepository;
 import com.example.onlineexamplatform.domain.examFile.service.S3UploadService;
@@ -88,15 +90,9 @@ public class ExamService {
 	}
 
 	@Transactional(readOnly = true)
-	public ExamResponseDto<ExamFileResponseDto> findExamById(Long userId, Long examId) {
+	public ExamResponseDto<ExamFileResponseDto> findExamById(Long examId) {
 
-		User user = userRepository.findById(userId)
-			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 		Exam exam = examRepository.findByIdOrElseThrow(examId);
-
-		if (!user.getId().equals(exam.getUser().getId())) {
-			throw new ApiException(ErrorStatus.FORBIDDEN);
-		}
 
 		List<ExamFile> examFiles = examFileRepository.findByExamId(examId);
 
@@ -107,10 +103,40 @@ public class ExamService {
 		return ExamResponseDto.of(exam, fileResponseDtos);
 	}
 
-	@Transactional
-	public UpdateExamResponseDto updateExamById(Long examId, @Valid UpdateExamRequestDto requestDto) {
+	@Transactional(readOnly = true)
+	public ExamDetailResponseDto getExamDetail(Long examId) {
 
 		Exam exam = examRepository.findByIdOrElseThrow(examId);
+
+		List<ExamFile> examFiles = examFileRepository.findByExamId(examId);
+
+		boolean anyMatch = examFiles.stream().anyMatch(examFile -> !exam.getId().equals(examFile.getExam().getId()));
+		if (anyMatch) {
+			throw new ApiException(ErrorStatus.EXAM_FILE_MISMATCH);
+		}
+
+		List<ExamFileS3PreSignedURLDto> examFileS3PreSignedURLs = examFiles.stream()
+			.map(examFile -> new ExamFileS3PreSignedURLDto(
+				examFile.getFileName(),
+				s3UploadService.createPresignedUrl(examFile.getPath())
+			))
+			.toList();
+
+		return ExamDetailResponseDto.of(exam, examFileS3PreSignedURLs);
+
+	}
+
+	@Transactional
+	public UpdateExamResponseDto updateExamById(Long userId, Long examId, @Valid UpdateExamRequestDto requestDto) {
+
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
+		
+		Exam exam = examRepository.findByIdOrElseThrow(examId);
+
+		if (!user.getId().equals(exam.getUser().getId())) {
+			throw new ApiException(ErrorStatus.FORBIDDEN);
+		}
 
 		exam.updateExam(requestDto);
 
@@ -118,8 +144,16 @@ public class ExamService {
 	}
 
 	@Transactional
-	public void deleteExamById(Long examId) {
+	public void deleteExamById(Long userId, Long examId) {
+
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
+
 		Exam exam = examRepository.findByIdOrElseThrow(examId);
+
+		if (!user.getId().equals(exam.getUser().getId())) {
+			throw new ApiException(ErrorStatus.FORBIDDEN);
+		}
 
 		//S3 + DB 업로드 파일 데이터 삭제
 		s3UploadService.deleteFilesByExam(exam);

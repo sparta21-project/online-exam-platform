@@ -4,6 +4,7 @@ import static com.example.onlineexamplatform.common.awsS3Util.MimeTypeUtil.*;
 
 import java.io.InputStream;
 import java.net.URLConnection;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -28,7 +29,10 @@ import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
 @Slf4j
 @Service
@@ -38,6 +42,7 @@ public class S3UploadService {
 	private final ExamFileQueryRepository examFileQueryRepository;
 	private final ExamFileRepository examFileRepository;
 	private final S3Client s3Client;
+	private final S3Presigner s3Presigner;
 
 	@Value("${aws.s3.bucket-name}")
 	private String bucketName;
@@ -129,6 +134,19 @@ public class S3UploadService {
 			throw new ApiException(ErrorStatus.FILE_ID_MISSING);
 		return examFiles;
 
+	}
+
+	public String createPresignedUrl(String s3FilePath) {
+		PresignedGetObjectRequest presignedGetObjectRequest = s3Presigner.presignGetObject(
+			getObjectRequest -> getObjectRequest.signatureDuration(Duration.ofMinutes(15)) // 15분 유효기간
+				.getObjectRequest(
+					GetObjectRequest.builder()
+						.bucket(bucketName)
+						.key(s3FilePath)
+						.build()
+				)
+		);
+		return presignedGetObjectRequest.url().toString();
 	}
 
 	@Transactional
