@@ -88,9 +88,16 @@ public class ExamService {
 	}
 
 	@Transactional(readOnly = true)
-	public ExamResponseDto<ExamFileResponseDto> findExamById(Long examId) {
+	public ExamResponseDto<ExamFileResponseDto> findExamById(Long userId, Long examId) {
 
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 		Exam exam = examRepository.findByIdOrElseThrow(examId);
+
+		if (!user.getId().equals(exam.getUser().getId())) {
+			throw new ApiException(ErrorStatus.FORBIDDEN);
+		}
+
 		List<ExamFile> examFiles = examFileRepository.findByExamId(examId);
 
 		List<ExamFileResponseDto> fileResponseDtos = examFiles.stream()
