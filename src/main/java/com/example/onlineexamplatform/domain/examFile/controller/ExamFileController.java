@@ -14,7 +14,6 @@ import com.example.onlineexamplatform.common.code.SuccessStatus;
 import com.example.onlineexamplatform.common.response.ApiResponse;
 import com.example.onlineexamplatform.config.session.CheckAuth;
 import com.example.onlineexamplatform.domain.examFile.dto.response.ExamFileResponseDto;
-import com.example.onlineexamplatform.domain.examFile.scheduler.ExamFileScheduler;
 import com.example.onlineexamplatform.domain.examFile.service.S3UploadService;
 import com.example.onlineexamplatform.domain.user.entity.Role;
 
@@ -30,7 +29,6 @@ import lombok.RequiredArgsConstructor;
 public class ExamFileController {
 
 	private final S3UploadService s3UploadService;
-	private final ExamFileScheduler examFileScheduler;
 
 	@Operation(summary = "시험파일 S3 업로드 API", description = "시험 생성 전 시험파일을 S3에 업로드합니다.")
 	@CheckAuth(Role.ADMIN)
