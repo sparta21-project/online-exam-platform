@@ -12,6 +12,7 @@ import com.example.onlineexamplatform.common.code.SuccessStatus;
 import com.example.onlineexamplatform.common.response.ApiResponse;
 import com.example.onlineexamplatform.config.session.CheckAuth;
 import com.example.onlineexamplatform.config.session.UserSession;
+import com.example.onlineexamplatform.config.session.UserSessionArgument;
 import com.example.onlineexamplatform.domain.user.dto.UserProfileModifyRequest;
 import com.example.onlineexamplatform.domain.user.dto.UserProfileModifyResponse;
 import com.example.onlineexamplatform.domain.user.dto.UserProfileResponse;
@@ -38,9 +39,9 @@ public class UserController {
 	@GetMapping
 	@Operation(summary = "2-1 내 프로필 조회", description = "로그인된 사용자의 프로필 정보를 반환합니다.")
 	public ResponseEntity<ApiResponse<UserProfileResponse>> getProfile(
-		HttpServletRequest request
+		@UserSessionArgument UserSession session
 	) {
-		UserSession session = (UserSession)request.getAttribute("userSession");
+
 		Long userId = session.getUserId();
 
 		UserProfileResponse dto = userService.getProfile(userId);
