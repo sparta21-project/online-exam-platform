@@ -75,16 +75,19 @@ public class ExamService {
 		);
 	}
 
+	@Transactional(readOnly = true)
 	public Page<GetExamListResponseDto> getExamList(Pageable pageable) {
 		return examRepository.findAll(pageable)
 			.map(GetExamListResponseDto::toDto);
 	}
 
+	@Transactional(readOnly = true)
 	public Page<GetExamListResponseDto> searchExamByTitle(Pageable pageable, String examTitle) {
 		return examRepository.findByTitle(pageable, examTitle)
 			.map(GetExamListResponseDto::toDto);
 	}
 
+	@Transactional(readOnly = true)
 	public ExamResponseDto<ExamFileResponseDto> findExamById(Long examId) {
 
 		Exam exam = examRepository.findByIdOrElseThrow(examId);
