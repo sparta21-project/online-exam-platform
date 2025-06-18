@@ -12,6 +12,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.onlineexamplatform.common.code.ErrorStatus;
@@ -22,7 +23,6 @@ import com.example.onlineexamplatform.domain.examFile.dto.response.ExamFileRespo
 import com.example.onlineexamplatform.domain.examFile.entity.ExamFile;
 import com.example.onlineexamplatform.domain.examFile.repository.ExamFileRepository;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -90,7 +90,6 @@ public class S3UploadService {
 		// 이미지 파일 -> InputStream 변환
 		try (InputStream inputStream = file.getInputStream()) {
 
-			//
 			String mimeType = getMimeType(extension);
 
 			// PutObjectRequest 객체 생성
