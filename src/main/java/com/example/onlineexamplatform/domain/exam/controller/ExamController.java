@@ -31,7 +31,6 @@ import com.example.onlineexamplatform.domain.exam.dto.response.UpdateExamRespons
 import com.example.onlineexamplatform.domain.exam.page.PageResponse;
 import com.example.onlineexamplatform.domain.exam.service.ExamService;
 import com.example.onlineexamplatform.domain.examFile.dto.response.ExamFileResponseDto;
-import com.example.onlineexamplatform.domain.examFile.service.S3UploadService;
 import com.example.onlineexamplatform.domain.user.entity.Role;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,7 +47,6 @@ import lombok.RequiredArgsConstructor;
 public class ExamController {
 
 	private final ExamService examService;
-	private final S3UploadService s3UploadService;
 
 	@Operation(summary = "시험 등록 API", description = " Dto로 입력받은 시험과 시험파일Id를 맵핑하여 저장합니다.")
 	@CheckAuth(Role.ADMIN)
