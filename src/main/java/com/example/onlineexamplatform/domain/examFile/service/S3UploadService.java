@@ -136,9 +136,21 @@ public class S3UploadService {
 
 	}
 
-	public String createPresignedUrl(String s3FilePath) {
+	public String createPresignedUrl(String s3FilePath, LocalDateTime startTime, LocalDateTime endTime) {
+
+		if (LocalDateTime.now().isBefore(startTime)) {
+			throw new ApiException(ErrorStatus.EXAM_NOT_STARTED);
+		}
+
+		long duration = Duration.between(LocalDateTime.now(), endTime).toMinutes();
+		log.info("PresignedUrl 유효시간 : {}분", duration);
+
+		if (duration <= 0) {
+			throw new ApiException(ErrorStatus.EXAM_ALREADY_ENDED);
+		}
 		PresignedGetObjectRequest presignedGetObjectRequest = s3Presigner.presignGetObject(
-			getObjectRequest -> getObjectRequest.signatureDuration(Duration.ofMinutes(15)) // 15분 유효기간
+			getObjectRequest -> getObjectRequest.signatureDuration(
+					Duration.ofMinutes(duration)) // 시험 시간 동안 만 PreSignedURL 유효
 				.getObjectRequest(
 					GetObjectRequest.builder()
 						.bucket(bucketName)

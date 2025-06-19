@@ -124,7 +124,7 @@ public class ExamService {
 		List<ExamFileS3PreSignedURLDto> examFileS3PreSignedURLs = examFiles.stream()
 			.map(examFile -> new ExamFileS3PreSignedURLDto(
 				examFile.getFileName(),
-				s3UploadService.createPresignedUrl(examFile.getPath())
+				s3UploadService.createPresignedUrl(examFile.getPath(), exam.getStartTime(), exam.getEndTime())
 			))
 			.toList();
 
