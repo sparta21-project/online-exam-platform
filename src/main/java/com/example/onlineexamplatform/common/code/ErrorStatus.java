@@ -26,6 +26,8 @@ public enum ErrorStatus implements BaseErrorCode {
 
 	//exam 에러 코드
 	EXAM_NOT_FOUND(HttpStatus.NOT_FOUND, "2001", "찾으시는 문제가 없습니다."),
+	EXAM_NOT_STARTED(HttpStatus.BAD_REQUEST, "2002", "아직 시험 시작 전입니다."),
+	EXAM_ALREADY_ENDED(HttpStatus.BAD_REQUEST, "2003", "이미 종료된 시험입니다."),
 
 	// user-category 에러 코드
 	CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "3001", "해당 카테고리가 DB에 존재하지 않습니다."),
