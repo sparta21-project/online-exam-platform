@@ -4,6 +4,7 @@ import static com.example.onlineexamplatform.common.awsS3Util.MimeTypeUtil.*;
 
 import java.io.InputStream;
 import java.net.URLConnection;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.onlineexamplatform.common.code.ErrorStatus;
@@ -22,13 +24,15 @@ import com.example.onlineexamplatform.domain.examFile.dto.response.ExamFileRespo
 import com.example.onlineexamplatform.domain.examFile.entity.ExamFile;
 import com.example.onlineexamplatform.domain.examFile.repository.ExamFileRepository;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
 @Slf4j
 @Service
@@ -38,6 +42,7 @@ public class S3UploadService {
 	private final ExamFileQueryRepository examFileQueryRepository;
 	private final ExamFileRepository examFileRepository;
 	private final S3Client s3Client;
+	private final S3Presigner s3Presigner;
 
 	@Value("${aws.s3.bucket-name}")
 	private String bucketName;
@@ -90,7 +95,6 @@ public class S3UploadService {
 		// 이미지 파일 -> InputStream 변환
 		try (InputStream inputStream = file.getInputStream()) {
 
-			//
 			String mimeType = getMimeType(extension);
 
 			// PutObjectRequest 객체 생성
@@ -130,6 +134,31 @@ public class S3UploadService {
 			throw new ApiException(ErrorStatus.FILE_ID_MISSING);
 		return examFiles;
 
+	}
+
+	public String createPresignedUrl(String s3FilePath, LocalDateTime startTime, LocalDateTime endTime) {
+
+		if (LocalDateTime.now().isBefore(startTime)) {
+			throw new ApiException(ErrorStatus.EXAM_NOT_STARTED);
+		}
+
+		long duration = Duration.between(LocalDateTime.now(), endTime).toMinutes();
+		log.info("PresignedUrl 유효시간 : {}분", duration);
+
+		if (duration <= 0) {
+			throw new ApiException(ErrorStatus.EXAM_ALREADY_ENDED);
+		}
+		PresignedGetObjectRequest presignedGetObjectRequest = s3Presigner.presignGetObject(
+			getObjectRequest -> getObjectRequest.signatureDuration(
+					Duration.ofMinutes(duration)) // 시험 시간 동안 만 PreSignedURL 유효
+				.getObjectRequest(
+					GetObjectRequest.builder()
+						.bucket(bucketName)
+						.key(s3FilePath)
+						.build()
+				)
+		);
+		return presignedGetObjectRequest.url().toString();
 	}
 
 	@Transactional
