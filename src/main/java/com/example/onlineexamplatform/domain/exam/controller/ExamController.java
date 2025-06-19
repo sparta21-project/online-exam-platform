@@ -108,9 +108,16 @@ public class ExamController {
 	@CheckAuth(Role.USER)
 	@GetMapping("/{examId}/to-take")
 	public ResponseEntity<ApiResponse<ExamDetailResponseDto>> getExamDetail(
+		HttpServletRequest request,
 		@Parameter(description = "시험의 ID입니다.") @PathVariable Long examId) {
 
-		ExamDetailResponseDto examDetail = examService.getExamDetail(examId);
+		UserSession userSession = (UserSession)request.getAttribute("userSession");
+		if (userSession == null) {
+			throw new ApiException(ErrorStatus.USER_SESSION_NOT_FOUND);
+		}
+		Long userId = userSession.getUserId();
+
+		ExamDetailResponseDto examDetail = examService.getExamDetail(userId, examId);
 
 		return ApiResponse.onSuccess(SuccessStatus.FIND_EXAM, examDetail);
 	}

@@ -18,6 +18,8 @@ import com.example.onlineexamplatform.domain.exam.dto.response.GetExamListRespon
 import com.example.onlineexamplatform.domain.exam.dto.response.UpdateExamResponseDto;
 import com.example.onlineexamplatform.domain.exam.entity.Exam;
 import com.example.onlineexamplatform.domain.exam.repository.ExamRepository;
+import com.example.onlineexamplatform.domain.examCategory.entity.ExamCategory;
+import com.example.onlineexamplatform.domain.examCategory.repository.ExamCategoryRepository;
 import com.example.onlineexamplatform.domain.examFile.dto.response.ExamFileResponseDto;
 import com.example.onlineexamplatform.domain.examFile.dto.response.ExamFileS3PreSignedURLDto;
 import com.example.onlineexamplatform.domain.examFile.entity.ExamFile;
@@ -25,6 +27,8 @@ import com.example.onlineexamplatform.domain.examFile.repository.ExamFileReposit
 import com.example.onlineexamplatform.domain.examFile.service.S3UploadService;
 import com.example.onlineexamplatform.domain.user.entity.User;
 import com.example.onlineexamplatform.domain.user.repository.UserRepository;
+import com.example.onlineexamplatform.domain.userCategory.entity.UserCategory;
+import com.example.onlineexamplatform.domain.userCategory.repository.UserCategoryRepository;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +41,8 @@ public class ExamService {
 	private final UserRepository userRepository;
 	private final S3UploadService s3UploadService;
 	private final ExamFileRepository examFileRepository;
+	private final UserCategoryRepository userCategoryRepository;
+	private final ExamCategoryRepository examCategoryRepository;
 
 	@Transactional
 	public ExamResponseDto<ExamFileResponseDto> createExam(CreateExamRequestDto requestDto, Long userId) {
@@ -104,16 +110,16 @@ public class ExamService {
 	}
 
 	@Transactional(readOnly = true)
-	public ExamDetailResponseDto getExamDetail(Long examId) {
-
+	public ExamDetailResponseDto getExamDetail(Long userId, Long examId) {
+		userRepository.findById(userId).orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 		Exam exam = examRepository.findByIdOrElseThrow(examId);
 
+		List<UserCategory> userCategories = userCategoryRepository.findByUserId(userId);
+		List<ExamCategory> examCategories = examCategoryRepository.findAllByExamId(examId);
 		List<ExamFile> examFiles = examFileRepository.findByExamId(examId);
 
-		boolean anyMatch = examFiles.stream().anyMatch(examFile -> !exam.getId().equals(examFile.getExam().getId()));
-		if (anyMatch) {
-			throw new ApiException(ErrorStatus.EXAM_FILE_MISMATCH);
-		}
+		validateUserExamCategory(userCategories, examCategories);
+		validateExamFiles(exam.getId(), examFiles);
 
 		List<ExamFileS3PreSignedURLDto> examFileS3PreSignedURLs = examFiles.stream()
 			.map(examFile -> new ExamFileS3PreSignedURLDto(
@@ -126,12 +132,33 @@ public class ExamService {
 
 	}
 
+	// 응시자 시험 응시 자격 검증 로직
+	private void validateUserExamCategory(List<UserCategory> userCategories, List<ExamCategory> examCategories) {
+		boolean isEligible = examCategories.stream()
+			.anyMatch(examCategory ->
+				userCategories.stream()
+					.anyMatch(
+						userCategory -> userCategory.getCategory().getId().equals(examCategory.getCategory().getId())
+					)
+			);
+
+		if (!isEligible) {
+			throw new ApiException(ErrorStatus.USER_CATEGORY_NOT_FOUND);
+		}
+	}
+
+	private void validateExamFiles(Long examId, List<ExamFile> examFiles) {
+		if (examFiles.stream().anyMatch(examFile -> !examFile.getExam().getId().equals(examId))) {
+			throw new ApiException(ErrorStatus.EXAM_FILE_MISMATCH);
+		}
+	}
+
 	@Transactional
 	public UpdateExamResponseDto updateExamById(Long userId, Long examId, @Valid UpdateExamRequestDto requestDto) {
 
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
-		
+
 		Exam exam = examRepository.findByIdOrElseThrow(examId);
 
 		if (!user.getId().equals(exam.getUser().getId())) {
