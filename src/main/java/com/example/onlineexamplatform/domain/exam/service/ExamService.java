@@ -134,15 +134,13 @@ public class ExamService {
 
 	// 응시자 시험 응시 자격 검증 로직
 	private void validateUserExamCategory(List<UserCategory> userCategories, List<ExamCategory> examCategories) {
-		boolean isEligible = examCategories.stream()
+		if (examCategories.stream()
 			.anyMatch(examCategory ->
 				userCategories.stream()
 					.anyMatch(
-						userCategory -> userCategory.getCategory().getId().equals(examCategory.getCategory().getId())
+						userCategory -> !userCategory.getCategory().getId().equals(examCategory.getCategory().getId())
 					)
-			);
-
-		if (!isEligible) {
+			)) {
 			throw new ApiException(ErrorStatus.USER_CATEGORY_NOT_FOUND);
 		}
 	}
