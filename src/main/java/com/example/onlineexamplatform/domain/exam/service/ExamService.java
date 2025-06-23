@@ -1,5 +1,6 @@
 package com.example.onlineexamplatform.domain.exam.service;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -118,13 +119,22 @@ public class ExamService {
 		List<ExamCategory> examCategories = examCategoryRepository.findAllByExamId(examId);
 		List<ExamFile> examFiles = examFileRepository.findByExamId(examId);
 
+		if (LocalDateTime.now().isBefore(exam.getStartTime())) {
+			throw new ApiException(ErrorStatus.EXAM_NOT_STARTED);
+		}
+
 		validateUserExamCategory(userCategories, examCategories);
-		validateExamFiles(exam.getId(), examFiles);
+
+		boolean anyMatch = userCategories.stream().anyMatch(userCategory ->
+			!userCategory.getUser().getId().equals(userId));
+		if (anyMatch) {
+			throw new ApiException(ErrorStatus.USER_CATEGORY_NOT_FOUND);
+		}
 
 		List<ExamFileS3PreSignedURLDto> examFileS3PreSignedURLs = examFiles.stream()
 			.map(examFile -> new ExamFileS3PreSignedURLDto(
 				examFile.getFileName(),
-				s3UploadService.createPresignedUrl(examFile.getPath(), exam.getStartTime(), exam.getEndTime())
+				s3UploadService.createPresignedUrl(examFile.getPath(), exam.getEndTime())
 			))
 			.toList();
 
@@ -134,20 +144,15 @@ public class ExamService {
 
 	// 응시자 시험 응시 자격 검증 로직
 	private void validateUserExamCategory(List<UserCategory> userCategories, List<ExamCategory> examCategories) {
-		if (examCategories.stream()
+		boolean anyMatch = examCategories.stream()
 			.anyMatch(examCategory ->
 				userCategories.stream()
 					.anyMatch(
 						userCategory -> !userCategory.getCategory().getId().equals(examCategory.getCategory().getId())
 					)
-			)) {
+			);
+		if (anyMatch) {
 			throw new ApiException(ErrorStatus.USER_CATEGORY_NOT_FOUND);
-		}
-	}
-
-	private void validateExamFiles(Long examId, List<ExamFile> examFiles) {
-		if (examFiles.stream().anyMatch(examFile -> !examFile.getExam().getId().equals(examId))) {
-			throw new ApiException(ErrorStatus.EXAM_FILE_MISMATCH);
 		}
 	}
 

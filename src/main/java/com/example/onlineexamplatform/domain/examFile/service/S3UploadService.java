@@ -31,6 +31,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
@@ -98,7 +99,7 @@ public class S3UploadService {
 			String mimeType = getMimeType(extension);
 
 			// PutObjectRequest 객체 생성
-			software.amazon.awssdk.services.s3.model.PutObjectRequest putObjectRequest = software.amazon.awssdk.services.s3.model.PutObjectRequest.builder()
+			PutObjectRequest putObjectRequest = PutObjectRequest.builder()
 				.bucket(bucketName) // 버킷 이름
 				.key(s3FileName) // 저장할 파일 이름
 				.contentType(mimeType) // 시험파일 MIME 타입
@@ -136,11 +137,7 @@ public class S3UploadService {
 
 	}
 
-	public String createPresignedUrl(String s3FilePath, LocalDateTime startTime, LocalDateTime endTime) {
-
-		if (LocalDateTime.now().isBefore(startTime)) {
-			throw new ApiException(ErrorStatus.EXAM_NOT_STARTED);
-		}
+	public String createPresignedUrl(String s3FilePath, LocalDateTime endTime) {
 
 		long duration = Duration.between(LocalDateTime.now(), endTime).toMinutes();
 		log.info("PresignedUrl 유효시간 : {}분", duration);
@@ -148,6 +145,7 @@ public class S3UploadService {
 		if (duration <= 0) {
 			throw new ApiException(ErrorStatus.EXAM_ALREADY_ENDED);
 		}
+
 		PresignedGetObjectRequest presignedGetObjectRequest = s3Presigner.presignGetObject(
 			getObjectRequest -> getObjectRequest.signatureDuration(
 					Duration.ofMinutes(duration)) // 시험 시간 동안 만 PreSignedURL 유효
