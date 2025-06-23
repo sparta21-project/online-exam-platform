@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.onlineexamplatform.common.code.SuccessStatus;
 import com.example.onlineexamplatform.common.response.ApiResponse;
 import com.example.onlineexamplatform.config.session.CheckAuth;
+import com.example.onlineexamplatform.config.session.SessionUser;
 import com.example.onlineexamplatform.config.session.UserSession;
-import com.example.onlineexamplatform.config.session.UserSessionArgument;
 import com.example.onlineexamplatform.domain.user.dto.UserProfileModifyRequest;
 import com.example.onlineexamplatform.domain.user.dto.UserProfileModifyResponse;
 import com.example.onlineexamplatform.domain.user.dto.UserProfileResponse;
@@ -39,7 +39,7 @@ public class UserController {
 	@GetMapping
 	@Operation(summary = "2-1 내 프로필 조회", description = "로그인된 사용자의 프로필 정보를 반환합니다.")
 	public ResponseEntity<ApiResponse<UserProfileResponse>> getProfile(
-		@UserSessionArgument UserSession session
+		@UserSession SessionUser session
 	) {
 
 		Long userId = session.getUserId();
@@ -57,7 +57,7 @@ public class UserController {
 		@RequestBody @Valid UserProfileModifyRequest modifyrequest,
 		HttpServletRequest request
 	) {
-		UserSession session = (UserSession)request.getAttribute("userSession");
+		SessionUser session = (SessionUser)request.getAttribute("userSession");
 		Long userId = session.getUserId();
 
 		UserProfileModifyResponse updated = userService.modifyProfile(userId, modifyrequest);
@@ -69,7 +69,7 @@ public class UserController {
 	@Operation(summary = "2-3 내 계정 탈퇴", description = "로그인된 사용자의 계정을 삭제하고 세션을 무효화합니다.")
 	@DeleteMapping
 	public ResponseEntity<ApiResponse<Void>> deleteAccount(HttpServletRequest request) {
-		UserSession session = (UserSession)request.getAttribute("userSession");
+		SessionUser session = (SessionUser)request.getAttribute("userSession");
 		Long userId = session.getUserId();
 
 		userService.delete(userId);

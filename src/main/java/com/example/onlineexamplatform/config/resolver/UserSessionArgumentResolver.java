@@ -6,8 +6,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import com.example.onlineexamplatform.config.session.SessionUser;
 import com.example.onlineexamplatform.config.session.UserSession;
-import com.example.onlineexamplatform.config.session.UserSessionArgument;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -16,8 +16,8 @@ public class UserSessionArgumentResolver implements HandlerMethodArgumentResolve
 
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
-		return parameter.hasParameterAnnotation(UserSessionArgument.class)
-			&& parameter.getParameterType().equals(UserSession.class);
+		return parameter.hasParameterAnnotation(UserSession.class)
+			&& parameter.getParameterType().equals(SessionUser.class);
 	}
 
 	@Override

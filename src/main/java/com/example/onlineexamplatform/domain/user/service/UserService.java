@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
-import com.example.onlineexamplatform.config.session.UserSession;
+import com.example.onlineexamplatform.config.session.SessionUser;
 import com.example.onlineexamplatform.domain.user.dto.AuthLoginRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthLoginResponse;
 import com.example.onlineexamplatform.domain.user.dto.AuthLoginResult;
@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserService {
 	private final UserRepository userRepository;
-	private final RedisTemplate<String, UserSession> redisTemplate;
+	private final RedisTemplate<String, SessionUser> redisTemplate;
 
 	// 유저 회원가입
 	public AuthSignupResponse signup(AuthSignupRequest request) {
@@ -100,10 +100,10 @@ public class UserService {
 			throw new ApiException(ErrorStatus.USER_NOT_MATCH);
 		}
 
-		UserSession userSession = new UserSession(user.getId(), user.getEmail(), user.getRole());
+		SessionUser sessionUser = new SessionUser(user.getId(), user.getEmail(), user.getRole());
 		String sessionId = UUID.randomUUID().toString();
 		String redisKey = "SESSION:" + sessionId;
-		redisTemplate.opsForValue().set(redisKey, userSession, Duration.ofHours(24));
+		redisTemplate.opsForValue().set(redisKey, sessionUser, Duration.ofHours(24));
 
 		AuthLoginResponse dto = new AuthLoginResponse(
 			user.getId(),

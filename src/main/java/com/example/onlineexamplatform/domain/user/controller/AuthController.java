@@ -15,7 +15,7 @@ import org.springframework.web.util.WebUtils;
 import com.example.onlineexamplatform.common.code.SuccessStatus;
 import com.example.onlineexamplatform.common.response.ApiResponse;
 import com.example.onlineexamplatform.config.session.CheckAuth;
-import com.example.onlineexamplatform.config.session.UserSession;
+import com.example.onlineexamplatform.config.session.SessionUser;
 import com.example.onlineexamplatform.domain.user.dto.AuthLoginRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthLoginResponse;
 import com.example.onlineexamplatform.domain.user.dto.AuthLoginResult;
@@ -41,7 +41,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
 
 	private final UserService userService;
-	private final RedisTemplate<String, UserSession> redisTemplate;
+	private final RedisTemplate<String, SessionUser> redisTemplate;
 
 	private static final String SESSION_COOKIE_NAME = "SESSION";
 	private static final Duration SESSION_TTL = Duration.ofHours(24);
@@ -101,7 +101,7 @@ public class AuthController {
 		@RequestBody @Valid AuthPasswordRequest request,
 		HttpServletRequest httpRequest
 	) {
-		UserSession session = (UserSession)httpRequest.getAttribute("userSession");
+		SessionUser session = (SessionUser)httpRequest.getAttribute("userSession");
 
 		userService.changePassword(session.getUserId(), request);
 		return ApiResponse.onSuccess(SuccessStatus.UPDATE_PASSWORD);
