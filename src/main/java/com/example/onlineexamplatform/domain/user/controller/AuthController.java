@@ -1,7 +1,6 @@
 package com.example.onlineexamplatform.domain.user.controller;
 
 import java.time.Duration;
-import java.util.UUID;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +18,7 @@ import com.example.onlineexamplatform.config.session.CheckAuth;
 import com.example.onlineexamplatform.config.session.UserSession;
 import com.example.onlineexamplatform.domain.user.dto.AuthLoginRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthLoginResponse;
+import com.example.onlineexamplatform.domain.user.dto.AuthLoginResult;
 import com.example.onlineexamplatform.domain.user.dto.AuthPasswordRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthSignupRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthSignupResponse;
@@ -44,7 +44,7 @@ public class AuthController {
 	private final RedisTemplate<String, UserSession> redisTemplate;
 
 	private static final String SESSION_COOKIE_NAME = "SESSION";
-	private static final Duration SESSION_TTL = Duration.ofMinutes(15);
+	private static final Duration SESSION_TTL = Duration.ofHours(24);
 
 	// 유저 회원가입
 	@Operation(summary = "1-1 일반 사용자 회원가입", description = "이메일, 비밀번호, 사용자명을 입력 받아 신규 사용자 계정을 생성합니다.")
@@ -69,27 +69,18 @@ public class AuthController {
 	}
 
 	// 로그인
-	@Operation(summary = "1- 3로그인", description = "이메일과 비밀번호를 검증하여 세션에 사용자 ID를 저장합니다.")
+	@Operation(summary = "1- 3 로그인", description = "이메일과 비밀번호를 검증하여 세션에 사용자 ID를 저장합니다.")
 	@Parameter(description = "로그인 요청 정보")
 	@PostMapping("/login")
 	public ResponseEntity<ApiResponse<AuthLoginResponse>> login(
 		@RequestBody @Valid AuthLoginRequest request,
 		HttpServletResponse response
 	) {
+
 		// 인증
-		AuthLoginResponse dto = userService.login(request);
-
-		// 세션 객체 생성
-		UserSession session = new UserSession(
-			dto.getId(),
-			dto.getUsername(),
-			dto.getRole()
-		);
-
-		// Redis 저장
-		String sessionId = UUID.randomUUID().toString();
-		String redisKey = SESSION_COOKIE_NAME + ":" + sessionId;
-		redisTemplate.opsForValue().set(redisKey, session, SESSION_TTL);
+		AuthLoginResult result = userService.login(request);
+		AuthLoginResponse dto = result.getDto();
+		String sessionId = result.getSessionId();
 
 		// 쿠키 발급
 		Cookie cookie = new Cookie(SESSION_COOKIE_NAME, sessionId);
