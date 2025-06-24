@@ -1,4 +1,4 @@
-package com.example.onlineexamplatform.domain.exam.repository;
+package com.example.onlineexamplatform.domain.examFile.repository;
 
 import static com.example.onlineexamplatform.domain.examFile.entity.QExamFile.*;
 

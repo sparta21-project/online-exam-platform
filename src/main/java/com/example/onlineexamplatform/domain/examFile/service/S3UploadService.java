@@ -19,9 +19,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
 import com.example.onlineexamplatform.domain.exam.entity.Exam;
-import com.example.onlineexamplatform.domain.exam.repository.ExamFileQueryRepository;
 import com.example.onlineexamplatform.domain.examFile.dto.response.ExamFileResponseDto;
 import com.example.onlineexamplatform.domain.examFile.entity.ExamFile;
+import com.example.onlineexamplatform.domain.examFile.repository.ExamFileQueryRepository;
 import com.example.onlineexamplatform.domain.examFile.repository.ExamFileRepository;
 
 import lombok.RequiredArgsConstructor;
