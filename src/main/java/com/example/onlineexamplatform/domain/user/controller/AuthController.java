@@ -16,6 +16,7 @@ import com.example.onlineexamplatform.common.code.SuccessStatus;
 import com.example.onlineexamplatform.common.response.ApiResponse;
 import com.example.onlineexamplatform.config.session.CheckAuth;
 import com.example.onlineexamplatform.config.session.SessionUser;
+import com.example.onlineexamplatform.config.session.UserSession;
 import com.example.onlineexamplatform.domain.user.dto.AuthLoginRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthLoginResponse;
 import com.example.onlineexamplatform.domain.user.dto.AuthLoginResult;
@@ -99,11 +100,10 @@ public class AuthController {
 	@PutMapping("/password")
 	public ResponseEntity<ApiResponse<Void>> changePassword(
 		@RequestBody @Valid AuthPasswordRequest request,
-		HttpServletRequest httpRequest
+		@UserSession SessionUser sessionUser
 	) {
-		SessionUser session = (SessionUser)httpRequest.getAttribute("userSession");
 
-		userService.changePassword(session.getUserId(), request);
+		userService.changePassword(sessionUser.getUserId(), request);
 		return ApiResponse.onSuccess(SuccessStatus.UPDATE_PASSWORD);
 	}
 
@@ -111,7 +111,9 @@ public class AuthController {
 	@CheckAuth(Role.USER)
 	@Operation(summary = "1-5 로그아웃", description = "현재 세션을 무효화하여 로그아웃 처리합니다.")
 	@DeleteMapping("/logout")
-	public ResponseEntity<ApiResponse<Void>> logout(HttpServletRequest httpRequest,
+	public ResponseEntity<ApiResponse<Void>> logout(
+		@UserSession SessionUser sessionUser,
+		HttpServletRequest httpRequest,
 		HttpServletResponse httpResponse) {
 
 		// 쿠키에서 세션 id 가져오기
