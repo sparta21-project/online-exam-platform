@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "answersheet")
+@Table(name = "answer_sheet")
 public class AnswerSheet extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

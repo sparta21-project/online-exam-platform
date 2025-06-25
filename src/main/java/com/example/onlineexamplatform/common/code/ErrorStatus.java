@@ -64,7 +64,12 @@ public enum ErrorStatus implements BaseErrorCode {
 	DUPLICATE_EXAM_ANSWER(HttpStatus.CONFLICT, "9001", "답안이 이미 존재합니다."),
 	EXAM_ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "9002", "답안이 없습니다."),
 	DUPLICATE_EXAM_CATEGORY(HttpStatus.CONFLICT, "9003", "이미 등록된 응시 권한입니다.")
+
+	// statistics 에러
+	STATISTICS_NOT_FOUND(HttpStatus.NOT_FOUND, "7001", "해당 시험에 대한 통계 정보를 찾을 수 없습니다."),
+	INVALID_EXAM_ID(HttpStatus.BAD_REQUEST, "7002","유효하지 않은 시험 ID 입니다."),
 	;
+
 
 	private final HttpStatus httpStatus;
 	private final String code;
