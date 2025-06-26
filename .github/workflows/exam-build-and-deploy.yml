@@ -59,7 +59,7 @@ jobs:
       # 데이터베이스 동작 대기 5초 간격으로 재시도, 동작 후 10초 대기
       - name: Wait for services to be ready
         run: |
-          until docker-compose exec -T mysql mysqladmin ping -h"127.0.0.1" --silent; do
+          until docker-compose exec -T db mysqladmin ping -h"127.0.0.1" --silent; do
             echo "Waiting for MySQL to be ready..."
             sleep 5
           done
