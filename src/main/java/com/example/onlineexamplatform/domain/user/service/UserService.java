@@ -12,7 +12,6 @@ import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
 import com.example.onlineexamplatform.config.session.SessionUser;
 import com.example.onlineexamplatform.domain.user.dto.AuthLoginRequest;
-import com.example.onlineexamplatform.domain.user.dto.AuthLoginResponse;
 import com.example.onlineexamplatform.domain.user.dto.AuthLoginResult;
 import com.example.onlineexamplatform.domain.user.dto.AuthPasswordRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthSignupRequest;
@@ -105,14 +104,13 @@ public class UserService {
 		String redisKey = "SESSION:" + sessionId;
 		redisTemplate.opsForValue().set(redisKey, sessionUser, Duration.ofHours(24));
 
-		AuthLoginResponse dto = new AuthLoginResponse(
+		return new AuthLoginResult(
 			user.getId(),
 			user.getEmail(),
 			user.getUsername(),
-			user.getRole()
+			user.getRole(),
+			sessionId
 		);
-
-		return new AuthLoginResult(dto, sessionId);
 	}
 
 	// 비밀번호 수정

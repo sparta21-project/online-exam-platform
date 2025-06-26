@@ -80,7 +80,7 @@ public class AuthController {
 
 		// 인증
 		AuthLoginResult result = userService.login(request);
-		AuthLoginResponse dto = result.getDto();
+		AuthLoginResponse dto = AuthLoginResponse.of(result);
 		String sessionId = result.getSessionId();
 
 		// 쿠키 발급
