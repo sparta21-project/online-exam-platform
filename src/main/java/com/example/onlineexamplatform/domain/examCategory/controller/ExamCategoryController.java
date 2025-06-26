@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.onlineexamplatform.common.code.SuccessStatus;
 import com.example.onlineexamplatform.common.response.ApiResponse;
 import com.example.onlineexamplatform.config.session.CheckAuth;
+import com.example.onlineexamplatform.config.session.SessionUser;
+import com.example.onlineexamplatform.config.session.UserSession;
 import com.example.onlineexamplatform.domain.examCategory.dto.ExamCategoryRequestDto;
 import com.example.onlineexamplatform.domain.examCategory.dto.ExamCategoryResponseDto;
 import com.example.onlineexamplatform.domain.examCategory.service.ExamCategoryService;
@@ -55,7 +57,8 @@ public class ExamCategoryController {
 	@Operation(summary = "시험 조회 By Category", description = "해당 권한으로 응시 가능한 시험의 목록을 조회합니다.")
 	@Parameter(description = "권한의 ID입니다.")
 	@GetMapping("/{categoryId}/categories")
-	public ResponseEntity<ApiResponse<List<ExamCategoryResponseDto>>> getByCategoryId(@PathVariable Long categoryId) {
+	public ResponseEntity<ApiResponse<List<ExamCategoryResponseDto>>> getByCategoryId(@PathVariable Long categoryId,
+		@UserSession SessionUser sessionUser) {
 		List<ExamCategoryResponseDto> response = examCategoryService.getByCategoryId(categoryId);
 		return ApiResponse.onSuccess(SuccessStatus.GET_EXAM_CATEGORY, response);
 	}

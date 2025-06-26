@@ -12,12 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.code.SuccessStatus;
-import com.example.onlineexamplatform.common.error.ApiException;
 import com.example.onlineexamplatform.common.response.ApiResponse;
 import com.example.onlineexamplatform.config.session.CheckAuth;
 import com.example.onlineexamplatform.config.session.SessionUser;
+import com.example.onlineexamplatform.config.session.UserSession;
 import com.example.onlineexamplatform.domain.answerSheet.dto.request.AnswerSheetRequestDto;
 import com.example.onlineexamplatform.domain.answerSheet.dto.response.AnswerSheetResponseDto;
 import com.example.onlineexamplatform.domain.answerSheet.service.AnswerSheetService;
@@ -26,7 +25,6 @@ import com.example.onlineexamplatform.domain.user.entity.Role;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @Tag(name = "08-AnswerSheet", description = "유저의 시험 답안지 API")
@@ -44,14 +42,10 @@ public class AnswerSheetController {
 	public ResponseEntity<ApiResponse<Void>> createAnswerSheet(
 		@Parameter(description = "시험에 대한 ID입니다.")
 		@PathVariable Long examId,
-		HttpServletRequest request
+		@UserSession SessionUser sessionUser
 	) {
-		SessionUser sessionUser = (SessionUser)request.getAttribute("userSession");
-		if (sessionUser == null) {
-			throw new ApiException(ErrorStatus.USER_SESSION_NOT_FOUND);
-		}
-		Long userId = sessionUser.getUserId();
-		answerSheetService.createAnswerSheet(examId, userId);
+
+		answerSheetService.createAnswerSheet(examId, sessionUser.getUserId());
 		return ApiResponse.onSuccess(SuccessStatus.CREATE_ANSWER_SHEET_SUCCESS);
 	}
 
@@ -63,14 +57,12 @@ public class AnswerSheetController {
 		@Parameter(description = "시험에 대한 ID입니다.")
 		@PathVariable Long examId,
 		@RequestBody AnswerSheetRequestDto requestDto,
-		HttpServletRequest request
+		@UserSession SessionUser sessionUser
 	) {
-		SessionUser sessionUser = (SessionUser)request.getAttribute("userSession");
-		if (sessionUser == null) {
-			throw new ApiException(ErrorStatus.USER_SESSION_NOT_FOUND);
-		}
-		Long userId = sessionUser.getUserId();
-		AnswerSheetResponseDto.Update responseDto = answerSheetService.updateAnswerSheet(examId, requestDto, userId);
+		AnswerSheetResponseDto.Update responseDto = answerSheetService.updateAnswerSheet(
+			examId,
+			requestDto,
+			sessionUser.getUserId());
 		return ApiResponse.onSuccess(SuccessStatus.SAVE_ANSWERS_SUCCESS, responseDto);
 	}
 
@@ -83,14 +75,12 @@ public class AnswerSheetController {
 		@PathVariable Long examId,
 		@Parameter(description = "답안지에 대한 ID입니다.")
 		@PathVariable Long answerSheetId,
-		HttpServletRequest request
+		@UserSession SessionUser sessionUser
 	) {
-		SessionUser sessionUser = (SessionUser)request.getAttribute("userSession");
-		if (sessionUser == null) {
-			throw new ApiException(ErrorStatus.USER_SESSION_NOT_FOUND);
-		}
-		Long userId = sessionUser.getUserId();
-		AnswerSheetResponseDto.Get responseDto = answerSheetService.getAnswerSheet(examId, answerSheetId, userId);
+		AnswerSheetResponseDto.Get responseDto = answerSheetService.getAnswerSheet(
+			examId,
+			answerSheetId,
+			sessionUser.getUserId());
 		return ApiResponse.onSuccess(SuccessStatus.GET_ANSWERS_SUCCESS, responseDto);
 	}
 
@@ -103,14 +93,9 @@ public class AnswerSheetController {
 		@PathVariable Long examId,
 		@Parameter(description = "답안지에 대한 ID입니다.")
 		@PathVariable Long answerSheetId,
-		HttpServletRequest request
+		@UserSession SessionUser sessionUser
 	) {
-		SessionUser sessionUser = (SessionUser)request.getAttribute("userSession");
-		if (sessionUser == null) {
-			throw new ApiException(ErrorStatus.USER_SESSION_NOT_FOUND);
-		}
-		Long userId = sessionUser.getUserId();
-		answerSheetService.deleteAnswerSheet(examId, answerSheetId, userId);
+		answerSheetService.deleteAnswerSheet(examId, answerSheetId, sessionUser.getUserId());
 		return ApiResponse.onSuccess(SuccessStatus.DELETE_ANSWER_SHEET_SUCCESS);
 	}
 
@@ -124,15 +109,13 @@ public class AnswerSheetController {
 		@Parameter(description = "답안지에 대한 ID입니다.")
 		@PathVariable Long answerSheetId,
 		@RequestBody AnswerSheetRequestDto requestDto,
-		HttpServletRequest request
+		@UserSession SessionUser sessionUser
 	) {
-		SessionUser sessionUser = (SessionUser)request.getAttribute("userSession");
-		if (sessionUser == null) {
-			throw new ApiException(ErrorStatus.USER_SESSION_NOT_FOUND);
-		}
-		Long userId = sessionUser.getUserId();
-		AnswerSheetResponseDto.Submit responseDto = answerSheetService.submitAnswerSheet(examId, answerSheetId,
-			requestDto, userId);
+		AnswerSheetResponseDto.Submit responseDto = answerSheetService.submitAnswerSheet(
+			examId,
+			answerSheetId,
+			requestDto,
+			sessionUser.getUserId());
 		return ApiResponse.onSuccess(SuccessStatus.SUBMIT_ANSWER_SUCCESS, responseDto);
 	}
 
@@ -143,14 +126,10 @@ public class AnswerSheetController {
 	public ResponseEntity<ApiResponse<List<AnswerSheetResponseDto.Applicant>>> getExamApplicants(
 		@Parameter(description = "시험에 대한 ID입니다.")
 		@PathVariable Long examId,
-		HttpServletRequest request
+		@UserSession SessionUser sessionUser
 	) {
-		SessionUser sessionUser = (SessionUser)request.getAttribute("userSession");
-		if (sessionUser == null) {
-			throw new ApiException(ErrorStatus.USER_SESSION_NOT_FOUND);
-		}
-		Long userId = sessionUser.getUserId();
-		List<AnswerSheetResponseDto.Applicant> responseDto = answerSheetService.getExamApplicants(examId, userId);
+		List<AnswerSheetResponseDto.Applicant> responseDto = answerSheetService.getExamApplicants(examId,
+			sessionUser.getUserId());
 		return ApiResponse.onSuccess(SuccessStatus.GET_APPLICANTS_SUCCESS, responseDto);
 	}
 }

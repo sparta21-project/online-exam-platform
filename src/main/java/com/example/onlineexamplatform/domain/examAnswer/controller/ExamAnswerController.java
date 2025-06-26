@@ -41,8 +41,9 @@ public class ExamAnswerController {
 	@Parameter(description = "시험에 대한 ID입니다.")
 	@PostMapping("/{examId}")
 	public ResponseEntity<ApiResponse<Void>> saveExamAnswer(@PathVariable Long examId,
-		@RequestBody @Valid SaveExamAnswerRequestDto requestDto) {
-		examAnswerService.saveExamAnswer(examId, requestDto.getExamAnswers());
+		@RequestBody @Valid SaveExamAnswerRequestDto requestDto,
+		@UserSession SessionUser sessionUser) {
+		examAnswerService.saveExamAnswer(examId, requestDto.getExamAnswers(), sessionUser.getUserId());
 		return ApiResponse.onSuccess(SuccessStatus.SAVE_EXAM_ANSWER_SUCCESS);
 	}
 
@@ -71,7 +72,7 @@ public class ExamAnswerController {
 	@DeleteMapping("/{examAnswerId}")
 	public ResponseEntity<ApiResponse<Void>> deleteExamAnswer(@UserSession SessionUser sessionUser,
 		@PathVariable Long examAnswerId) {
-		examAnswerService.deleteExamAnswer(examAnswerId);
+		examAnswerService.deleteExamAnswer(examAnswerId, sessionUser.getUserId());
 		return ApiResponse.onSuccess(SuccessStatus.DELETE_EXAM_ANSWER_SUCCESS);
 	}
 }

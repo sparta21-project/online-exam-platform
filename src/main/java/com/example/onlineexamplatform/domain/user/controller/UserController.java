@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-@Tag(name = "User", description = "사용자 프로필 조회,수정,탈퇴 API")
+@Tag(name = "03 User", description = "사용자 프로필 조회,수정,탈퇴 API")
 public class UserController {
 
 	private final UserService userService;
@@ -36,7 +36,7 @@ public class UserController {
 	// 프로필 조회
 	@CheckAuth(Role.USER)
 	@GetMapping
-	@Operation(summary = "2-1 내 프로필 조회", description = "로그인된 사용자의 프로필 정보를 반환합니다.")
+	@Operation(summary = "내 프로필 조회", description = "로그인된 사용자의 프로필 정보를 반환합니다.")
 	public ResponseEntity<ApiResponse<UserProfileResponse>> getProfile(
 		@UserSession SessionUser session
 	) {
@@ -49,7 +49,7 @@ public class UserController {
 
 	// 프로필 수정
 	@CheckAuth(Role.USER)
-	@Operation(summary = "2-2 내 프로필 수정", description = "로그인된 사용자의 프로필 정보를 수정합니다.")
+	@Operation(summary = "내 프로필 수정", description = "로그인된 사용자의 프로필 정보를 수정합니다.")
 	@Parameter(description = "프로필 수정 요청 정보")
 	@PutMapping("/profile")
 	public ResponseEntity<ApiResponse<UserProfileModifyResponse>> modifyProfile(
@@ -64,7 +64,7 @@ public class UserController {
 
 	// 회원탈퇴
 	@CheckAuth(Role.USER)
-	@Operation(summary = "2-3 내 계정 탈퇴", description = "로그인된 사용자의 계정을 삭제하고 세션을 무효화합니다.")
+	@Operation(summary = "내 계정 탈퇴", description = "로그인된 사용자의 계정을 삭제하고 세션을 무효화합니다.")
 	@DeleteMapping
 	public ResponseEntity<ApiResponse<Void>> deleteAccount(@UserSession SessionUser session) {
 		Long userId = session.getUserId();
