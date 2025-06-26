@@ -47,6 +47,8 @@ jobs:
           sleep 10
 
       # 프로젝트 빌드
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
       - name: Build with Gradle
         run: ./gradlew clean build -Duser.language=ko -Duser.country=KR
 
