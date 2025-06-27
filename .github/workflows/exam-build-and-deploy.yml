@@ -1,9 +1,9 @@
-name: TodoBuildAndDeploy
+name: ExamBuildAndDeploy
 
 # CI workflow 완료 시 트리거
 on:
   workflow_run:
-    workflows: [ "TodoBuildAndTest" ]
+    workflows: [ "ExamBuildAndTest" ]
     types:
       - completed
 
