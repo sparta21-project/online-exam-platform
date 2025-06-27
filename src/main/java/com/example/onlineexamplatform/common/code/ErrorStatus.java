@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ErrorStatus implements BaseErrorCode {
 	// 공통 에러 코드
-	BAD_REQUEST(HttpStatus.BAD_REQUEST,"0001", "잘못된 요청입니다."),
+	BAD_REQUEST(HttpStatus.BAD_REQUEST, "0001", "잘못된 요청입니다."),
 	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "0002", "서버 내부 오류가 발생했습니다."),
 
 	//user 에러 코드
@@ -26,6 +26,8 @@ public enum ErrorStatus implements BaseErrorCode {
 
 	//exam 에러 코드
 	EXAM_NOT_FOUND(HttpStatus.NOT_FOUND, "2001", "찾으시는 문제가 없습니다."),
+	EXAM_NOT_STARTED(HttpStatus.BAD_REQUEST, "2002", "아직 시험 시작 전입니다."),
+	EXAM_ALREADY_ENDED(HttpStatus.BAD_REQUEST, "2003", "이미 종료된 시험입니다."),
 
 	// user-category 에러 코드
 	CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "3001", "해당 카테고리가 DB에 존재하지 않습니다."),
@@ -43,6 +45,7 @@ public enum ErrorStatus implements BaseErrorCode {
 	INVALID_URL_FORMAT(HttpStatus.BAD_REQUEST, "4006", "잘못된 URL 형식입니다."),
 	FILE_ID_MISSING(HttpStatus.BAD_REQUEST, "4007", "이미지 ID가 누락되었습니다."),
 	FILE_ALREADY_LINKED(HttpStatus.BAD_REQUEST, "4008", "해당 파일은 이미 다른 시험에 연결되어 있습니다."),
+	EXAM_FILE_MISMATCH(HttpStatus.BAD_REQUEST, "4009", "요청한 시험 ID와 파일이 연결된 시험 ID가 일치하지 않습니다."),
 
 	//answerSheet 에러 코드
 	ANSWER_SHEET_NOT_FOUND(HttpStatus.NOT_FOUND, "3001", "답안지 정보가 없습니다."),
