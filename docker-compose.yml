@@ -7,7 +7,7 @@ services: #컨테이너 단위로 실행할 서비스 목록 정의
       - "3307:3306" # 호스트:컨테이너 포트 연결
     environment: # 컨테이너에 전달할 환경변수
       MYSQL_ROOT_PASSWORD: root # root 계정 비밀번호 설정, 필수 부분
-      MYSQL_DATABASE: onlineExamPlatform #컨테이너 시작 시 자동으로 생성할 db 이름, local properties 에 맞춰줘야함
+      MYSQL_DATABASE: onlineexamplatform #컨테이너 시작 시 자동으로 생성할 db 이름, local properties 에 맞춰줘야함
       MYSQL_USER: test
       MYSQL_PASSWORD: test # 이 값이 컨테이너 안에서 mySql 사용자 계정으로 자동 생성 , local properties 에 맞춰줘야함
     volumes: # MySQL의 실제 데이터가 로컬 디스크나 Docker 관리 영역에 따로 저장, volumes 지정 안하면 MySQL 데이터는 컨테이너 안에만 저장됨
