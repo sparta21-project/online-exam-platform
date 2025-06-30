@@ -1,4 +1,4 @@
-package com.example.onlineexamplatform.domain.lms.entity;
+package com.example.onlineexamplatform.domain.sms.entity;
 
 import com.example.onlineexamplatform.common.entity.BaseEntity;
 import com.example.onlineexamplatform.domain.exam.entity.Exam;
@@ -21,11 +21,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "lms")
-public class Lms extends BaseEntity {
+public class Sms extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	private String phoneNumber;
+	private String message;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)

@@ -3,6 +3,7 @@ package com.example.onlineexamplatform.domain.user.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,4 +26,9 @@ public class UserProfileModifyRequest {
 	@NotBlank(message = "사용자명을 입력해주세요.")
 	@Size(min = 2, max = 20, message = "사용자명은 2~20자 사이여야 합니다.")
 	private String username;
+
+	@Schema(description = "새 전화번호 (숫자만 입력)", example = "01012345678")
+	@NotBlank(message = "전화번호를 입력해주세요.")
+	@Pattern(regexp = "^\\d{10,11}$", message = "전화번호는 10~11자리 숫자여야 합니다.")
+	private String phoneNumber;
 }
