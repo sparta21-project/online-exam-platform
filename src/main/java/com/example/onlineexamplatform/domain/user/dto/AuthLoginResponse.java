@@ -18,4 +18,13 @@ public class AuthLoginResponse {
 	private String username;
 	@Schema(description = "사용자 권한", example = "USER")
 	private Role role;
+
+	public static AuthLoginResponse of(AuthLoginResult result) {
+		return new AuthLoginResponse(
+			result.getUserId(),
+			result.getEmail(),
+			result.getUsername(),
+			result.getRole()
+		);
+	}
 }
