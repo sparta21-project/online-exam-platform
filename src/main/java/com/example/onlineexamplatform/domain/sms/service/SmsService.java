@@ -1,11 +1,14 @@
 package com.example.onlineexamplatform.domain.sms.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
 import com.example.onlineexamplatform.domain.exam.entity.Exam;
 import com.example.onlineexamplatform.domain.exam.repository.ExamRepository;
+import com.example.onlineexamplatform.domain.sms.dto.SmsResponse;
 import com.example.onlineexamplatform.domain.sms.entity.Sms;
 import com.example.onlineexamplatform.domain.sms.repository.SmsRepository;
 import com.example.onlineexamplatform.domain.user.entity.User;
@@ -38,4 +41,18 @@ public class SmsService {
 
 		// 벤더사 연동
 	}
+
+	@Transactional
+	public List<SmsResponse> getSmsList(Long userId) {
+		List<Sms> smsList = smsRepository.findAllByUserId(userId);
+
+		return smsList.stream()
+			.map(sms -> new SmsResponse(
+				sms.getExam().getId(),
+				sms.getMessage(),
+				sms.getCreatedAt()
+			))
+			.toList();
+	}
+
 }
