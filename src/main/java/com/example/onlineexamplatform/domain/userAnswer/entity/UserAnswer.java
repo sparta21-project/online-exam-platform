@@ -4,6 +4,8 @@ import com.example.onlineexamplatform.domain.answerSheet.entity.AnswerSheet;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
@@ -16,6 +18,7 @@ public class UserAnswer {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "answer_sheet_id")
     private AnswerSheet answerSheet;
 

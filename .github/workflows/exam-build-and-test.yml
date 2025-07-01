@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - feat/SaltBr # main 브랜치 push 트리거
-  pull_request:
-    branches:
+ #pull_request:
+    #branches:
       #- dev
       #- feat/** # dev, feat/** 대상으로의 PR 생성 트리거
 
