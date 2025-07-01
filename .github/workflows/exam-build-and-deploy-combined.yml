@@ -3,10 +3,14 @@ name: ExamBuildAndDeployCombined
 on:
   push:
     branches:
-      - feat/SaltBr
+      - feat/SaltBr # main 브랜치 push 트리거
+    pull_request:
+      branches:
+        - dev
+        - feat/** # dev, feat/** 대상으로의 PR 생성 트리거
 
 jobs:
-  build:
+  build-and-test:
     name: Build and Test
     runs-on: ubuntu-latest
 
@@ -38,7 +42,7 @@ jobs:
           done
           sleep 10
 
-      - name: Change wrapper permissions
+      - name: Grant permission for gradlew
         run: chmod +x ./gradlew
 
       - name: Build with Gradle
@@ -50,9 +54,11 @@ jobs:
 
   deploy:
     name: Deploy to EC2
-    needs: build
-    if: needs.build.result == 'success'
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'feat/SaltBr'
     runs-on: ubuntu-latest
+    needs: build-and-test
     permissions:
       contents: read
       packages: write
@@ -96,7 +102,7 @@ jobs:
           done
           sleep 10
 
-      - name: Grant execute permission for gradlew
+      - name: Grant permission for gradlew
         run: chmod +x ./gradlew
 
       - name: Build with Gradle (prod profile)
