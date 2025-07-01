@@ -8,14 +8,13 @@ import com.example.onlineexamplatform.domain.examAnswer.repository.ExamAnswerRep
 import com.example.onlineexamplatform.domain.userAnswer.dto.SaveAnswerDto;
 import com.example.onlineexamplatform.domain.userAnswer.entity.UserAnswer;
 import com.example.onlineexamplatform.domain.userAnswer.repository.UserAnswerRepository;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
+import io.micrometer.core.instrument.Timer.Sample;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -29,37 +28,44 @@ public class UserAnswerService {
 
     private final ExamAnswerRepository examAnswerRepository;
 
+    private final MeterRegistry meterRegistry;
+
     @Transactional
     public void saveAnswer(Long answerSheetId, List<SaveAnswerDto> answers) {
-        AnswerSheet answerSheet = answerSheetRepository.findById(answerSheetId)
-                .orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
+        Sample sample = Timer.start(meterRegistry);
 
-        // 사용자 제출 답안 questionNumber 중복 체크
-        if(answers.size() != answers.stream().map(SaveAnswerDto::getQuestionNumber).distinct().count()) {
-            throw new ApiException(ErrorStatus.DUPLICATE_QUESTION_NUMBER); }
+        try {
+            AnswerSheet answerSheet = answerSheetRepository.findById(answerSheetId)
+                    .orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
 
-        // 시험 문제보다 제출한 문제가 더 많을경우 예외 발생
-        int answerCount = examAnswerRepository.countByExamId(answerSheet.getExam().getId());
-
-        if(answers.size() > answerCount) {
-            throw new ApiException(ErrorStatus.EXCEED_USER_ANSWER);
-        }
-
-        // DB에 저장된 값 한번에 불러오기 -> SELECT 1회
-        Map<Integer, UserAnswer> userAnswerMap = userAnswerRepository.findAllByAnswerSheetId(answerSheetId)
-                .stream()
-                .collect(Collectors.toMap(UserAnswer::getQuestionNumber, Function.identity()));
-
-        for(SaveAnswerDto dto : answers) {
-            String saveAnswer = dto.getAnswerText();
-            Integer saveQuestionNumber = dto.getQuestionNumber();
-
-            if (userAnswerMap.containsKey(saveQuestionNumber)) {
-                userAnswerMap.get(saveQuestionNumber).updateAnswer(saveAnswer);
-            } else {
-                UserAnswer userAnswer = new UserAnswer(answerSheet, saveQuestionNumber, saveAnswer);
-                userAnswerRepository.save(userAnswer);
+            if (answers.size() != answers.stream().map(SaveAnswerDto::getQuestionNumber).distinct().count()) {
+                throw new ApiException(ErrorStatus.DUPLICATE_QUESTION_NUMBER);
             }
+
+            int answerCount = examAnswerRepository.countByExamId(answerSheet.getExam().getId());
+            if (answers.size() > answerCount) {
+                throw new ApiException(ErrorStatus.EXCEED_USER_ANSWER);
+            }
+
+            Map<Integer, UserAnswer> userAnswerMap = userAnswerRepository.findAllByAnswerSheetId(answerSheetId)
+                    .stream()
+                    .collect(Collectors.toMap(UserAnswer::getQuestionNumber, Function.identity()));
+
+            for (SaveAnswerDto dto : answers) {
+                String answer = dto.getAnswerText();
+                Integer questionNumber = dto.getQuestionNumber();
+
+                if (userAnswerMap.containsKey(questionNumber)) {
+                    userAnswerMap.get(questionNumber).updateAnswer(answer);
+                } else {
+                    userAnswerRepository.save(new UserAnswer(answerSheet, questionNumber, answer));
+                }
+            }
+        } finally {
+            sample.stop(Timer.builder("custom.save.answer.timer")
+                    .description("SaveAnswer API (Map version)")
+                    .tag("version", "map")
+                    .register(meterRegistry));
         }
     }
 }

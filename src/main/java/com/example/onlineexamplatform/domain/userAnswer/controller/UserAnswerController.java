@@ -11,10 +11,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "01-UserAnswer", description = "사용자(User)가 작성하는 답안 작성 API")
+@Tag(name = "09UserAnswer", description = "사용자(User)가 작성하는 답안 작성 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user-answers")
@@ -29,5 +28,4 @@ public class UserAnswerController {
         userAnswerService.saveAnswer(answerSheetId, requestDto.getAnswers());
         return ApiResponse.onSuccess(SuccessStatus.SAVE_USER_ANSWER_SUCCESS);
     }
-
 }

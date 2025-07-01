@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "ExamCategory", description = "사용자(Admin)가 생성하는 시험 권한 API")
+@Tag(name = "06ExamCategory", description = "사용자(Admin)가 생성하는 시험 권한 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/exam-category")

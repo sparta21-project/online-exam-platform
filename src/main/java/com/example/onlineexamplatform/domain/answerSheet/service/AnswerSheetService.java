@@ -22,7 +22,14 @@ import com.example.onlineexamplatform.domain.userAnswer.entity.UserAnswer;
 import com.example.onlineexamplatform.domain.userAnswer.repository.UserAnswerRepository;
 import com.example.onlineexamplatform.domain.userCategory.entity.UserCategory;
 import com.example.onlineexamplatform.domain.userCategory.repository.UserCategoryRepository;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.redisson.RedissonFairLock;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,9 +38,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import static com.example.onlineexamplatform.domain.answerSheet.enums.AnswerSheetStatus.STARTED;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AnswerSheetService {
@@ -50,6 +59,11 @@ public class AnswerSheetService {
     @Transactional
     public void createAnswerSheet(Long examId, Long userId) {
         Exam exam = examRepository.findByIdOrElseThrow(examId);
+        log.info("📌 [User {}] 조회한 remainUsers: {}", userId, exam.getRemainUsers());
+
+        exam.decreaseRemainUsers();
+        log.info("🔻 [User {}] 감소 후 remainUsers: {}", userId, exam.getRemainUsers());
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 
@@ -269,4 +283,5 @@ public class AnswerSheetService {
                 .sorted(Comparator.comparing(UserAnswerResponseDto::getQuestionNumber))
                 .toList();
     }
+
 }

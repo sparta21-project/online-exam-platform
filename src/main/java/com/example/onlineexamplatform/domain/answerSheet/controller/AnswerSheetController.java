@@ -3,6 +3,7 @@ package com.example.onlineexamplatform.domain.answerSheet.controller;
 import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
 import com.example.onlineexamplatform.config.session.UserSession;
+import com.example.onlineexamplatform.domain.answerSheet.service.AnswerSheetLockService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -26,13 +27,14 @@ import io.swagger.v3.oas.annotations.Parameter;
 
 import java.util.List;
 
-@Tag(name = "08-AnswerSheet", description = "유저의 시험 답안지 API")
+@Tag(name = "08AnswerSheet", description = "유저의 시험 답안지 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/exams/{examId}")
 public class AnswerSheetController {
 
 	private final AnswerSheetService answerSheetService;
+    private final AnswerSheetLockService answerSheetLockService;
 
     @Operation(summary = "빈 답안지 생성", description = "STARTED 상태의 빈 답안지를 생성합니다.")
     @PostMapping("/answer-sheet")
@@ -46,7 +48,7 @@ public class AnswerSheetController {
             throw new ApiException(ErrorStatus.USER_SESSION_NOT_FOUND);
         }
         Long userId = userSession.getUserId();
-        answerSheetService.createAnswerSheet(examId, userId);
+        answerSheetLockService.createAnswerSheetWithLock(examId, userId);
         return ApiResponse.onSuccess(SuccessStatus.CREATE_ANSWER_SHEET_SUCCESS);
     }
 

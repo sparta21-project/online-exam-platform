@@ -16,7 +16,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "ExamAnswer", description = "사용자(Admin)가 작성하는 시험 답안 API")
+@Tag(name = "05ExamAnswer", description = "사용자(Admin)가 작성하는 시험 답안 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/exam-answers")

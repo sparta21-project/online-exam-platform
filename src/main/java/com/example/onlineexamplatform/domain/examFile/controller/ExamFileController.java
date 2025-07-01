@@ -22,7 +22,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "03-ExamFile", description = "사용자(Admin)가 시험 생성 시 시험 파일을 S3에 업로드하는 API")
+@Tag(name = "03ExamFile", description = "사용자(Admin)가 시험 생성 시 시험 파일을 S3에 업로드하는 API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/s3")

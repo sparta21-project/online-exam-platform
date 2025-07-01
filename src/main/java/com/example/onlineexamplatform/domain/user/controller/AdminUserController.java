@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/admin/users")
 @RequiredArgsConstructor
-@Tag(name = "Admin User", description = "관리자 전용 사용자 관리 API")
+@Tag(name = "02Admin User", description = "관리자 전용 사용자 관리 API")
 public class AdminUserController {
 
 	private final UserService userService;

@@ -37,7 +37,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@Tag(name = "Authentication", description = "회원가입,로그인,로그아웃,비밀번호 변경 API")
+@Tag(name = "01Authentication", description = "회원가입,로그인,로그아웃,비밀번호 변경 API")
 public class AuthController {
 
 	private final UserService userService;

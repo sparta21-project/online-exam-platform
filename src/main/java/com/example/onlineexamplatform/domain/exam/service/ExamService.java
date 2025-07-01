@@ -49,6 +49,7 @@ public class ExamService {
 			.totalQuestionsNum(requestDto.getTotalQuestionsNum())
 			.startTime(requestDto.getStartTime())
 			.endTime(requestDto.getEndTime())
+			.remainUsers(requestDto.getRemainUsers())
 			.build());
 
 		List<ExamFile> examFiles = Collections.emptyList();
