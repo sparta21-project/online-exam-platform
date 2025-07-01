@@ -56,3 +56,12 @@ jobs:
       - name: Tear down Docker Compose
         if: always() # CI 성공, 실패 여부와 관계없이 동작
         run: docker-compose down
+          
+      # Context 값 echo 확인
+      - name: Echo workflow_run context values
+        run: |
+         echo "Conclusion: $CONCLUSION"
+         echo "Head Branch: $HEAD_BRANCH"
+        env:
+         CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+         HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
