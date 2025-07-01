@@ -7,7 +7,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 
-import com.example.onlineexamplatform.config.session.UserSession;
+import com.example.onlineexamplatform.config.session.SessionUser;
 
 @Configuration
 public class RedisConfig {
@@ -17,11 +17,11 @@ public class RedisConfig {
 	}
 
 	@Bean
-	public RedisTemplate<String, UserSession> redisTemplate(RedisConnectionFactory factory) {
-		RedisTemplate<String, UserSession> template = new RedisTemplate<>();
+	public RedisTemplate<String, SessionUser> redisTemplate(RedisConnectionFactory factory) {
+		RedisTemplate<String, SessionUser> template = new RedisTemplate<>();
 		template.setConnectionFactory(factory);
-		Jackson2JsonRedisSerializer<UserSession> serializer =
-			new Jackson2JsonRedisSerializer<>(UserSession.class);
+		Jackson2JsonRedisSerializer<SessionUser> serializer =
+			new Jackson2JsonRedisSerializer<>(SessionUser.class);
 		template.setDefaultSerializer(serializer);
 		return template;
 	}
