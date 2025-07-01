@@ -73,10 +73,10 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Set Yaml
+      - name: Set Properties
         uses: microsoft/variable-substitution@v1
         with:
-          files: ./src/main/resources/application-prod.yaml
+          files: ./src/main/resources/application-prod.properties
         env:
           spring.datasource.url: ${{ secrets.MYSQL_URL }}
           spring.datasource.username: ${{ secrets.DB_USERNAME }}
