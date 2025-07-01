@@ -1,15 +1,18 @@
 package com.example.onlineexamplatform.domain.user.service;
 
+import java.time.Duration;
 import java.util.List;
+import java.util.UUID;
 
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
-import com.example.onlineexamplatform.domain.password.BCryptUtil;
 import com.example.onlineexamplatform.domain.password.PasswordUtil;
+import com.example.onlineexamplatform.config.session.SessionUser;
 import com.example.onlineexamplatform.domain.user.dto.AuthLoginRequest;
-import com.example.onlineexamplatform.domain.user.dto.AuthLoginResponse;
+import com.example.onlineexamplatform.domain.user.dto.AuthLoginResult;
 import com.example.onlineexamplatform.domain.user.dto.AuthPasswordRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthSignupRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthSignupResponse;
@@ -19,7 +22,6 @@ import com.example.onlineexamplatform.domain.user.dto.UserProfileResponse;
 import com.example.onlineexamplatform.domain.user.entity.Role;
 import com.example.onlineexamplatform.domain.user.entity.User;
 import com.example.onlineexamplatform.domain.user.repository.UserRepository;
-import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserService {
 	private final UserRepository userRepository;
+	private final RedisTemplate<String, SessionUser> redisTemplate;
 
 	// 유저 회원가입
 	public AuthSignupResponse signup(AuthSignupRequest request) {
@@ -86,7 +89,7 @@ public class UserService {
 	}
 
 	// 로그인
-	public AuthLoginResponse login(AuthLoginRequest request) {
+	public AuthLoginResult login(AuthLoginRequest request) {
 		User user = userRepository.findByEmail(request.getEmail())
 			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 
@@ -103,11 +106,17 @@ public class UserService {
 			throw new ApiException(ErrorStatus.USER_NOT_MATCH);
 		}
 
-		return new AuthLoginResponse(
+		SessionUser sessionUser = new SessionUser(user.getId(), user.getEmail(), user.getRole());
+		String sessionId = UUID.randomUUID().toString();
+		String redisKey = "SESSION:" + sessionId;
+		redisTemplate.opsForValue().set(redisKey, sessionUser, Duration.ofHours(24));
+
+		return new AuthLoginResult(
 			user.getId(),
 			user.getEmail(),
 			user.getUsername(),
-			user.getRole()
+			user.getRole(),
+			sessionId
 		);
 	}
 
@@ -188,6 +197,7 @@ public class UserService {
 		user.withdraw();
 		userRepository.save(user);
 	}
+
 	// 사용자 목록조회 및 검색 (관리자 전용)
 	@Transactional(readOnly = true)
 	public List<UserProfileResponse> getUsersByFilter(String name, String email) {
@@ -197,12 +207,12 @@ public class UserService {
 		List<User> users = userRepository.findByUsernameContainingAndEmailContaining(nameFilter, emailFilter);
 
 		return users.stream()
-				.map(user -> new UserProfileResponse(
-						user.getId(),
-						user.getEmail(),
-						user.getUsername(),
-						user.getRole()
-				))
-				.toList();
+			.map(user -> new UserProfileResponse(
+				user.getId(),
+				user.getEmail(),
+				user.getUsername(),
+				user.getRole()
+			))
+			.toList();
 	}
 }

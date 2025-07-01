@@ -32,7 +32,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 		}
 
 		// request에 있는 userSession 꺼내기
-		UserSession session = (UserSession)req.getAttribute("userSession");
+		SessionUser session = (SessionUser)req.getAttribute("userSession");
 		if (session == null) {
 			// 없으면 401 UNAUTHORIZED 반환
 			throw new ApiException(ErrorStatus.UNAUTHORIZED);

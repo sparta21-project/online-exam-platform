@@ -98,9 +98,12 @@ public class ExamService {
 	}
 
 	@Transactional
-	public UpdateExamResponseDto updateExamById(Long examId, @Valid UpdateExamRequestDto requestDto) {
-
+	public UpdateExamResponseDto updateExamById(Long examId, @Valid UpdateExamRequestDto requestDto, Long userId) {
 		Exam exam = examRepository.findByIdOrElseThrow(examId);
+
+		if (!exam.getUser().getId().equals(userId)) {
+			throw new ApiException(ErrorStatus.FORBIDDEN);
+		}
 
 		exam.updateExam(requestDto);
 
@@ -108,8 +111,12 @@ public class ExamService {
 	}
 
 	@Transactional
-	public void deleteExamById(Long examId) {
+	public void deleteExamById(Long examId, Long userId) {
 		Exam exam = examRepository.findByIdOrElseThrow(examId);
+
+		if (!exam.getUser().getId().equals(userId)) {
+			throw new ApiException(ErrorStatus.FORBIDDEN);
+		}
 
 		//S3 + DB 업로드 파일 데이터 삭제
 		s3UploadService.deleteFilesByExam(exam);
