@@ -43,7 +43,7 @@ public class User extends BaseEntity {
 
 	public User(String email, String password, String username, Role role) {
 		this.email = email;
-		this.password = password;
+		this.password = password; // BCrypt로 자동 암호화
 		this.username = username;
 		this.role = role;
 	}

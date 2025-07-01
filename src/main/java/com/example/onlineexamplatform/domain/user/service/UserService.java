@@ -1,10 +1,13 @@
 package com.example.onlineexamplatform.domain.user.service;
 
 import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
+import com.example.onlineexamplatform.domain.password.BCryptUtil;
+import com.example.onlineexamplatform.domain.password.PasswordUtil;
 import com.example.onlineexamplatform.domain.user.dto.AuthLoginRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthLoginResponse;
 import com.example.onlineexamplatform.domain.user.dto.AuthPasswordRequest;
@@ -34,7 +37,9 @@ public class UserService {
 		}
 
 		// 비밀번호 암호화
-		// String encodedPassword = encoder.encode(request.getPassword());
+		// 단방향 해싱
+		String plainPassword = request.getPassword();
+		String hashPassword = PasswordUtil.hashPassword(plainPassword);
 
 		// jpa에 저장할 user 엔티티 객체
 		User user = new User(
@@ -93,6 +98,11 @@ public class UserService {
 			throw new ApiException(ErrorStatus.USER_NOT_MATCH);
 		}
 
+		// BCrypt를 사용한 비밀번호 검증
+		if (!PasswordUtil.checkPassword(request.getPassword(), user.getPassword())) {
+			throw new ApiException(ErrorStatus.USER_NOT_MATCH);
+		}
+
 		return new AuthLoginResponse(
 			user.getId(),
 			user.getEmail(),
@@ -112,12 +122,17 @@ public class UserService {
 		}
 
 		// 현재 비밀번호 검증
-		if (!dto.getOldPassword().equals(user.getPassword())) {
+		if (!PasswordUtil.verify(dto.getOldPassword(), user.getPassword())) {
 			throw new ApiException(ErrorStatus.INVALID_PASSWORD);
 		}
 
 		// 비밀번호 변경
 		user.setPassword(dto.getNewPassword());
+		userRepository.save(user);
+
+		// 새 비밀번호를 해시화하여 저장
+		String hashedNewPassword = PasswordUtil.hash(dto.getNewPassword());
+		user.setPassword(hashedNewPassword);
 		userRepository.save(user);
 	}
 
