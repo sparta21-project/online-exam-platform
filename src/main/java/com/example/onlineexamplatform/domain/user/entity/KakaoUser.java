@@ -1,7 +1,5 @@
 package com.example.onlineexamplatform.domain.user.entity;
 
-import java.time.LocalDateTime;
-
 import com.example.onlineexamplatform.common.entity.BaseEntity;
 import com.example.onlineexamplatform.domain.user.dto.KakaoUserInfoResponse;
 
@@ -40,18 +38,6 @@ public class KakaoUser extends BaseEntity {
 	@Column(nullable = false)
 	private Role role;
 
-	@Column(nullable = false)
-	private Boolean isWithdraw = false;
-
-	@Column
-	private LocalDateTime withdrawAt;
-
-	public KakaoUser(String email, String username, Role role) {
-		this.email = email;
-		this.username = username;
-		this.role = role;
-	}
-
 	@Builder
 	private KakaoUser(Long kakaoId, String email, String username, Role role) {
 		this.kakaoId = kakaoId;
@@ -69,20 +55,4 @@ public class KakaoUser extends BaseEntity {
 			.build();
 	}
 
-	public void withdraw() {
-		this.isWithdraw = true;
-		this.withdrawAt = LocalDateTime.now();
-	}
-
-	public boolean isWithdraw() {
-		return Boolean.TRUE.equals(this.isWithdraw);
-	}
-
-	public void updateEmail(String email) {
-		this.email = email;
-	}
-
-	public void updateUsername(String username) {
-		this.username = username;
-	}
 }
