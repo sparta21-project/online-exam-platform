@@ -165,19 +165,19 @@ public class AuthController {
 				KakaoUser kakaoUser = kakaoOauthService.signupByKakao(kakaoUserInfo);
 
 				// 세션 객체 생성
-				UserSession session = new UserSession(
+				SessionUser session = new SessionUser(
 					kakaoUser.getId(),
 					kakaoUser.getUsername(),
 					Role.USER
 				);
 
-				// Redis 저장 및 쿠키 발급
+				// Redis 저장
 				String sessionId = UUID.randomUUID().toString();
 				String redisKey = SESSION_COOKIE_NAME + ":" + sessionId;
 				redisTemplate.opsForValue().set(redisKey, session, SESSION_TTL);
 				log.info("[KakaoLogin] Redis 세션 저장 완료: key={}, TTL={}초", redisKey, SESSION_TTL.getSeconds());
 
-				// 3. 쿠키 발급
+				// 쿠키 발급
 				Cookie cookie = new Cookie(SESSION_COOKIE_NAME, sessionId);
 				cookie.setHttpOnly(true);
 				cookie.setPath("/");
