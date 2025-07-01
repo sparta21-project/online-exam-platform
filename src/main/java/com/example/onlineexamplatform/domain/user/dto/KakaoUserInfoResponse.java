@@ -1,32 +1,39 @@
 package com.example.onlineexamplatform.domain.user.dto;
 
-import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class KakaoUserInfoResponse {
 
-	private final Long id;
+	@JsonProperty("id")
+	private Long id;
 
-	private final Map<String, Object> properties; // nickname, profile_image 등
+	@JsonProperty("kakao_account")
+	private KakaoAccount kakaoAccount;
 
-	private final Map<String, Object> kakao_account; //email, age_range 등
+	@JsonProperty("properties")
+	private Properties properties;
 
-	public String getEmail() {
-		if (kakao_account == null)
-			return null;
-		Object email = kakao_account.get("email");
-		return email != null ? email.toString() : null;
+	@Getter
+	@NoArgsConstructor
+	public static class Properties {
+
+		@JsonProperty("nickname")
+		private String nickName;
+
 	}
 
-	public String getNickname() {
-		if (properties == null)
-			return null;
-		Object nickName = properties.get("nickname");
-		return nickName != null ? nickName.toString() : null;
+	@Getter
+	@NoArgsConstructor
+	public static class KakaoAccount {
+
+		@JsonProperty("email")
+		private String email;
+
 	}
 
 }

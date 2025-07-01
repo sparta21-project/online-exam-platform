@@ -1,7 +1,6 @@
 package com.example.onlineexamplatform.domain.user.controller;
 
 import java.time.Duration;
-import java.util.UUID;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +25,6 @@ import com.example.onlineexamplatform.domain.user.dto.AuthLoginResult;
 import com.example.onlineexamplatform.domain.user.dto.AuthPasswordRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthSignupRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthSignupResponse;
-import com.example.onlineexamplatform.domain.user.dto.KakaoAuthLoginResponse;
-import com.example.onlineexamplatform.domain.user.entity.KakaoUser;
 import com.example.onlineexamplatform.domain.user.entity.Role;
 import com.example.onlineexamplatform.domain.user.service.KakaoOauthService;
 import com.example.onlineexamplatform.domain.user.service.UserService;
@@ -149,44 +146,15 @@ public class AuthController {
 	@Operation(summary = "1- 6 카카오 로그인", description = "카카오 로그인을 통해 사용자 ID를 저장합니다.")
 	@Parameter(description = "로그인 요청 정보")
 	@GetMapping("/login/kakao")
-	public Mono<ResponseEntity<ApiResponse<KakaoAuthLoginResponse>>> kakaoLogin(
+	public Mono<ResponseEntity<ApiResponse<AuthLoginResponse>>> kakaoLogin(
 		@RequestParam String code,
 		HttpServletResponse response
 	) {
-		log.info("[KakaoLogin] 인가 코드 수신: {}", code);
-
 		return kakaoOauthService.getKakaoToken(code)
-			.doOnNext(kakaoToken -> log.info("[KakaoLogin] 액세스 토큰 발급 성공: {}", kakaoToken.getAccessToken()))
 			.flatMap(kakaoToken -> kakaoOauthService.getKakaoUserInfo(kakaoToken.getAccessToken()))
-			.doOnNext(kakaoUserInfo -> log.info("[KakaoLogin] 카카오 사용자 정보 조회 성공: id={}, email={}, nickname={}",
-				kakaoUserInfo.getId(), kakaoUserInfo.getEmail(), kakaoUserInfo.getNickname()))
 			.map(kakaoUserInfo -> {
-
-				KakaoUser kakaoUser = kakaoOauthService.signupByKakao(kakaoUserInfo);
-
-				// 세션 객체 생성
-				SessionUser session = new SessionUser(
-					kakaoUser.getId(),
-					kakaoUser.getUsername(),
-					Role.USER
-				);
-
-				// Redis 저장
-				String sessionId = UUID.randomUUID().toString();
-				String redisKey = SESSION_COOKIE_NAME + ":" + sessionId;
-				redisTemplate.opsForValue().set(redisKey, session, SESSION_TTL);
-				log.info("[KakaoLogin] Redis 세션 저장 완료: key={}, TTL={}초", redisKey, SESSION_TTL.getSeconds());
-
-				// 쿠키 발급
-				Cookie cookie = new Cookie(SESSION_COOKIE_NAME, sessionId);
-				cookie.setHttpOnly(true);
-				cookie.setPath("/");
-				cookie.setMaxAge((int)SESSION_TTL.getSeconds());
-				response.addCookie(cookie);
-				log.info("[KakaoLogin] 세션 쿠키 발급 완료: name={}, value={}", SESSION_COOKIE_NAME, sessionId);
-
-				log.info("[KakaoLogin] 로그인 응답 완료");
-				return ApiResponse.onSuccess(SuccessStatus.LOGIN_SUCCESS);
+				AuthLoginResponse authLoginResponse = kakaoOauthService.loginWithKakao(kakaoUserInfo, response);
+				return ApiResponse.onSuccess(SuccessStatus.LOGIN_SUCCESS, authLoginResponse);
 			});
 	}
 
