@@ -54,9 +54,7 @@ jobs:
 
   deploy:
     name: Deploy to EC2
-    if: >
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.head_branch == 'feat/SaltBr'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/feat/SaltBr'
     runs-on: ubuntu-latest
     needs: build-and-test
     permissions:
