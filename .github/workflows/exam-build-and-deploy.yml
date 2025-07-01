@@ -6,8 +6,6 @@ on:
     workflows: [ "ExamBuildAndTest" ]
     types:
       - completed
-    branches:
-      - feat/SaltBr
 
 jobs:
   deploy:
