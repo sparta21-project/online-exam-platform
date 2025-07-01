@@ -4,10 +4,12 @@ on:
   push:
     branches:
       - feat/SaltBr # main 브랜치 push 트리거
+      #나중에 메인으로 변경
     pull_request:
       branches:
         - dev
         - feat/** # dev, feat/** 대상으로의 PR 생성 트리거
+        - main
 
 jobs:
   build-and-test:
@@ -74,7 +76,7 @@ jobs:
       - name: Set Yaml
         uses: microsoft/variable-substitution@v1
         with:
-          files: ./src/main/resources/application-prod.yml
+          files: ./src/main/resources/application-prod.properties
         env:
           spring.datasource.url: ${{ secrets.MYSQL_URL }}
           spring.datasource.username: ${{ secrets.DB_USERNAME }}
