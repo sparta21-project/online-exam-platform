@@ -68,15 +68,4 @@ public class KakaoOauthService {
 				.build()));
 	}
 
-	public void logoutFromKakao(String accessToken) {
-		webClient.post()
-			.uri("https://kapi.kakao.com/v1/user/logout")
-			.header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-			.retrieve()
-			.bodyToMono(String.class)
-			.doOnSuccess(res -> log.info("[KakaoLogout] 카카오 로그아웃 완료"))
-			.doOnError(err -> log.warn("[KakaoLogout] 로그아웃 실패: {}", err.getMessage()))
-			.subscribe(); // 비동기로 호출 (단순 로그아웃이므로)
-	}
-
 }
