@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "ExamAnswer", description = "사용자(Admin)가 작성하는 시험 답안 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/exam-answers")
+@RequestMapping("/api/exam-answers")
 public class ExamAnswerController {
 
 	private final ExamAnswerService examAnswerService;

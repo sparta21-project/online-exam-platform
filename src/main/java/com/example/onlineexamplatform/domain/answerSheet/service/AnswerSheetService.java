@@ -85,7 +85,8 @@ public class AnswerSheetService {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 
-		AnswerSheet answerSheet = answerSheetRepository.findByExamAndUser(exam, user)
+		AnswerSheet answerSheet = answerSheetRepository.findTopByExamAndUserAndStatusInOrderByCreatedAt(exam, user,
+				List.of(STARTED, IN_PROGRESS))
 			.orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
 
 		if (answerSheet.getStatus() == AnswerSheetStatus.SUBMITTED
