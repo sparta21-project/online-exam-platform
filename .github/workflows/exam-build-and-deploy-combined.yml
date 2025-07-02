@@ -12,53 +12,53 @@ on:
         - main
 
 jobs:
-#  build-and-test:
-#    name: Build and Test
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v3
-#
-#      - name: Set up JDK 17
-#        uses: actions/setup-java@v3
-#        with:
-#          java-version: '17'
-#          distribution: 'temurin'
-#
-#      - name: Install Docker Compose
-#        run: |
-#          sudo apt-get update
-#          sudo apt-get install -y docker-compose
-#
-#      - name: Set up Docker Compose
-#        run: |
-#          docker-compose up -d
-#          docker-compose ps
-#
-#      - name: Wait for services to be ready
-#        run: |
-#          until docker-compose exec -T db mysqladmin ping -h"127.0.0.1" --silent; do
-#            echo "Waiting for MySQL to be ready..."
-#            sleep 5
-#          done
-#          sleep 10
-#
-#      - name: Grant permission for gradlew
-#        run: chmod +x ./gradlew
-#
-#      - name: Build with Gradle
-#        run: ./gradlew clean build -Duser.language=ko -Duser.country=KR
-#
-#      - name: Tear down Docker Compose
-#        if: always()
-#        run: docker-compose down
+  #  build-and-test:
+  #    name: Build and Test
+  #    runs-on: ubuntu-latest
+  #
+  #    steps:
+  #      - name: Checkout code
+  #        uses: actions/checkout@v3
+  #
+  #      - name: Set up JDK 17
+  #        uses: actions/setup-java@v3
+  #        with:
+  #          java-version: '17'
+  #          distribution: 'temurin'
+  #
+  #      - name: Install Docker Compose
+  #        run: |
+  #          sudo apt-get update
+  #          sudo apt-get install -y docker-compose
+  #
+  #      - name: Set up Docker Compose
+  #        run: |
+  #          docker-compose up -d
+  #          docker-compose ps
+  #
+  #      - name: Wait for services to be ready
+  #        run: |
+  #          until docker-compose exec -T db mysqladmin ping -h"127.0.0.1" --silent; do
+  #            echo "Waiting for MySQL to be ready..."
+  #            sleep 5
+  #          done
+  #          sleep 10
+  #
+  #      - name: Grant permission for gradlew
+  #        run: chmod +x ./gradlew
+  #
+  #      - name: Build with Gradle
+  #        run: ./gradlew clean build -Duser.language=ko -Duser.country=KR
+  #
+  #      - name: Tear down Docker Compose
+  #        if: always()
+  #        run: docker-compose down
 
   deploy:
     name: Deploy to EC2
     if: github.event_name == 'push' && github.ref == 'refs/heads/feat/SaltBr'
     runs-on: ubuntu-latest
-#    needs: build-and-test
+    #    needs: build-and-test
     permissions:
       contents: read
       packages: write
@@ -73,36 +73,16 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Create application-prod.properties
-        run: |
-          mkdir -p ./src/main/resources
-          cat > ./src/main/resources/application-prod.properties << EOF
-          spring.application.name=onlineexamplatform
-
-          spring.datasource.url=${{ secrets.MYSQL_URL }}
-          spring.datasource.username=${{ secrets.DB_USERNAME }}
-          spring.datasource.password=${{ secrets.DB_PASSWORD }}
-          spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-
-          spring.jpa.hibernate.ddl-auto=validate
-          spring.jpa.show-sql=true
-          spring.jpa.properties.hibernate.format_sql=true
-          spring.jpa.properties.hibernate.use_sql_comments=true
-          spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
-
-          aws.s3.access-key=${{ secrets.AWS_ACCESS_KEY }}
-          aws.s3.secret-key=${{ secrets.AWS_SECRET_KEY }}
-          aws.s3.bucket-name=${{ secrets.AWS_BUCKET_NAME }}
-          aws.region=${{ secrets.AWS_REGION }}
-
-          spring.servlet.multipart.enabled=true
-          spring.servlet.multipart.file-size-threshold=0B
-          spring.servlet.multipart.max-file-size=100MB
-          spring.servlet.multipart.max-request-size=100MB
-
-          spring.data.redis.host=${{ secrets.REDIS_HOST }}
-          spring.data.redis.port=${{ secrets.REDIS_PORT }}
-          EOF
+      - name: Set Yml
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: ./src/main/resources/application-prod.yml
+        env:
+          spring.datasource.url: ${{ secrets.MYSQL_URL }}
+          spring.datasource.username: ${{ secrets.DB_USERNAME }}
+          spring.datasource.password: ${{ secrets.DB_PASSWORD }}
+          spring.data.redis.host: ${{ secrets.REDIS_HOST }}
+          spring.data.redis.port: ${{ secrets.REDIS_PORT }}
 
       - name: Install Docker Compose
         run: |
