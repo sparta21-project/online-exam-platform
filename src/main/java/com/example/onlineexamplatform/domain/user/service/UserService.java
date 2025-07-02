@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
+import com.example.onlineexamplatform.domain.password.BCryptUtil;
 import com.example.onlineexamplatform.domain.password.PasswordUtil;
 import com.example.onlineexamplatform.config.session.SessionUser;
 import com.example.onlineexamplatform.domain.user.dto.AuthLoginRequest;
@@ -41,13 +42,13 @@ public class UserService {
 
 		// 비밀번호 암호화
 		// 단방향 해싱
-		String plainPassword = request.getPassword();
-		String hashPassword = PasswordUtil.hashPassword(plainPassword);
+		String hashedPassword = PasswordUtil.hashPassword(request.getPassword());
 
 		// jpa에 저장할 user 엔티티 객체
 		User user = new User(
 			request.getEmail(),
-			request.getPassword(),
+			//request.getPassword(),
+			hashedPassword,
 			request.getUsername(),
 			Role.USER
 		);
@@ -71,9 +72,12 @@ public class UserService {
 			throw new ApiException(ErrorStatus.DUPLICATE_EMAIL);
 		}
 
+		String hashedPassword = PasswordUtil.hashPassword(request.getPassword());
+
 		User user = new User(
 			request.getEmail(),
-			request.getPassword(),
+			//request.getPassword(),
+			hashedPassword,
 			request.getUsername(),
 			Role.ADMIN
 		);
