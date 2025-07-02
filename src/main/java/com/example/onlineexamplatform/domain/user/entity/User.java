@@ -13,7 +13,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,7 +27,7 @@ public class User extends BaseEntity {
 	private Long id;
 
 	@Column
-	private Long vendorId;
+	private String vendorId;
 
 	@Column(unique = true, nullable = false, length = 255)
 	private String email;
@@ -53,7 +52,9 @@ public class User extends BaseEntity {
 	@Column
 	private LocalDateTime withdrawAt;
 
-	public User(String email, String password, String username, Role role, LoginProvider loginProvider) {
+	public User(String vendorId, String email, String password, String username, Role role,
+		LoginProvider loginProvider) {
+		this.vendorId = vendorId;
 		this.email = email;
 		this.password = password;
 		this.username = username;
@@ -61,23 +62,15 @@ public class User extends BaseEntity {
 		this.loginProvider = loginProvider;
 	}
 
-	@Builder
-	private User(Long vendorId, String email, String username, Role role, LoginProvider loginProvider) {
-		this.vendorId = vendorId;
-		this.email = email;
-		this.username = username;
-		this.role = role;
-		this.loginProvider = loginProvider;
-	}
-
 	public static User fromKakao(KakaoUserInfoResponse kakaoUserInfo) {
-		return User.builder()
-			.vendorId(kakaoUserInfo.getId())
-			.email(kakaoUserInfo.getKakaoAccount().getEmail())
-			.username(kakaoUserInfo.getProperties().getNickName())
-			.role(Role.USER)
-			.loginProvider(LoginProvider.KAKAO)
-			.build();
+		return new User(
+			kakaoUserInfo.getId(),
+			kakaoUserInfo.getKakaoAccount().getEmail(),
+			null,
+			kakaoUserInfo.getProperties().getNickName(),
+			Role.USER,
+			LoginProvider.KAKAO
+		);
 	}
 
 	public void setPassword(String password) {

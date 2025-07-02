@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class KakaoUserInfoResponse {
 
 	@JsonProperty("id")
-	private Long id;
+	private String id;
 
 	@JsonProperty("kakao_account")
 	private KakaoAccount kakaoAccount;

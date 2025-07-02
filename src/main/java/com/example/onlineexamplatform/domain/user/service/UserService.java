@@ -45,6 +45,7 @@ public class UserService {
 
 		// jpa에 저장할 user 엔티티 객체
 		User user = new User(
+			null,
 			request.getEmail(),
 			request.getPassword(),
 			request.getUsername(),
@@ -72,6 +73,7 @@ public class UserService {
 		}
 
 		User user = new User(
+			null,
 			request.getEmail(),
 			request.getPassword(),
 			request.getUsername(),
@@ -110,7 +112,7 @@ public class UserService {
 
 		return new AuthLoginResult(
 			user.getId(),
-			user.getVendorId(),
+			null,
 			user.getEmail(),
 			user.getUsername(),
 			user.getRole(),

@@ -15,7 +15,7 @@ public class AuthLoginResponse {
 	@Schema(description = "사용자 ID", example = "1")
 	private Long id;
 	@Schema(description = "소셜 로그인 ID", example = "1")
-	private Long vendorId;
+	private String vendorId;
 	@Schema(description = "사용자 이메일", example = "user@example.com")
 	private String email;
 	@Schema(description = "사용자 이름", example = "김민준")

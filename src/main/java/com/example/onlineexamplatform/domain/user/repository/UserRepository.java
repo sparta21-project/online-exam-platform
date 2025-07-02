@@ -18,6 +18,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	// 이름 및 이메일 포함 검색
 	List<User> findByUsernameContainingAndEmailContaining(String username, String email);
 
-	Optional<User> findByVendorId(Long vendorId);
+	Optional<User> findByVendorId(String vendorId);
 
 }
