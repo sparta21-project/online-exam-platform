@@ -152,6 +152,3 @@ jobs:
           --deployment-config-name CodeDeployDefault.AllAtOnce \
           --deployment-group-name ${{ secrets.AWS_CODE_DEPLOY_GROUP }} \
           --s3-location bucket=${{ secrets.AWS_S3_BUCKET }},key=$GITHUB_SHA.zip,bundleType=zip
-
-      - name: Check secret value
-        run: echo "App name is ':${{ secrets.AWS_CODE_DEPLOY_APPLICATION }}:'"
