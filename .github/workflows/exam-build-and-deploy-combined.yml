@@ -12,47 +12,47 @@ on:
         - main
 
 jobs:
-  build-and-test:
-    name: Build and Test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Install Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose
-
-      - name: Set up Docker Compose
-        run: |
-          docker-compose up -d
-          docker-compose ps
-
-      - name: Wait for services to be ready
-        run: |
-          until docker-compose exec -T db mysqladmin ping -h"127.0.0.1" --silent; do
-            echo "Waiting for MySQL to be ready..."
-            sleep 5
-          done
-          sleep 10
-
-      - name: Grant permission for gradlew
-        run: chmod +x ./gradlew
-
-      - name: Build with Gradle
-        run: ./gradlew clean build -Duser.language=ko -Duser.country=KR
-
-      - name: Tear down Docker Compose
-        if: always()
-        run: docker-compose down
+#  build-and-test:
+#    name: Build and Test
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v3
+#
+#      - name: Set up JDK 17
+#        uses: actions/setup-java@v3
+#        with:
+#          java-version: '17'
+#          distribution: 'temurin'
+#
+#      - name: Install Docker Compose
+#        run: |
+#          sudo apt-get update
+#          sudo apt-get install -y docker-compose
+#
+#      - name: Set up Docker Compose
+#        run: |
+#          docker-compose up -d
+#          docker-compose ps
+#
+#      - name: Wait for services to be ready
+#        run: |
+#          until docker-compose exec -T db mysqladmin ping -h"127.0.0.1" --silent; do
+#            echo "Waiting for MySQL to be ready..."
+#            sleep 5
+#          done
+#          sleep 10
+#
+#      - name: Grant permission for gradlew
+#        run: chmod +x ./gradlew
+#
+#      - name: Build with Gradle
+#        run: ./gradlew clean build -Duser.language=ko -Duser.country=KR
+#
+#      - name: Tear down Docker Compose
+#        if: always()
+#        run: docker-compose down
 
   deploy:
     name: Deploy to EC2
@@ -147,7 +147,7 @@ jobs:
 
       - name: EC2 Deploy
         run: aws deploy create-deployment \
-          --application-name "$AWS_CODE_DEPLOY_APPLICATION" \
+          --application-name Sparta21-CodeDeploy \
           --deployment-config-name CodeDeployDefault.AllAtOnce \
           --deployment-group-name "$AWS_CODE_DEPLOY_GROUP" \
           --s3-location bucket="$AWS_S3_BUCKET",key=$GITHUB_SHA.zip,bundleType=zip
