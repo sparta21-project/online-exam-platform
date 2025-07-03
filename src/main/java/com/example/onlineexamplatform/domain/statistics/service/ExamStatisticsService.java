@@ -150,12 +150,13 @@ public class ExamStatisticsService {
 			}
 
 			// 변경사항 있으면 기존 데이터 삭제
-			detailRepository.deleteAllInBatch(existingDetail);
+			detailRepository.deleteAllInBatch(detailRepository.findByExamStatistics(existing));
 			examStatisticsJpaRepository.delete(existing);
+			examStatisticsJpaRepository.flush();
 		}
 
 		// 통계 저장
-		ExamStatistics statistics = examStatisticsJpaRepository.save(
+		ExamStatistics Statistics = examStatisticsJpaRepository.save(
 				ExamStatistics.builder()
 						.exam(exam)
 						.averageScore(averageScore)
@@ -166,7 +167,7 @@ public class ExamStatisticsService {
 
 		// 정답률 저장
 		List<ExamQuestionStatistics> detailList = newCorrectRates.stream()
-				.map(dto -> ExamQuestionStatistics.of(statistics, dto.questionNumber(),
+				.map(dto -> ExamQuestionStatistics.of(Statistics, dto.questionNumber(),
 						dto.correctRate()))
 				.toList();
 		detailRepository.saveAll(detailList);
