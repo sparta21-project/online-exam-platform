@@ -1,4 +1,4 @@
-package com.example.onlineexamplatform.common.scheduler;
+package com.example.onlineexamplatform.domain.examFile.scheduler;
 
 import java.time.LocalDateTime;
 import java.util.List;

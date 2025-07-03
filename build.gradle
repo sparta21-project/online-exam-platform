@@ -60,6 +60,10 @@ dependencies {
     // Prometheus 시간 측정용 Micrometer Timer
     implementation 'io.micrometer:micrometer-registry-prometheus'
 
+    // Spring WebFlux WebClient
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+
 }
 
 tasks.named('test') {

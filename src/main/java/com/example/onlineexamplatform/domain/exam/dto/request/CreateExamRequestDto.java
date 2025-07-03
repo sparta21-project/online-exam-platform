@@ -43,6 +43,8 @@ public class CreateExamRequestDto {
 	private final Integer remainUsers;
 
 	@Schema(description = "S3에 업로드한 시험파일의 ID를 입력하여 시험 생성 시 exam_id를 부여", example = "[]")
+	@NotNull
+	@Size(min = 1, message = "시험 파일은 한 개 이상 선택해야 합니다.")
 	private final List<Long> examFileIds;
 
 	public CreateExamRequestDto toCreate() {
