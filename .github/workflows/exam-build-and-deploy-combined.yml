@@ -58,7 +58,7 @@ jobs:
     name: Deploy to EC2
     if: github.event_name == 'push' && github.ref == 'refs/heads/feat/SaltBr'
     runs-on: ubuntu-latest
-    #needs: build-and-test
+    needs: build-and-test
     permissions:
       contents: read
       packages: write
