@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -105,6 +106,11 @@ public class AnswerSheetService {
         if (!answerSheet.getExam().getId().equals(exam.getId()) ||
                 !(answerSheet.getUser().getId().equals(user.getId()) || user.getRole().equals(Role.ADMIN))) {
             throw new ApiException(ErrorStatus.ACCESS_DENIED);
+        }
+
+        //시험 종료 시간이 지났을 경우 에러
+        if (exam.getEndTime().isBefore(LocalDateTime.now())) {
+            throw new ApiException(ErrorStatus.EXAM_ALREADY_ENDED);
         }
 
         if (answerSheet.getStatus() == AnswerSheetStatus.SUBMITTED || answerSheet.getStatus() == AnswerSheetStatus.GRADED) {
@@ -196,6 +202,11 @@ public class AnswerSheetService {
         if (!answerSheet.getExam().getId().equals(exam.getId()) ||
                 !(answerSheet.getUser().getId().equals(user.getId()) || user.getRole().equals(Role.ADMIN))) {
             throw new ApiException(ErrorStatus.ACCESS_DENIED);
+        }
+
+        //시험 종료 시간이 지났을 경우 에러
+        if (exam.getEndTime().isBefore(LocalDateTime.now())) {
+            throw new ApiException(ErrorStatus.EXAM_ALREADY_ENDED);
         }
 
         saveUserAnswers(requestDto, answerSheet);
