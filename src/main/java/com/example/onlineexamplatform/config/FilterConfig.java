@@ -18,7 +18,7 @@ public class FilterConfig {
 		FilterRegistrationBean<SessionFilter> registration = new FilterRegistrationBean<>();
 		registration.setFilter(new SessionFilter(redisTemplate));
 		registration.addUrlPatterns("/api/*");  // 인증이 필요한 경로
-		registration.setOrder(1);
+		registration.setOrder(0);
 		return registration;
 	}
 
