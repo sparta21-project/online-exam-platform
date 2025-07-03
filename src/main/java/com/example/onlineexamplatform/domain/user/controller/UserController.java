@@ -22,6 +22,7 @@ import com.example.onlineexamplatform.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -40,7 +41,6 @@ public class UserController {
 	public ResponseEntity<ApiResponse<UserProfileResponse>> getProfile(
 		@UserSession SessionUser session
 	) {
-
 		Long userId = session.getUserId();
 
 		UserProfileResponse dto = userService.getProfile(userId);

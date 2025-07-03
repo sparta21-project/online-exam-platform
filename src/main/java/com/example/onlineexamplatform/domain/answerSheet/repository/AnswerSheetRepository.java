@@ -11,6 +11,7 @@ import com.example.onlineexamplatform.domain.exam.entity.Exam;
 import com.example.onlineexamplatform.domain.user.entity.User;
 
 public interface AnswerSheetRepository extends JpaRepository<AnswerSheet, Long> {
+
 	Optional<AnswerSheet> findById(Long id);
 
 	List<AnswerSheet> findByExamId(Long examId);
@@ -18,8 +19,13 @@ public interface AnswerSheetRepository extends JpaRepository<AnswerSheet, Long> 
 	Optional<AnswerSheet> findTopByExamAndUserAndStatusInOrderByCreatedAt(Exam exam, User user,
 		List<AnswerSheetStatus> includedStatuses
 	);
+  
+  Optional<AnswerSheet> findByExamAndUser(Exam exam, User user);
 
 	List<AnswerSheet> findByExamIdAndStatusNotIn(Long examId, List<AnswerSheetStatus> statuses);
 
 	List<AnswerSheet> findByExamIdAndStatusNot(Long examId, AnswerSheetStatus status);
+  
+  boolean existsByExamAndUser(Exam exam, User user);
+
 }

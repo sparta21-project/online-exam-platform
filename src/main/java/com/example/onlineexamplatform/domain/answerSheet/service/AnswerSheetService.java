@@ -1,11 +1,14 @@
 package com.example.onlineexamplatform.domain.answerSheet.service;
 
-import static com.example.onlineexamplatform.domain.answerSheet.enums.AnswerSheetStatus.*;
+import static com.example.onlineexamplatform.domain.answerSheet.enums.AnswerSheetStatus.STARTED;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,256 +36,262 @@ import com.example.onlineexamplatform.domain.userAnswer.repository.UserAnswerRep
 import com.example.onlineexamplatform.domain.userCategory.entity.UserCategory;
 import com.example.onlineexamplatform.domain.userCategory.repository.UserCategoryRepository;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AnswerSheetService {
 
-	private final AnswerSheetRepository answerSheetRepository;
-	private final UserAnswerRepository userAnswerRepository;
-	private final ExamRepository examRepository;
-	private final UserRepository userRepository;
-	private final ExamAnswerRepository examAnswerRepository;
-	private final ExamCategoryRepository examCategoryRepository;
-	private final UserCategoryRepository userCategoryRepository;
-	private final SmsService smsService;
 
-	//빈 답안지 생성 (시험 응시)
-	@Transactional
-	public void createAnswerSheet(Long examId, Long userId) {
-		Exam exam = examRepository.findByIdOrElseThrow(examId);
-		User user = userRepository.findById(userId)
-			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
+    private final AnswerSheetRepository answerSheetRepository;
+    private final UserAnswerRepository userAnswerRepository;
+    private final ExamRepository examRepository;
+    private final UserRepository userRepository;
+    private final ExamAnswerRepository examAnswerRepository;
+    private final ExamCategoryRepository examCategoryRepository;
+    private final UserCategoryRepository userCategoryRepository;
 
-		List<ExamCategory> examCategories = examCategoryRepository.findAllByExamId(examId);
-		List<UserCategory> userCategories = userCategoryRepository.findByUserId(userId);
+    //빈 답안지 생성 (시험 응시)
+    @Transactional
+    public void createAnswerSheet(Long examId, Long userId) {
+        Exam exam = examRepository.findByIdOrElseThrow(examId);
+        log.info("📌 [User {}] 조회한 remainUsers: {}", userId, exam.getRemainUsers());
 
-		boolean hasCategory = false;
-		for (ExamCategory examCategory : examCategories) {
-			for (UserCategory userCategory : userCategories) {
-				if (examCategory.getCategory().getId().equals(userCategory.getCategory().getId())) {
-					hasCategory = true;
-					break;
-				}
-			}
-			if (hasCategory)
-				break;
-		}
+        exam.decreaseRemainUsers();
+        log.info("🔻 [User {}] 감소 후 remainUsers: {}", userId, exam.getRemainUsers());
 
-		if (hasCategory) {
-			AnswerSheet answerSheet = new AnswerSheet(exam, user, STARTED);
-			answerSheetRepository.save(answerSheet);
-		} else {
-			throw new ApiException(ErrorStatus.CATEGORY_NOT_MATCHED);
-		}
-	}
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 
-	//답안지 수정 (임시 저장 포함)
-	@Transactional
-	public AnswerSheetResponseDto.Update updateAnswerSheet(Long examId, AnswerSheetRequestDto requestDto, Long userId) {
-		Exam exam = examRepository.findByIdOrElseThrow(examId);
-		User user = userRepository.findById(userId)
-			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
+        List<ExamCategory> examCategories = examCategoryRepository.findAllByExamId(examId);
+        List<UserCategory> userCategories = userCategoryRepository.findByUserId(userId);
 
-		AnswerSheet answerSheet = answerSheetRepository.findTopByExamAndUserAndStatusInOrderByCreatedAt(exam, user,
-				List.of(STARTED, IN_PROGRESS))
-			.orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
+        //답안지 생성을 하나로 제한
+        boolean exists = answerSheetRepository.existsByExamAndUser(exam, user);
+        if (exists) {
+            throw new ApiException(ErrorStatus.ANSWER_SHEET_ALREADY_EXISTS);
+        }
 
-		if (answerSheet.getStatus() == AnswerSheetStatus.SUBMITTED
-			|| answerSheet.getStatus() == AnswerSheetStatus.GRADED) {
-			throw new ApiException(ErrorStatus.ANSWER_SUBMITTED);
-		}
+        boolean hasCategory = false;
+        //카테고리가 없으면 누구든 응시 가능
+        if(examCategories.isEmpty()) {
+            hasCategory = true;
+        }
+        for (ExamCategory examCategory : examCategories) {
+            for (UserCategory userCategory : userCategories) {
+                if (examCategory.getCategory().getId().equals(userCategory.getCategory().getId())) {
+                    hasCategory = true;
+                    break;
+                }
+            }
+            if (hasCategory) break;
+        }
 
-		saveUserAnswers(requestDto, answerSheet);
+        if(hasCategory){
+            AnswerSheet answerSheet = new AnswerSheet(exam, user, STARTED);
+            answerSheetRepository.save(answerSheet);
+        } else {
+            throw new ApiException(ErrorStatus.CATEGORY_NOT_MATCHED);
+        }
+    }
 
-		answerSheet.updateStatus(AnswerSheetStatus.IN_PROGRESS);
+    //답안지 수정 (임시 저장 포함)
+    @Transactional
+    public AnswerSheetResponseDto.Update updateAnswerSheet(Long examId, AnswerSheetRequestDto requestDto, Long userId) {
+        Exam exam = examRepository.findByIdOrElseThrow(examId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 
-		List<UserAnswer> userAnswers = userAnswerRepository.findAllByAnswerSheet(answerSheet);
+        AnswerSheet answerSheet = answerSheetRepository.findByExamAndUser(exam, user)
+                .orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
 
-		List<UserAnswerResponseDto> answerDtos = sortUserAnswers(userAnswers);
+        if (answerSheet.getStatus() == AnswerSheetStatus.SUBMITTED || answerSheet.getStatus() == AnswerSheetStatus.GRADED) {
+            throw new ApiException(ErrorStatus.ANSWER_SUBMITTED);
+        }
 
-		return new AnswerSheetResponseDto.Update(
-			exam.getId(),
-			user.getId(),
-			answerSheet.getStatus(),
-			answerDtos
-		);
-	}
+        saveUserAnswers(requestDto, answerSheet);
 
-	//답안지 조회 (본인)
-	@Transactional(readOnly = true)
-	public AnswerSheetResponseDto.Get getAnswerSheet(Long examId, Long answerSheetId, Long userId) {
-		Exam exam = examRepository.findByIdOrElseThrow(examId);
-		User user = userRepository.findById(userId)
-			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
+        answerSheet.updateStatus(AnswerSheetStatus.IN_PROGRESS);
 
-		AnswerSheet answerSheet = answerSheetRepository.findById(answerSheetId)
-			.orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
+        List<UserAnswer> userAnswers = userAnswerRepository.findAllByAnswerSheet(answerSheet);
 
-		//본인이나 관리자가 아니면 에러
-		if (!answerSheet.getExam().getId().equals(exam.getId()) ||
-			!(answerSheet.getUser().getId().equals(user.getId()) || user.getRole().equals(Role.ADMIN))) {
-			throw new ApiException(ErrorStatus.ACCESS_DENIED);
-		}
+        List<UserAnswerResponseDto> answerDtos = sortUserAnswers(userAnswers);
 
-		List<UserAnswer> userAnswers = userAnswerRepository.findAllByAnswerSheet(answerSheet);
+        return new AnswerSheetResponseDto.Update(
+                exam.getId(),
+                user.getId(),
+                answerSheet.getStatus(),
+                answerDtos
+        );
+    }
 
-		List<UserAnswerResponseDto> answerDtos = sortUserAnswers(userAnswers);
+    //답안지 조회 (본인)
+    @Transactional(readOnly = true)
+    public AnswerSheetResponseDto.Get getAnswerSheet(Long examId, Long answerSheetId, Long userId) {
+        Exam exam = examRepository.findByIdOrElseThrow(examId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 
-		return new AnswerSheetResponseDto.Get(
-			exam.getId(),
-			user.getId(),
-			answerSheet.getStatus(),
-			answerDtos
-		);
-	}
+        AnswerSheet answerSheet = answerSheetRepository.findById(answerSheetId)
+                .orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
 
-	//답안지 삭제
-	@Transactional
-	public void deleteAnswerSheet(Long examId, Long answerSheetId, Long userId) {
-		examRepository.findByIdOrElseThrow(examId);
-		User user = userRepository.findById(userId)
-			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
-		AnswerSheet answerSheet = answerSheetRepository.findById(answerSheetId)
-			.orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
+        //본인이나 관리자가 아니면 에러
+        if (!answerSheet.getExam().getId().equals(exam.getId()) ||
+                !(answerSheet.getUser().getId().equals(user.getId()) || user.getRole().equals(Role.ADMIN))) {
+            throw new ApiException(ErrorStatus.ACCESS_DENIED);
+        }
 
-		//시험 아이디와 답안지 시험 아이디 불일치
-		if (!examId.equals(answerSheet.getExam().getId())) {
-			throw new ApiException(ErrorStatus.ACCESS_DENIED);
-		}
+        List<UserAnswer> userAnswers = userAnswerRepository.findAllByAnswerSheet(answerSheet);
 
-		//관리자만 삭제 가능
-		if (!user.getRole().equals(Role.ADMIN)) {
-			throw new ApiException(ErrorStatus.ACCESS_DENIED);
-		}
+        List<UserAnswerResponseDto> answerDtos = sortUserAnswers(userAnswers);
 
-		userAnswerRepository.deleteAllByAnswerSheet(answerSheet);
-		answerSheetRepository.delete(answerSheet);
-	}
+        return new AnswerSheetResponseDto.Get(
+                exam.getId(),
+                user.getId(),
+                answerSheet.getStatus(),
+                answerDtos
+        );
+    }
 
-	//답안 최종 제출
-	@Transactional
-	public AnswerSheetResponseDto.Submit submitAnswerSheet(Long examId, Long answerSheetId,
-		AnswerSheetRequestDto requestDto, Long userId) {
-		Exam exam = examRepository.findByIdOrElseThrow(examId);
-		User user = userRepository.findById(userId)
-			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
+    //답안지 삭제
+    @Transactional
+    public void deleteAnswerSheet(Long examId, Long answerSheetId, Long userId) {
+        examRepository.findByIdOrElseThrow(examId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
+        AnswerSheet answerSheet = answerSheetRepository.findById(answerSheetId)
+                .orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
 
-		AnswerSheet answerSheet = answerSheetRepository.findById(answerSheetId)
-			.orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
+        //시험 아이디와 답안지 시험 아이디 불일치
+        if(!examId.equals(answerSheet.getExam().getId())){
+            throw new ApiException(ErrorStatus.ACCESS_DENIED);
+        }
 
-		if (answerSheet.getStatus() == AnswerSheetStatus.SUBMITTED
-			|| answerSheet.getStatus() == AnswerSheetStatus.GRADED) {
-			throw new ApiException(ErrorStatus.ANSWER_SUBMITTED);
-		}
+        //관리자만 삭제 가능
+        if (!user.getRole().equals(Role.ADMIN)) {
+            throw new ApiException(ErrorStatus.ACCESS_DENIED);
+        }
 
-		//본인이나 관리자가 아니면 에러
-		if (!answerSheet.getExam().getId().equals(exam.getId()) ||
-			!(answerSheet.getUser().getId().equals(user.getId()) || user.getRole().equals(Role.ADMIN))) {
-			throw new ApiException(ErrorStatus.ACCESS_DENIED);
-		}
+        // userAnswerRepository.deleteAllByAnswerSheet(answerSheet);
+        answerSheetRepository.delete(answerSheet);
+    }
 
-		saveUserAnswers(requestDto, answerSheet);
+    //답안 최종 제출
+    @Transactional
+    public AnswerSheetResponseDto.Submit submitAnswerSheet(Long examId, Long answerSheetId, AnswerSheetRequestDto requestDto, Long userId) {
+        Exam exam = examRepository.findByIdOrElseThrow(examId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 
-		answerSheet.updateStatus(AnswerSheetStatus.SUBMITTED);
+        AnswerSheet answerSheet = answerSheetRepository.findById(answerSheetId)
+                .orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
 
-		List<UserAnswer> userAnswers = userAnswerRepository.findAllByAnswerSheet(answerSheet);
+        if (answerSheet.getStatus() == AnswerSheetStatus.SUBMITTED || answerSheet.getStatus() == AnswerSheetStatus.GRADED) {
+            throw new ApiException(ErrorStatus.ANSWER_SUBMITTED);
+        }
 
-		List<UserAnswerResponseDto> answerDtos = sortUserAnswers(userAnswers);
+        //본인이나 관리자가 아니면 에러
+        if (!answerSheet.getExam().getId().equals(exam.getId()) ||
+                !(answerSheet.getUser().getId().equals(user.getId()) || user.getRole().equals(Role.ADMIN))) {
+            throw new ApiException(ErrorStatus.ACCESS_DENIED);
+        }
 
-		return new AnswerSheetResponseDto.Submit(
-			exam.getId(),
-			user.getId(),
-			answerSheet.getStatus(),
-			answerDtos
-		);
-	}
+        saveUserAnswers(requestDto, answerSheet);
 
-	//시험 응시자 조회
-	@Transactional(readOnly = true)
-	public List<AnswerSheetResponseDto.Applicant> getExamApplicants(Long examId, Long userId) {
-		User user = userRepository.findById(userId)
-			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
+        answerSheet.updateStatus(AnswerSheetStatus.SUBMITTED);
 
-		if (!user.getRole().equals(Role.ADMIN)) {
-			throw new ApiException(ErrorStatus.ACCESS_DENIED);
-		}
+        List<UserAnswer> userAnswers = userAnswerRepository.findAllByAnswerSheet(answerSheet);
 
-		List<AnswerSheet> answerSheets = answerSheetRepository.findByExamId(examId);
-		return answerSheets.stream()
-			.map(answerSheet -> new AnswerSheetResponseDto.Applicant(
-				answerSheet.getUser().getUsername(),
-				answerSheet.getUser().getEmail(),
-				answerSheet.getStatus()
-			))
-			.toList();
-	}
+        List<UserAnswerResponseDto> answerDtos = sortUserAnswers(userAnswers);
 
-	//답안지 채점
-	@Transactional
-	public void gradeAnswerSheet(Long answerSheetId) {
-		AnswerSheet answerSheet = answerSheetRepository.findById(answerSheetId)
-			.orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
+        return new AnswerSheetResponseDto.Submit(
+                exam.getId(),
+                user.getId(),
+                answerSheet.getStatus(),
+                answerDtos
+        );
+    }
 
-		List<UserAnswer> userAnswers = userAnswerRepository.findAllByAnswerSheet(answerSheet);
+    //시험 응시자 조회
+    @Transactional(readOnly = true)
+    public List<AnswerSheetResponseDto.Applicant> getExamApplicants(Long examId, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 
-		int score = 0;
-		for (UserAnswer userAnswer : userAnswers) {
-			ExamAnswer examAnswer = examAnswerRepository.findByExamAndQuestionNumber(
-					answerSheet.getExam(),
-					userAnswer.getQuestionNumber())
-				.orElseThrow(() -> new ApiException(ErrorStatus.EXAM_ANSWER_NOT_FOUND));
+        if (!user.getRole().equals(Role.ADMIN)) {
+            throw new ApiException(ErrorStatus.ACCESS_DENIED);
+        }
 
-			String correctAnswer = examAnswer.getCorrectAnswer();
+        List<AnswerSheet> answerSheets = answerSheetRepository.findByExamId(examId);
+        return answerSheets.stream()
+                .map(answerSheet -> new AnswerSheetResponseDto.Applicant(
+                        answerSheet.getUser().getUsername(),
+                        answerSheet.getUser().getEmail(),
+                        answerSheet.getStatus()
+                ))
+                .toList();
+    }
 
-			if (correctAnswer.equals(userAnswer.getAnswerText())) {
-				score += examAnswer.getQuestionScore();
-			}
-		}
-		answerSheet.grade(score);
+    //답안지 채점
+    @Transactional
+    public void gradeAnswerSheet(Long answerSheetId) {
+        AnswerSheet answerSheet = answerSheetRepository.findById(answerSheetId)
+                .orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
 
-		// sms 저장 및 전송 호출
-		smsService.createSms(
-			answerSheet.getUser().getId(),
-			answerSheet.getExam().getId(),
-			score
-		);
+        List<UserAnswer> userAnswers = userAnswerRepository.findAllByAnswerSheet(answerSheet);
 
-	}
+        int score = 0;
+        for (UserAnswer userAnswer : userAnswers) {
+            ExamAnswer examAnswer = examAnswerRepository.findByExamAndQuestionNumber(
+                            answerSheet.getExam(),
+                            userAnswer.getQuestionNumber())
+                    .orElseThrow(() -> new ApiException(ErrorStatus.EXAM_ANSWER_NOT_FOUND));
 
-	//답안지 상태 변경
-	@Transactional
-	public void changeAnswerSheetStatus(Long answerSheetId) {
-		AnswerSheet answerSheet = answerSheetRepository.findById(answerSheetId)
-			.orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
+            String correctAnswer = examAnswer.getCorrectAnswer();
 
-		answerSheet.updateStatus(AnswerSheetStatus.SUBMITTED);
-	}
+            if (correctAnswer.equals(userAnswer.getAnswerText())) {
+                score += examAnswer.getQuestionScore();
+            }
+        }
+        answerSheet.grade(score);
+    }
 
-	//답안 저장 로직
-	public void saveUserAnswers(AnswerSheetRequestDto requestDto, AnswerSheet answerSheet) {
-		for (UserAnswerRequestDto dto : requestDto.getAnswers()) {
-			int questionNumber = dto.getQuestionNumber();
-			String answerText = dto.getAnswerText();
+    //답안지 상태 변경
+    @Transactional
+    public void changeAnswerSheetStatus(Long answerSheetId) {
+        AnswerSheet answerSheet = answerSheetRepository.findById(answerSheetId)
+                .orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
 
-			Optional<UserAnswer> userAnswer = userAnswerRepository.findByAnswerSheetAndQuestionNumber(answerSheet,
-				questionNumber);
+        answerSheet.updateStatus(AnswerSheetStatus.SUBMITTED);
+    }
 
-			if (userAnswer.isPresent()) {
-				userAnswer.get().updateAnswer(answerText);
-			} else {
-				UserAnswer newAnswer = new UserAnswer(answerSheet, questionNumber, answerText);
-				userAnswerRepository.save(newAnswer);
-			}
-		}
-	}
+    //답안 저장 로직
+    public void saveUserAnswers(AnswerSheetRequestDto requestDto, AnswerSheet answerSheet) {
+        for (UserAnswerRequestDto dto : requestDto.getAnswers()) {
+            int questionNumber = dto.getQuestionNumber();
+            String answerText = dto.getAnswerText();
 
-	//답변 정렬 로직
-	private List<UserAnswerResponseDto> sortUserAnswers(List<UserAnswer> userAnswers) {
-		return userAnswers.stream()
-			.map(UserAnswerResponseDto::toUserAnswerResponseDto)
-			.sorted(Comparator.comparing(UserAnswerResponseDto::getQuestionNumber))
-			.toList();
-	}
+            Optional<UserAnswer> userAnswer = userAnswerRepository.findByAnswerSheetAndQuestionNumber(answerSheet, questionNumber);
+
+            if (userAnswer.isPresent()) {
+                userAnswer.get().updateAnswer(answerText);
+            } else {
+                UserAnswer newAnswer = new UserAnswer(answerSheet, questionNumber, answerText);
+                userAnswerRepository.save(newAnswer);
+            }
+        }
+    }
+
+    //답변 정렬 로직
+    private List<UserAnswerResponseDto> sortUserAnswers(List<UserAnswer> userAnswers) {
+        return userAnswers.stream()
+                .map(UserAnswerResponseDto::toUserAnswerResponseDto)
+                .sorted(Comparator.comparing(UserAnswerResponseDto::getQuestionNumber))
+                .toList();
+    }
 }

@@ -6,9 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -40,11 +38,17 @@ public class CreateExamRequestDto {
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private final LocalDateTime endTime;
 
+	@Schema(description = "시험 응시 최대 가능 인원", example = "100")
+	@Min(value = 1, message = "1 이상의 숫자를 입력해주세요.")
+	private final Integer remainUsers;
+
 	@Schema(description = "S3에 업로드한 시험파일의 ID를 입력하여 시험 생성 시 exam_id를 부여", example = "[]")
+	@NotNull
+	@Size(min = 1, message = "시험 파일은 한 개 이상 선택해야 합니다.")
 	private final List<Long> examFileIds;
 
 	public CreateExamRequestDto toCreate() {
-		return new CreateExamRequestDto(title, description, totalQuestionsNum, startTime, endTime, examFileIds);
+		return new CreateExamRequestDto(title, description, totalQuestionsNum, startTime, endTime, remainUsers, examFileIds);
 	}
 
 }
