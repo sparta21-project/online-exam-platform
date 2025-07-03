@@ -100,7 +100,7 @@ public class ExamController {
 
 	@Operation(summary = "시험 상세 조회 API", description = "응시자가 응시할 시험 정보와 파일을 조회합니다")
 	@CheckAuth(Role.USER)
-	@GetMapping("/{examId}/to-take")
+	@GetMapping("/{examId}/participation")
 	public ResponseEntity<ApiResponse<ExamDetailResponseDto>> getExamDetail(
 		@Parameter(description = "시험의 ID입니다.") @PathVariable Long examId,
 		@UserSession SessionUser session) {

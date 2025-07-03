@@ -1,5 +1,7 @@
 package com.example.onlineexamplatform.domain.exam.service;
 
+import static com.example.onlineexamplatform.domain.answerSheet.enums.AnswerSheetStatus.*;
+
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -11,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
+import com.example.onlineexamplatform.domain.answerSheet.entity.AnswerSheet;
+import com.example.onlineexamplatform.domain.answerSheet.repository.AnswerSheetRepository;
 import com.example.onlineexamplatform.domain.exam.dto.request.CreateExamRequestDto;
 import com.example.onlineexamplatform.domain.exam.dto.request.UpdateExamRequestDto;
 import com.example.onlineexamplatform.domain.exam.dto.response.ExamDetailResponseDto;
@@ -44,6 +48,7 @@ public class ExamService {
 	private final ExamFileRepository examFileRepository;
 	private final UserCategoryRepository userCategoryRepository;
 	private final ExamCategoryRepository examCategoryRepository;
+	private final AnswerSheetRepository answerSheetRepository;
 
 	@Transactional
 	public ExamResponseDto<ExamFileResponseDto> createExam(CreateExamRequestDto requestDto, Long userId) {
@@ -113,7 +118,7 @@ public class ExamService {
 
 	@Transactional(readOnly = true)
 	public ExamDetailResponseDto getExamDetail(Long userId, Long examId) {
-		userRepository.findById(userId).orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
+		User user = userRepository.findById(userId).orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 		Exam exam = examRepository.findByIdOrElseThrow(examId);
 
 		List<UserCategory> userCategories = userCategoryRepository.findByUserId(userId);
@@ -124,7 +129,25 @@ public class ExamService {
 			throw new ApiException(ErrorStatus.EXAM_NOT_STARTED);
 		}
 
-		validateUserExamCategory(userCategories, examCategories);
+		boolean hasCategory = examCategories.isEmpty();
+		//카테고리가 없으면 누구든 응시 가능
+		for (ExamCategory examCategory : examCategories) {
+			for (UserCategory userCategory : userCategories) {
+				if (examCategory.getCategory().getId().equals(userCategory.getCategory().getId())) {
+					hasCategory = true;
+					break;
+				}
+			}
+			if (hasCategory)
+				break;
+		}
+
+		if (hasCategory) {
+			AnswerSheet answerSheet = new AnswerSheet(exam, user, STARTED);
+			answerSheetRepository.save(answerSheet);
+		} else {
+			throw new ApiException(ErrorStatus.CATEGORY_NOT_MATCHED);
+		}
 
 		boolean anyMatch = userCategories.stream().anyMatch(userCategory ->
 			!userCategory.getUser().getId().equals(userId));
@@ -141,20 +164,6 @@ public class ExamService {
 
 		return ExamDetailResponseDto.of(exam, examFileS3PreSignedURLs);
 
-	}
-
-	// 응시자 시험 응시 자격 검증 로직
-	private void validateUserExamCategory(List<UserCategory> userCategories, List<ExamCategory> examCategories) {
-		boolean anyMatch = examCategories.stream()
-			.anyMatch(examCategory ->
-				userCategories.stream()
-					.anyMatch(
-						userCategory -> !userCategory.getCategory().getId().equals(examCategory.getCategory().getId())
-					)
-			);
-		if (anyMatch) {
-			throw new ApiException(ErrorStatus.USER_CATEGORY_NOT_FOUND);
-		}
 	}
 
 	@Transactional
