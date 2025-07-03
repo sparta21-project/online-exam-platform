@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
+import com.example.onlineexamplatform.domain.password.PasswordUtil;
 import com.example.onlineexamplatform.config.session.SessionUser;
 import com.example.onlineexamplatform.domain.user.dto.AuthLoginRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthLoginResult;
@@ -47,10 +48,10 @@ public class UserService {
 		User user = new User(
 			null,
 			request.getEmail(),
-			request.getPassword(),
+			request.getPassword(), //평문
 			request.getUsername(),
 			request.getPhoneNumber(),
-			Role.USER
+			Role.USER,
 			LoginProvider.LOCAL
 		);
 
@@ -104,7 +105,8 @@ public class UserService {
 			throw new ApiException(ErrorStatus.USER_DEACTIVATE);
 		}
 
-		if (!request.getPassword().equals(user.getPassword())) {
+		// BCrypt를 사용한 비밀번호 검증
+		if (!user.checkPassword(request.getPassword())) {
 			throw new ApiException(ErrorStatus.USER_NOT_MATCH);
 		}
 
@@ -136,12 +138,13 @@ public class UserService {
 		}
 
 		// 현재 비밀번호 검증
-		if (!dto.getOldPassword().equals(user.getPassword())) {
+		if (!PasswordUtil.checkPassword(dto.getOldPassword(), user.getPassword())) {
 			throw new ApiException(ErrorStatus.INVALID_PASSWORD);
 		}
 
-		// 비밀번호 변경
-		user.setPassword(dto.getNewPassword());
+		// 새 비밀번호를 해시화하여 저장
+		String hashedNewPassword = PasswordUtil.hash(dto.getNewPassword());
+		user.setPassword(hashedNewPassword);
 		userRepository.save(user);
 	}
 
