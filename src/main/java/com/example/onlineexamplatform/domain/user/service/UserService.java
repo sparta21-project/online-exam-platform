@@ -19,6 +19,7 @@ import com.example.onlineexamplatform.domain.user.dto.AuthSignupResponse;
 import com.example.onlineexamplatform.domain.user.dto.UserProfileModifyRequest;
 import com.example.onlineexamplatform.domain.user.dto.UserProfileModifyResponse;
 import com.example.onlineexamplatform.domain.user.dto.UserProfileResponse;
+import com.example.onlineexamplatform.domain.user.entity.LoginProvider;
 import com.example.onlineexamplatform.domain.user.entity.Role;
 import com.example.onlineexamplatform.domain.user.entity.User;
 import com.example.onlineexamplatform.domain.user.repository.UserRepository;
@@ -44,10 +45,12 @@ public class UserService {
 
 		// jpa에 저장할 user 엔티티 객체
 		User user = new User(
+			null,
 			request.getEmail(),
 			request.getPassword(),
 			request.getUsername(),
-			Role.USER
+			Role.USER,
+			LoginProvider.LOCAL
 		);
 
 		// 엔티티에 저장
@@ -70,10 +73,12 @@ public class UserService {
 		}
 
 		User user = new User(
+			null,
 			request.getEmail(),
 			request.getPassword(),
 			request.getUsername(),
-			Role.ADMIN
+			Role.ADMIN,
+			LoginProvider.LOCAL
 		);
 
 		User saved = userRepository.save(user);
@@ -99,16 +104,19 @@ public class UserService {
 			throw new ApiException(ErrorStatus.USER_NOT_MATCH);
 		}
 
-		SessionUser sessionUser = new SessionUser(user.getId(), user.getEmail(), user.getRole());
+		SessionUser sessionUser = new SessionUser(user.getId(), user.getEmail(), user.getRole(),
+			user.getLoginProvider());
 		String sessionId = UUID.randomUUID().toString();
 		String redisKey = "SESSION:" + sessionId;
 		redisTemplate.opsForValue().set(redisKey, sessionUser, Duration.ofHours(24));
 
 		return new AuthLoginResult(
 			user.getId(),
+			null,
 			user.getEmail(),
 			user.getUsername(),
 			user.getRole(),
+			user.getLoginProvider(),
 			sessionId
 		);
 	}
