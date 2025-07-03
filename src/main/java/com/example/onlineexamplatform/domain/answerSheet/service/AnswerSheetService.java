@@ -15,6 +15,7 @@ import com.example.onlineexamplatform.domain.examAnswer.entity.ExamAnswer;
 import com.example.onlineexamplatform.domain.examAnswer.repository.ExamAnswerRepository;
 import com.example.onlineexamplatform.domain.examCategory.entity.ExamCategory;
 import com.example.onlineexamplatform.domain.examCategory.repository.ExamCategoryRepository;
+import com.example.onlineexamplatform.domain.sms.service.SmsService;
 import com.example.onlineexamplatform.domain.user.entity.Role;
 import com.example.onlineexamplatform.domain.user.entity.User;
 import com.example.onlineexamplatform.domain.user.repository.UserRepository;
@@ -36,12 +37,10 @@ import java.util.stream.Collectors;
 
 import static com.example.onlineexamplatform.domain.answerSheet.enums.AnswerSheetStatus.STARTED;
 
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class AnswerSheetService {
-
 
     private final AnswerSheetRepository answerSheetRepository;
     private final UserAnswerRepository userAnswerRepository;
@@ -50,6 +49,7 @@ public class AnswerSheetService {
     private final ExamAnswerRepository examAnswerRepository;
     private final ExamCategoryRepository examCategoryRepository;
     private final UserCategoryRepository userCategoryRepository;
+    private final SmsService smsService;
 
     //빈 답안지 생성 (시험 응시)
     @Transactional
@@ -81,7 +81,8 @@ public class AnswerSheetService {
                     break;
                 }
             }
-            if (hasCategory) break;
+            if (hasCategory)
+                break;
         }
 
         if (hasCategory) {
@@ -102,6 +103,10 @@ public class AnswerSheetService {
         AnswerSheet answerSheet = answerSheetRepository.findByExamAndUser(exam, user)
                 .orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
 
+        if (answerSheet.getStatus() == AnswerSheetStatus.SUBMITTED
+                || answerSheet.getStatus() == AnswerSheetStatus.GRADED) {
+            throw new ApiException(ErrorStatus.ANSWER_SUBMITTED);
+        }
         //본인이나 관리자가 아니면 에러
         if (!answerSheet.getExam().getId().equals(exam.getId()) ||
                 !(answerSheet.getUser().getId().equals(user.getId()) || user.getRole().equals(Role.ADMIN))) {
@@ -186,7 +191,8 @@ public class AnswerSheetService {
 
     //답안 최종 제출
     @Transactional
-    public AnswerSheetResponseDto.Submit submitAnswerSheet(Long examId, Long answerSheetId, AnswerSheetRequestDto requestDto, Long userId) {
+    public AnswerSheetResponseDto.Submit submitAnswerSheet(Long examId, Long answerSheetId,
+                                                           AnswerSheetRequestDto requestDto, Long userId) {
         Exam exam = examRepository.findByIdOrElseThrow(examId);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
@@ -194,7 +200,8 @@ public class AnswerSheetService {
         AnswerSheet answerSheet = answerSheetRepository.findById(answerSheetId)
                 .orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
 
-        if (answerSheet.getStatus() == AnswerSheetStatus.SUBMITTED || answerSheet.getStatus() == AnswerSheetStatus.GRADED) {
+        if (answerSheet.getStatus() == AnswerSheetStatus.SUBMITTED
+                || answerSheet.getStatus() == AnswerSheetStatus.GRADED) {
             throw new ApiException(ErrorStatus.ANSWER_SUBMITTED);
         }
 
@@ -267,6 +274,13 @@ public class AnswerSheetService {
             }
         }
         answerSheet.grade(score);
+
+        // sms 저장 및 전송 호출
+        smsService.createSms(
+                answerSheet.getUser().getId(),
+                answerSheet.getExam().getId(),
+                score
+        );
     }
 
     //답안지 상태 변경

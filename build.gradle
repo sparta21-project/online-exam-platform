@@ -52,6 +52,7 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9'
 
     // Solapi SDK
+    implementation 'net.nurigo:sdk:4.3.2'
 
     // Redisson, 분산 락
     implementation 'org.redisson:redisson-spring-boot-starter:3.27.2'
