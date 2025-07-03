@@ -50,7 +50,7 @@ public class UserService {
 			request.getPassword(),
 			request.getUsername(),
 			request.getPhoneNumber(),
-			Role.USER
+			Role.USER,
 			LoginProvider.LOCAL
 		);
 

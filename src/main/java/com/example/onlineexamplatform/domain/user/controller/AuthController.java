@@ -25,8 +25,10 @@ import com.example.onlineexamplatform.domain.user.dto.AuthLoginResult;
 import com.example.onlineexamplatform.domain.user.dto.AuthPasswordRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthSignupRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthSignupResponse;
+import com.example.onlineexamplatform.domain.user.entity.LoginProvider;
 import com.example.onlineexamplatform.domain.user.entity.Role;
 import com.example.onlineexamplatform.domain.user.service.KakaoOauthService;
+import com.example.onlineexamplatform.domain.user.service.RedisService;
 import com.example.onlineexamplatform.domain.user.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,19 +50,33 @@ import reactor.core.publisher.Mono;
 public class AuthController {
 
 	private static final String SESSION_COOKIE_NAME = "SESSION";
-	private static final Duration SESSION_TTL = Duration.ofMinutes(15);
+	private static final Duration SESSION_TTL = Duration.ofHours(24);
 	private final KakaoOauthService kakaoOauthService;
 	private final UserService userService;
 	private final RedisTemplate<String, SessionUser> redisTemplate;
+	private final RedisService redisService;
 
 	// 유저 회원가입
 	@Operation(summary = "일반 사용자 회원가입", description = "이메일, 비밀번호, 사용자명을 입력 받아 신규 사용자 계정을 생성합니다.")
 	@Parameter(description = "회원가입 요청 정보")
 	@PostMapping("/signup")
 	public ResponseEntity<ApiResponse<AuthSignupResponse>> signup(
-		@RequestBody @Valid AuthSignupRequest request
+		@RequestBody @Valid AuthSignupRequest request,
+		HttpServletResponse response
 	) {
 		AuthSignupResponse dto = userService.signup(request);
+
+		// 세션 객체 생성
+		SessionUser session = new SessionUser(
+			dto.getId(),
+			dto.getUsername(),
+			dto.getRole(),
+			LoginProvider.LOCAL
+		);
+
+		// Redis에 Session 저장 및 쿠키 생성
+		redisService.createRedisSession(session, response);
+
 		return ApiResponse.onSuccess(SuccessStatus.SIGNUP_SUCCESS, dto);
 	}
 
@@ -69,9 +85,21 @@ public class AuthController {
 	@Parameter(description = "관리자 회원가입 요청 정보")
 	@PostMapping("/admin/signup")
 	public ResponseEntity<ApiResponse<AuthSignupResponse>> createAdmin(
-		@RequestBody @Valid AuthSignupRequest request
+		@RequestBody @Valid AuthSignupRequest request,
+		HttpServletResponse response
 	) {
 		AuthSignupResponse dto = userService.signupAdmin(request);
+
+		// 세션 객체 생성
+		SessionUser session = new SessionUser(
+			dto.getId(),
+			dto.getUsername(),
+			dto.getRole(),
+			LoginProvider.LOCAL
+		);
+
+		redisService.createRedisSession(session, response);
+
 		return ApiResponse.onSuccess(SuccessStatus.SIGNUP_SUCCESS, dto);
 	}
 
@@ -87,14 +115,16 @@ public class AuthController {
 		// 인증
 		AuthLoginResult result = userService.login(request);
 		AuthLoginResponse dto = AuthLoginResponse.of(result);
-		String sessionId = result.getSessionId();
+
+		SessionUser sessionUser = new SessionUser(
+			result.getUserId(),
+			result.getUsername(),
+			result.getRole(),
+			result.getLoginProvider()
+		);
 
 		// 쿠키 발급
-		Cookie cookie = new Cookie(SESSION_COOKIE_NAME, sessionId);
-		cookie.setHttpOnly(true);
-		cookie.setPath("/");
-		cookie.setMaxAge((int)SESSION_TTL.getSeconds());
-		response.addCookie(cookie);
+		redisService.createRedisSession(sessionUser, response);
 
 		return ApiResponse.onSuccess(SuccessStatus.LOGIN_SUCCESS, dto);
 	}
