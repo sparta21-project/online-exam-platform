@@ -55,7 +55,6 @@ public class User extends BaseEntity {
 	@Column
 	private LocalDateTime withdrawAt;
 
-
 	public User(String vendorId, String email, String password, String username, String phoneNumber, Role role,
 		LoginProvider loginProvider) {
 		this.vendorId = vendorId;
