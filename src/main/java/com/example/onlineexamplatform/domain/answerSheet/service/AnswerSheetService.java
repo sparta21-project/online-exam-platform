@@ -1,17 +1,5 @@
 package com.example.onlineexamplatform.domain.answerSheet.service;
 
-import static com.example.onlineexamplatform.domain.answerSheet.enums.AnswerSheetStatus.STARTED;
-
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
 import com.example.onlineexamplatform.domain.answerSheet.dto.request.AnswerSheetRequestDto;
@@ -27,7 +15,6 @@ import com.example.onlineexamplatform.domain.examAnswer.entity.ExamAnswer;
 import com.example.onlineexamplatform.domain.examAnswer.repository.ExamAnswerRepository;
 import com.example.onlineexamplatform.domain.examCategory.entity.ExamCategory;
 import com.example.onlineexamplatform.domain.examCategory.repository.ExamCategoryRepository;
-import com.example.onlineexamplatform.domain.sms.service.SmsService;
 import com.example.onlineexamplatform.domain.user.entity.Role;
 import com.example.onlineexamplatform.domain.user.entity.User;
 import com.example.onlineexamplatform.domain.user.repository.UserRepository;
@@ -35,11 +22,18 @@ import com.example.onlineexamplatform.domain.userAnswer.entity.UserAnswer;
 import com.example.onlineexamplatform.domain.userAnswer.repository.UserAnswerRepository;
 import com.example.onlineexamplatform.domain.userCategory.entity.UserCategory;
 import com.example.onlineexamplatform.domain.userCategory.repository.UserCategoryRepository;
-
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Timer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static com.example.onlineexamplatform.domain.answerSheet.enums.AnswerSheetStatus.STARTED;
 
 
 @Slf4j
@@ -77,11 +71,8 @@ public class AnswerSheetService {
             throw new ApiException(ErrorStatus.ANSWER_SHEET_ALREADY_EXISTS);
         }
 
-        boolean hasCategory = false;
+        boolean hasCategory = examCategories.isEmpty();
         //카테고리가 없으면 누구든 응시 가능
-        if(examCategories.isEmpty()) {
-            hasCategory = true;
-        }
         for (ExamCategory examCategory : examCategories) {
             for (UserCategory userCategory : userCategories) {
                 if (examCategory.getCategory().getId().equals(userCategory.getCategory().getId())) {
@@ -92,7 +83,7 @@ public class AnswerSheetService {
             if (hasCategory) break;
         }
 
-        if(hasCategory){
+        if (hasCategory) {
             AnswerSheet answerSheet = new AnswerSheet(exam, user, STARTED);
             answerSheetRepository.save(answerSheet);
         } else {
@@ -109,6 +100,12 @@ public class AnswerSheetService {
 
         AnswerSheet answerSheet = answerSheetRepository.findByExamAndUser(exam, user)
                 .orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
+
+        //본인이나 관리자가 아니면 에러
+        if (!answerSheet.getExam().getId().equals(exam.getId()) ||
+                !(answerSheet.getUser().getId().equals(user.getId()) || user.getRole().equals(Role.ADMIN))) {
+            throw new ApiException(ErrorStatus.ACCESS_DENIED);
+        }
 
         if (answerSheet.getStatus() == AnswerSheetStatus.SUBMITTED || answerSheet.getStatus() == AnswerSheetStatus.GRADED) {
             throw new ApiException(ErrorStatus.ANSWER_SUBMITTED);
@@ -168,7 +165,7 @@ public class AnswerSheetService {
                 .orElseThrow(() -> new ApiException(ErrorStatus.ANSWER_SHEET_NOT_FOUND));
 
         //시험 아이디와 답안지 시험 아이디 불일치
-        if(!examId.equals(answerSheet.getExam().getId())){
+        if (!examId.equals(answerSheet.getExam().getId())) {
             throw new ApiException(ErrorStatus.ACCESS_DENIED);
         }
 
@@ -272,17 +269,33 @@ public class AnswerSheetService {
 
     //답안 저장 로직
     public void saveUserAnswers(AnswerSheetRequestDto requestDto, AnswerSheet answerSheet) {
+
+        // 사용자 제출 답안 questionNumber 중복 체크
+        if (requestDto.getAnswers().size() != requestDto.getAnswers().stream().map(UserAnswerRequestDto::getQuestionNumber).distinct().count()) {
+            throw new ApiException(ErrorStatus.DUPLICATE_QUESTION_NUMBER);
+        }
+
+        // 시험 문제보다 제출한 문제가 더 많을경우 예외 발생
+        int answerCount = examAnswerRepository.countByExamId(answerSheet.getExam().getId());
+
+        if (requestDto.getAnswers().size() > answerCount) {
+            throw new ApiException(ErrorStatus.EXCEED_USER_ANSWER);
+        }
+
+        // DB에 저장된 값 한번에 불러오기 -> SELECT 1회
+        Map<Integer, UserAnswer> userAnswerMap = userAnswerRepository.findAllByAnswerSheetId(answerSheet.getId())
+                .stream()
+                .collect(Collectors.toMap(UserAnswer::getQuestionNumber, Function.identity()));
+
         for (UserAnswerRequestDto dto : requestDto.getAnswers()) {
-            int questionNumber = dto.getQuestionNumber();
-            String answerText = dto.getAnswerText();
+            String saveAnswer = dto.getAnswerText();
+            Integer saveQuestionNumber = dto.getQuestionNumber();
 
-            Optional<UserAnswer> userAnswer = userAnswerRepository.findByAnswerSheetAndQuestionNumber(answerSheet, questionNumber);
-
-            if (userAnswer.isPresent()) {
-                userAnswer.get().updateAnswer(answerText);
+            if (userAnswerMap.containsKey(saveQuestionNumber)) {
+                userAnswerMap.get(saveQuestionNumber).updateAnswer(saveAnswer);
             } else {
-                UserAnswer newAnswer = new UserAnswer(answerSheet, questionNumber, answerText);
-                userAnswerRepository.save(newAnswer);
+                UserAnswer userAnswer = new UserAnswer(answerSheet, saveQuestionNumber, saveAnswer);
+                userAnswerRepository.save(userAnswer);
             }
         }
     }
