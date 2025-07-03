@@ -37,6 +37,8 @@ public class User extends BaseEntity {
 
 	@Column(nullable = false, length = 20)
 	private String username;
+	@Column(nullable = false)
+	private String phoneNumber;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -52,12 +54,14 @@ public class User extends BaseEntity {
 	@Column
 	private LocalDateTime withdrawAt;
 
+
 	public User(String vendorId, String email, String password, String username, Role role,
 		LoginProvider loginProvider) {
 		this.vendorId = vendorId;
 		this.email = email;
 		this.password = password;
 		this.username = username;
+		this.phoneNumber = phoneNumber;
 		this.role = role;
 		this.loginProvider = loginProvider;
 	}
@@ -92,5 +96,9 @@ public class User extends BaseEntity {
 
 	public void updateUsername(String username) {
 		this.username = username;
+	}
+
+	public void updatePhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
 	}
 }

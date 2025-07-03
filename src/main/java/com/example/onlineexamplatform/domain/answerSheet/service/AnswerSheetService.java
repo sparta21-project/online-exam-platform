@@ -1,5 +1,17 @@
 package com.example.onlineexamplatform.domain.answerSheet.service;
 
+import static com.example.onlineexamplatform.domain.answerSheet.enums.AnswerSheetStatus.STARTED;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
 import com.example.onlineexamplatform.domain.answerSheet.dto.request.AnswerSheetRequestDto;
@@ -15,6 +27,7 @@ import com.example.onlineexamplatform.domain.examAnswer.entity.ExamAnswer;
 import com.example.onlineexamplatform.domain.examAnswer.repository.ExamAnswerRepository;
 import com.example.onlineexamplatform.domain.examCategory.entity.ExamCategory;
 import com.example.onlineexamplatform.domain.examCategory.repository.ExamCategoryRepository;
+import com.example.onlineexamplatform.domain.sms.service.SmsService;
 import com.example.onlineexamplatform.domain.user.entity.Role;
 import com.example.onlineexamplatform.domain.user.entity.User;
 import com.example.onlineexamplatform.domain.user.repository.UserRepository;
@@ -22,30 +35,18 @@ import com.example.onlineexamplatform.domain.userAnswer.entity.UserAnswer;
 import com.example.onlineexamplatform.domain.userAnswer.repository.UserAnswerRepository;
 import com.example.onlineexamplatform.domain.userCategory.entity.UserCategory;
 import com.example.onlineexamplatform.domain.userCategory.repository.UserCategoryRepository;
+
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.RedissonFairLock;
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-
-
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-
-import static com.example.onlineexamplatform.domain.answerSheet.enums.AnswerSheetStatus.STARTED;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class AnswerSheetService {
+
 
     private final AnswerSheetRepository answerSheetRepository;
     private final UserAnswerRepository userAnswerRepository;
@@ -293,5 +294,4 @@ public class AnswerSheetService {
                 .sorted(Comparator.comparing(UserAnswerResponseDto::getQuestionNumber))
                 .toList();
     }
-
 }

@@ -23,6 +23,7 @@ public enum SuccessStatus implements BaseCode {
 	UPDATE_PASSWORD(HttpStatus.OK, "1010", "비밀번호 변경 성공"),
 	USER_GET_ALL_SUCCESS(HttpStatus.OK, "1011", "전체 사용자 목록 조회 성공"),
 	USER_SEARCH_SUCCESS(HttpStatus.OK, "1012", "사용자 검색 결과 조회 성공"),
+	GET_SMS_LIST_SUCCESS(HttpStatus.OK, "1013", "SMS 알림 조회 성공"),
 
 	// 2000: 시험 성공 코드
 	FIND_EXAM(HttpStatus.OK, "2000", "시험 조회 성공."),
@@ -72,9 +73,8 @@ public enum SuccessStatus implements BaseCode {
 	USERCATEGORY_CREATE_SUCCESS(HttpStatus.CREATED, "9001", "응시 권한 생성에 성공했습니다."),
 	USERCATEGORY_GET_SUCCESS(HttpStatus.OK, "9002", "응시 권한 목록 조회에 성공했습니다."),
 	USERCATEGORY_DELETE_SUCCESS(HttpStatus.OK, "9003", "응시 권한 삭제에 성공했습니다."),
-	USERCATEGORY_GET_USERS_BY_CATEGORY_SUCCESS(HttpStatus.OK,"9004", "응시 권한 보유 사용자 목록 조회 성공"),
+	USERCATEGORY_GET_USERS_BY_CATEGORY_SUCCESS(HttpStatus.OK, "9004", "응시 권한 보유 사용자 목록 조회 성공"),
 	;
-
 
 	private final HttpStatus httpStatus;
 	private final String code;
