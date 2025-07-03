@@ -10,11 +10,16 @@ import com.example.onlineexamplatform.domain.examCategory.dto.ExamCategoryCreate
 import com.example.onlineexamplatform.domain.examCategory.dto.ExamCategoryResponseDto;
 import com.example.onlineexamplatform.domain.examCategory.entity.ExamCategory;
 import com.example.onlineexamplatform.domain.examCategory.repository.ExamCategoryRepository;
+import com.example.onlineexamplatform.domain.userAnswer.entity.UserAnswer;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,7 +43,11 @@ public class ExamCategoryService {
 
             ExamCategory examCategory = new ExamCategory(exam, category);
 
-            examCategoryRepository.save(examCategory);
+            try {
+                examCategoryRepository.save(examCategory);
+            } catch (DataIntegrityViolationException e) {
+                throw new ApiException(ErrorStatus.DUPLICATE_EXAM_CATEGORY);
+            }
         }
     }
 

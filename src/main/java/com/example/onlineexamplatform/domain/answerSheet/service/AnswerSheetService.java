@@ -22,7 +22,14 @@ import com.example.onlineexamplatform.domain.userAnswer.entity.UserAnswer;
 import com.example.onlineexamplatform.domain.userAnswer.repository.UserAnswerRepository;
 import com.example.onlineexamplatform.domain.userCategory.entity.UserCategory;
 import com.example.onlineexamplatform.domain.userCategory.repository.UserCategoryRepository;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.redisson.RedissonFairLock;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,9 +38,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import static com.example.onlineexamplatform.domain.answerSheet.enums.AnswerSheetStatus.STARTED;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AnswerSheetService {
@@ -50,13 +59,28 @@ public class AnswerSheetService {
     @Transactional
     public void createAnswerSheet(Long examId, Long userId) {
         Exam exam = examRepository.findByIdOrElseThrow(examId);
+        log.info("📌 [User {}] 조회한 remainUsers: {}", userId, exam.getRemainUsers());
+
+        exam.decreaseRemainUsers();
+        log.info("🔻 [User {}] 감소 후 remainUsers: {}", userId, exam.getRemainUsers());
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 
         List<ExamCategory> examCategories = examCategoryRepository.findAllByExamId(examId);
         List<UserCategory> userCategories = userCategoryRepository.findByUserId(userId);
 
+        //답안지 생성을 하나로 제한
+        boolean exists = answerSheetRepository.existsByExamAndUser(exam, user);
+        if (exists) {
+            throw new ApiException(ErrorStatus.ANSWER_SHEET_ALREADY_EXISTS);
+        }
+
         boolean hasCategory = false;
+        //카테고리가 없으면 누구든 응시 가능
+        if(examCategories.isEmpty()) {
+            hasCategory = true;
+        }
         for (ExamCategory examCategory : examCategories) {
             for (UserCategory userCategory : userCategories) {
                 if (examCategory.getCategory().getId().equals(userCategory.getCategory().getId())) {
@@ -152,7 +176,7 @@ public class AnswerSheetService {
             throw new ApiException(ErrorStatus.ACCESS_DENIED);
         }
 
-        userAnswerRepository.deleteAllByAnswerSheet(answerSheet);
+        // userAnswerRepository.deleteAllByAnswerSheet(answerSheet);
         answerSheetRepository.delete(answerSheet);
     }
 
@@ -269,4 +293,5 @@ public class AnswerSheetService {
                 .sorted(Comparator.comparing(UserAnswerResponseDto::getQuestionNumber))
                 .toList();
     }
+
 }

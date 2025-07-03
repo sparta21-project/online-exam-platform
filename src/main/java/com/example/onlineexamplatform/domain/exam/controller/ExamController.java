@@ -16,15 +16,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.code.SuccessStatus;
-import com.example.onlineexamplatform.common.error.ApiException;
 import com.example.onlineexamplatform.common.response.ApiResponse;
 import com.example.onlineexamplatform.config.session.CheckAuth;
 import com.example.onlineexamplatform.config.session.SessionUser;
 import com.example.onlineexamplatform.config.session.UserSession;
 import com.example.onlineexamplatform.domain.exam.dto.request.CreateExamRequestDto;
 import com.example.onlineexamplatform.domain.exam.dto.request.UpdateExamRequestDto;
+import com.example.onlineexamplatform.domain.exam.dto.response.ExamDetailResponseDto;
 import com.example.onlineexamplatform.domain.exam.dto.response.ExamResponseDto;
 import com.example.onlineexamplatform.domain.exam.dto.response.GetExamListResponseDto;
 import com.example.onlineexamplatform.domain.exam.dto.response.UpdateExamResponseDto;
@@ -39,38 +38,34 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "04-Exam", description = "사용자(Admin)가 시험 관리(CRUD)하는 API")
+@Tag(name = "04Exam", description = "사용자(Admin)가 시험 관리(CRUD)하는 API")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/exams")
 public class ExamController {
 
 	private final ExamService examService;
 
+	@Operation(summary = "시험 등록 API", description = " Dto로 입력받은 시험과 시험파일Id를 맵핑하여 저장합니다.")
 	@CheckAuth(Role.ADMIN)
-	@Operation(summary = "시험 등록", description = "Dto로 입력받은 시험과 시험파일ID를 맵핑하여 저장합니다.")
-	@Parameter(description = "유저의 ID입니다.")
-	@PostMapping("/admin/{userId}/exams")
-	public ResponseEntity<ApiResponse<ExamResponseDto<ExamFileResponseDto>>> createExam(@PathVariable Long userId,
+	@PostMapping
+	public ResponseEntity<ApiResponse<ExamResponseDto<ExamFileResponseDto>>> createExam(
 		@Valid @RequestBody CreateExamRequestDto requestDto,
-		@UserSession SessionUser sessionUser) {
+		@UserSession SessionUser session) {
 
-		if (!sessionUser.getUserId().equals(userId)) {
-			throw new ApiException(ErrorStatus.FORBIDDEN);
-		}
+		Long userId = session.getUserId();
 
 		ExamResponseDto<ExamFileResponseDto> exam = examService.createExam(requestDto.toCreate(), userId);
 
 		return ApiResponse.onSuccess(SuccessStatus.CREATE_EXAM, exam);
 	}
 
-	@CheckAuth(Role.ADMIN)
 	@Operation(summary = "시험 전체 조회 API", description = "등록된 시험 전체를 페이지네이션으로 조회합니다.")
-	@GetMapping("/admin/exams")
+	@CheckAuth(Role.USER)
+	@GetMapping
 	public ResponseEntity<ApiResponse<PageResponse<GetExamListResponseDto>>> getExamList(
 		@ParameterObject @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-		// 페이징 적용
 		Page<GetExamListResponseDto> examList = examService.getExamList(pageable);
 
 		PageResponse<GetExamListResponseDto> response = new PageResponse<>(examList);
@@ -78,13 +73,12 @@ public class ExamController {
 		return ApiResponse.onSuccess(SuccessStatus.FIND_EXAM, response);
 	}
 
-	@CheckAuth(Role.ADMIN)
 	@Operation(summary = "시험 검색 조회 API", description = "등록된 시험의 제목을 검색하여 페이지네이션으로 조회합니다.")
-	@Parameter(description = "시험 검색어 입니다.")
-	@GetMapping("/admin/exams/search")
+	@CheckAuth(Role.USER)
+	@GetMapping("/search")
 	public ResponseEntity<ApiResponse<PageResponse<GetExamListResponseDto>>> searchExamByTitle(
 		@ParameterObject @PageableDefault(sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable,
-		@RequestParam String examTile) {
+		@Parameter(description = "시험 검색어 입니다.") @RequestParam String examTile) {
 
 		Page<GetExamListResponseDto> examList = examService.searchExamByTitle(pageable, examTile);
 
@@ -93,38 +87,56 @@ public class ExamController {
 		return ApiResponse.onSuccess(SuccessStatus.FIND_EXAM, response);
 	}
 
-	@CheckAuth(Role.ADMIN)
 	@Operation(summary = "시험 단건 조회 API", description = "등록된 시험의 ID로 해당 시험을 단건 조회합니다")
-	@Parameter(description = "시험의 ID입니다.")
-	@GetMapping("/admin/exams/{examId}")
-	public ResponseEntity<ApiResponse<ExamResponseDto<ExamFileResponseDto>>> findExamById(@PathVariable Long examId) {
+	@CheckAuth(Role.ADMIN)
+	@GetMapping("/{examId}")
+	public ResponseEntity<ApiResponse<ExamResponseDto<ExamFileResponseDto>>> findExamById(
+		@Parameter(description = "시험의 ID입니다.") @PathVariable Long examId) {
 
 		ExamResponseDto<ExamFileResponseDto> exam = examService.findExamById(examId);
 
 		return ApiResponse.onSuccess(SuccessStatus.FIND_EXAM, exam);
 	}
 
-	@CheckAuth(Role.ADMIN)
-	@Operation(summary = "시험 수정 API", description = "등록된 시험의 ID로 해당 시험을 찾아 입력된 수정DTO 값을 받아 시험 정보 수정")
-	@Parameter(description = "시험의 ID입니다.")
-	@PatchMapping("/admin/exams/{examId}")
-	public ResponseEntity<ApiResponse<UpdateExamResponseDto>> updateExamById(@PathVariable Long examId,
-		@Valid @RequestBody UpdateExamRequestDto requestDto,
-		@UserSession SessionUser sessionUser) {
+	@Operation(summary = "시험 상세 조회 API", description = "응시자가 응시할 시험 정보와 파일을 조회합니다")
+	@CheckAuth(Role.USER)
+	@GetMapping("/{examId}/to-take")
+	public ResponseEntity<ApiResponse<ExamDetailResponseDto>> getExamDetail(
+		@Parameter(description = "시험의 ID입니다.") @PathVariable Long examId,
+		@UserSession SessionUser session) {
 
-		UpdateExamResponseDto exam = examService.updateExamById(examId, requestDto, sessionUser.getUserId());
+		Long userId = session.getUserId();
+
+		ExamDetailResponseDto examDetail = examService.getExamDetail(userId, examId);
+
+		return ApiResponse.onSuccess(SuccessStatus.FIND_EXAM, examDetail);
+	}
+
+	@Operation(summary = "시험 수정 API", description = "등록된 시험의 ID로 해당 시험을 찾아 입력된 수정DTO 값을 받아 시험 정보 수정")
+	@CheckAuth(Role.ADMIN)
+	@PatchMapping("/{examId}")
+	public ResponseEntity<ApiResponse<UpdateExamResponseDto>> updateExamById(
+		@Parameter(description = "시험의 ID입니다.") @PathVariable Long examId,
+		@Valid @RequestBody UpdateExamRequestDto requestDto,
+		@UserSession SessionUser session) {
+
+		Long userId = session.getUserId();
+
+		UpdateExamResponseDto exam = examService.updateExamById(userId, examId, requestDto);
 
 		return ApiResponse.onSuccess(SuccessStatus.UPDATE_EXAM, exam);
 	}
 
-	@CheckAuth(Role.ADMIN)
 	@Operation(summary = "시험 삭제 API", description = "등록된 시험의 ID로 해당 시험을 찾아 삭제")
-	@Parameter(description = "시험의 ID입니다.")
-	@DeleteMapping("/admin/exams/{examId}")
-	public ResponseEntity<ApiResponse<Void>> deleteExamById(@PathVariable Long examId,
-		@UserSession SessionUser sessionUser) {
+	@CheckAuth(Role.ADMIN)
+	@DeleteMapping("/{examId}")
+	public ResponseEntity<ApiResponse<Void>> deleteExamById(
+		@Parameter(description = "시험의 ID입니다.") @PathVariable Long examId,
+		@UserSession SessionUser session) {
 
-		examService.deleteExamById(examId, sessionUser.getUserId());
+		Long userId = session.getUserId();
+
+		examService.deleteExamById(userId, examId);
 
 		return ApiResponse.onSuccess(SuccessStatus.DELETE_EXAM);
 	}

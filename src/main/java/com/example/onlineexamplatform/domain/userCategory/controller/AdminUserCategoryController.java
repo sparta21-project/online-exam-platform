@@ -35,7 +35,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/admin/user-category")
 @RequiredArgsConstructor
-@Tag(name = "07-Admin UserCategory", description = "관리자 전용 응시 권한 관리 API.")
+@Tag(name = "07Admin-UserCategory", description = "관리자 전용 응시 권한 관리 API.")
 public class AdminUserCategoryController {
 
 	private final UserCategoryService userCategoryService;
