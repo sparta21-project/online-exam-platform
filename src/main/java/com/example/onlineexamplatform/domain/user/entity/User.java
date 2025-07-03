@@ -3,6 +3,7 @@ package com.example.onlineexamplatform.domain.user.entity;
 import java.time.LocalDateTime;
 
 import com.example.onlineexamplatform.common.entity.BaseEntity;
+import com.example.onlineexamplatform.domain.password.PasswordUtil;
 import com.example.onlineexamplatform.domain.user.dto.KakaoUserInfoResponse;
 
 import jakarta.persistence.Column;
@@ -54,12 +55,11 @@ public class User extends BaseEntity {
 	@Column
 	private LocalDateTime withdrawAt;
 
-
-	public User(String vendorId, String email, String password, String username, Role role,
+	public User(String vendorId, String email, String password, String username, String phoneNumber, Role role,
 		LoginProvider loginProvider) {
 		this.vendorId = vendorId;
 		this.email = email;
-		this.password = password;
+		this.password = PasswordUtil.hash(password); // BCrypt로 자동 암호화
 		this.username = username;
 		this.phoneNumber = phoneNumber;
 		this.role = role;
@@ -72,6 +72,7 @@ public class User extends BaseEntity {
 			kakaoUserInfo.getKakaoAccount().getEmail(),
 			null,
 			kakaoUserInfo.getProperties().getNickName(),
+			null,
 			Role.USER,
 			LoginProvider.KAKAO
 		);
@@ -100,5 +101,9 @@ public class User extends BaseEntity {
 
 	public void updatePhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
+	}
+
+	public boolean checkPassword(String password) {
+		return PasswordUtil.checkPassword(password, this.password);
 	}
 }
