@@ -48,7 +48,8 @@ public class UserService {
 			request.getEmail(),
 			hashedPassword, //평문
 			request.getUsername(),
-			Role.USER,
+			request.getPhoneNumber(),
+			Role.USER
 			LoginProvider.LOCAL
 		);
 
@@ -60,7 +61,8 @@ public class UserService {
 			saved.getId(),
 			saved.getEmail(),
 			saved.getUsername(),
-			saved.getRole()
+			saved.getRole(),
+			saved.getPhoneNumber()
 		);
 
 	}
@@ -78,6 +80,7 @@ public class UserService {
 			request.getEmail(),
 			hashedPassword,
 			request.getUsername(),
+			request.getPhoneNumber(),
 			Role.ADMIN,
 			LoginProvider.LOCAL
 		);
@@ -88,7 +91,8 @@ public class UserService {
 			saved.getId(),
 			saved.getEmail(),
 			saved.getUsername(),
-			saved.getRole()
+			saved.getRole(),
+			saved.getPhoneNumber()
 		);
 	}
 
@@ -157,7 +161,8 @@ public class UserService {
 			user.getId(),
 			user.getEmail(),
 			user.getUsername(),
-			user.getRole()
+			user.getRole(),
+			user.getPhoneNumber()
 		);
 	}
 
@@ -173,6 +178,7 @@ public class UserService {
 
 		user.updateEmail(request.getEmail());
 		user.updateUsername(request.getUsername());
+		user.updatePhoneNumber(request.getPhoneNumber());
 
 		User saved = userRepository.save(user);
 
@@ -180,7 +186,9 @@ public class UserService {
 			saved.getId(),
 			saved.getEmail(),
 			saved.getUsername(),
-			saved.getRole()
+			saved.getRole(),
+			saved.getPhoneNumber()
+
 		);
 	}
 
@@ -210,7 +218,8 @@ public class UserService {
 				user.getId(),
 				user.getEmail(),
 				user.getUsername(),
-				user.getRole()
+				user.getRole(),
+				user.getPhoneNumber()
 			))
 			.toList();
 	}

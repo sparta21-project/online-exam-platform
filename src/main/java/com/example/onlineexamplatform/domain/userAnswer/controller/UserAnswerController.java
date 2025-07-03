@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "UserAnswer", description = "사용자(User)가 작성하는 답안 작성 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user-answers")
+@RequestMapping("/api/user-answers")
 public class UserAnswerController {
 
 	private final UserAnswerService userAnswerService;
