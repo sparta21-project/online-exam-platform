@@ -7,9 +7,9 @@ import java.util.UUID;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
+import com.example.onlineexamplatform.domain.password.PasswordUtil;
 import com.example.onlineexamplatform.config.session.SessionUser;
 import com.example.onlineexamplatform.domain.user.dto.AuthLoginRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthLoginResult;
@@ -40,14 +40,12 @@ public class UserService {
 			throw new ApiException(ErrorStatus.DUPLICATE_EMAIL);
 		}
 
-		// 비밀번호 암호화
-		// String encodedPassword = encoder.encode(request.getPassword());
 
 		// jpa에 저장할 user 엔티티 객체
 		User user = new User(
 			null,
 			request.getEmail(),
-			request.getPassword(),
+			request.getPassword(), //평문
 			request.getUsername(),
 			request.getPhoneNumber(),
 			Role.USER,
@@ -104,7 +102,8 @@ public class UserService {
 			throw new ApiException(ErrorStatus.USER_DEACTIVATE);
 		}
 
-		if (!request.getPassword().equals(user.getPassword())) {
+		// BCrypt를 사용한 비밀번호 검증
+		if (!user.checkPassword(request.getPassword())) {
 			throw new ApiException(ErrorStatus.USER_NOT_MATCH);
 		}
 
@@ -136,12 +135,13 @@ public class UserService {
 		}
 
 		// 현재 비밀번호 검증
-		if (!dto.getOldPassword().equals(user.getPassword())) {
+		if (!PasswordUtil.checkPassword(dto.getOldPassword(), user.getPassword())) {
 			throw new ApiException(ErrorStatus.INVALID_PASSWORD);
 		}
 
-		// 비밀번호 변경
-		user.setPassword(dto.getNewPassword());
+		// 새 비밀번호를 해시화하여 저장
+		String hashedNewPassword = PasswordUtil.hash(dto.getNewPassword());
+		user.setPassword(hashedNewPassword);
 		userRepository.save(user);
 	}
 
