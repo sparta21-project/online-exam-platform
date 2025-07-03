@@ -40,16 +40,14 @@ public class UserService {
 			throw new ApiException(ErrorStatus.DUPLICATE_EMAIL);
 		}
 
-		String hashedPassword = PasswordUtil.hash(request.getPassword());
-
 		// jpa에 저장할 user 엔티티 객체
 		User user = new User(
 			null,
 			request.getEmail(),
-			hashedPassword, //평문
+			request.getPassword(), //평문
 			request.getUsername(),
 			request.getPhoneNumber(),
-			Role.USER
+			Role.USER,
 			LoginProvider.LOCAL
 		);
 
@@ -73,12 +71,10 @@ public class UserService {
 			throw new ApiException(ErrorStatus.DUPLICATE_EMAIL);
 		}
 
-		String hashedPassword = PasswordUtil.hash(request.getPassword());
-
 		User user = new User(
 			null,
 			request.getEmail(),
-			hashedPassword,
+			request.getPassword(),
 			request.getUsername(),
 			request.getPhoneNumber(),
 			Role.ADMIN,
@@ -106,7 +102,7 @@ public class UserService {
 		}
 
 		// BCrypt를 사용한 비밀번호 검증
-		if (!PasswordUtil.checkPassword(request.getPassword(), user.getPassword())) {
+		if (!user.checkPassword(request.getPassword())) {
 			throw new ApiException(ErrorStatus.USER_NOT_MATCH);
 		}
 

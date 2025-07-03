@@ -1,10 +1,6 @@
 package com.example.onlineexamplatform.domain.password;
 
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
-
 import org.mindrot.jbcrypt.BCrypt;
 
 public class PasswordUtil {
@@ -22,6 +18,7 @@ public class PasswordUtil {
 		}
 		return BCrypt.hashpw(password, BCrypt.gensalt());
 	}
+
 
 	// 비밀번호 비교 (plain vs hash)
 	public static boolean checkPassword(String plainPassword, String hashedPassword) {
