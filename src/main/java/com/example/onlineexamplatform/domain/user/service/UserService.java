@@ -40,6 +40,7 @@ public class UserService {
 			throw new ApiException(ErrorStatus.DUPLICATE_EMAIL);
 		}
 
+
 		// jpa에 저장할 user 엔티티 객체
 		User user = new User(
 			null,

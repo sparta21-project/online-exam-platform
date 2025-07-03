@@ -19,7 +19,6 @@ public class PasswordUtil {
 		return BCrypt.hashpw(password, BCrypt.gensalt());
 	}
 
-
 	// 비밀번호 비교 (plain vs hash)
 	public static boolean checkPassword(String plainPassword, String hashedPassword) {
 		return BCrypt.checkpw(plainPassword, hashedPassword);
