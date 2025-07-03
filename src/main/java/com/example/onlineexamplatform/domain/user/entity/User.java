@@ -3,6 +3,7 @@ package com.example.onlineexamplatform.domain.user.entity;
 import java.time.LocalDateTime;
 
 import com.example.onlineexamplatform.common.entity.BaseEntity;
+import com.example.onlineexamplatform.domain.password.PasswordUtil;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,10 +44,12 @@ public class User extends BaseEntity {
 
 	public User(String email, String password, String username, Role role) {
 		this.email = email;
-		this.password = password; // BCrypt로 자동 암호화
+		this.password = PasswordUtil.hash(password); // BCrypt로 자동 암호화
 		this.username = username;
 		this.role = role;
 	}
+
+
 
 	public void setPassword(String password) {
 		this.password = password;
@@ -67,5 +70,9 @@ public class User extends BaseEntity {
 
 	public void updateUsername(String username) {
 		this.username = username;
+	}
+
+	public boolean chsckPassword(String password) {
+		return !PasswordUtil.checkPassword(password, this.password);
 	}
 }
