@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 public class RedisService {
 
 	private static final String SESSION_COOKIE_NAME = "SESSION";
-	private static final Duration SESSION_TTL = Duration.ofMinutes(15);
+	private static final Duration SESSION_TTL = Duration.ofHours(24);
 	private final RedisTemplate<String, SessionUser> redisTemplate;
 
 	public void createRedisSession(SessionUser session, HttpServletResponse response) {
