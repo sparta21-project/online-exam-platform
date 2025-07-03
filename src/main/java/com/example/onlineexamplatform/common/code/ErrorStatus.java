@@ -33,6 +33,7 @@ public enum ErrorStatus implements BaseErrorCode {
 	CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "3001", "해당 카테고리가 DB에 존재하지 않습니다."),
 	DUPLICATE_USER_CATEGORY(HttpStatus.CONFLICT, "3002", "이미 등록된 응시 권한입니다."),
 	USER_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "3003", "응시 권한이 존재하지 않습니다."),
+
 	INVALID_EXAM_CATEGORY_MAPPING(HttpStatus.BAD_REQUEST, "3007", "시험과 연결된 카테고리가 없습니다."),
 	INVALID_CATEGORY_TYPE(HttpStatus.BAD_REQUEST, "3008", "지원하지 않는 카테고리 타입입니다."),
 
@@ -62,6 +63,7 @@ public enum ErrorStatus implements BaseErrorCode {
 	// examAnswer 에러
 	DUPLICATE_EXAM_ANSWER(HttpStatus.CONFLICT, "9001", "답안이 이미 존재합니다."),
 	EXAM_ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "9002", "답안이 없습니다."),
+	DUPLICATE_EXAM_CATEGORY(HttpStatus.CONFLICT, "9003", "이미 등록된 응시 권한입니다.")
 	;
 
 	private final HttpStatus httpStatus;

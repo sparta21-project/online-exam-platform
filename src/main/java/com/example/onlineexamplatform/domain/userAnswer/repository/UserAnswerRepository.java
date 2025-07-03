@@ -15,4 +15,5 @@ public interface UserAnswerRepository extends JpaRepository<UserAnswer, Long> {
     List<UserAnswer> findAllByAnswerSheet(AnswerSheet answerSheet);
     void deleteAllByAnswerSheet(AnswerSheet answerSheet);
 
+    Optional<UserAnswer> findByAnswerSheetIdAndQuestionNumber(Long answerSheetId, Integer questionNumber);
 }

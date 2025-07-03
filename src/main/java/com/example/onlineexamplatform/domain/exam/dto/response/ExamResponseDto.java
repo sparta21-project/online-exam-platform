@@ -41,6 +41,8 @@ public class ExamResponseDto<T> {
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private final LocalDateTime updatedAt;
 
+	private final Integer remainUsers;
+
 	public static <T> ExamResponseDto<T> of(Exam exam, List<T> examFiles) {
 		return new ExamResponseDto<>(
 			exam.getId(),
@@ -52,7 +54,8 @@ public class ExamResponseDto<T> {
 			exam.getEndTime(),
 			examFiles,
 			exam.getCreatedAt(),
-			exam.getUpdatedAt()
+			exam.getUpdatedAt(),
+			exam.getRemainUsers()
 		);
 	}
 
