@@ -77,8 +77,9 @@ public enum SuccessStatus implements BaseCode {
 	USERCATEGORY_GET_USERS_BY_CATEGORY_SUCCESS(HttpStatus.OK,"9004", "응시 권한 보유 사용자 목록 조회 성공"),
 
 	// 10000 : 통계 성공 코드
-	STATISTICS_GET_SUCCESS(HttpStatus.OK, "10001", "시험 통계 조회에 성공했습니다."),
-	;
+	STATISTICS_GET_SUCCESS(HttpStatus.OK, "10001", "통계 조회에 성공했습니다."),
+	STATISTICS_SEARCH_SUCCESS(HttpStatus.OK, "1003", "통계 조건 검색 성공"),
+	STATISTICS_VISIBILITY_UPDATED(HttpStatus.OK, "10005", "통계 공개 상태를 변경했습니다.");
 
 	private final HttpStatus httpStatus;
 	private final String code;

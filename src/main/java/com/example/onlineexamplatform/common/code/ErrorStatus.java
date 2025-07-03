@@ -1,11 +1,9 @@
 package com.example.onlineexamplatform.common.code;
 
-import org.springframework.http.HttpStatus;
-
 import com.example.onlineexamplatform.common.dto.ErrorReasonDto;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
@@ -66,8 +64,10 @@ public enum ErrorStatus implements BaseErrorCode {
 	DUPLICATE_EXAM_CATEGORY(HttpStatus.CONFLICT, "9003", "이미 등록된 응시 권한입니다.")
 
 	// statistics 에러
-	STATISTICS_NOT_FOUND(HttpStatus.NOT_FOUND, "7001", "해당 시험에 대한 통계 정보를 찾을 수 없습니다."),
-	INVALID_EXAM_ID(HttpStatus.BAD_REQUEST, "7002","유효하지 않은 시험 ID 입니다."),
+	STATISTICS_NOT_FOUND(HttpStatus.NOT_FOUND, "7001", "통계 정보를 찾을 수 없습니다."),
+	INVALID_EXAM_ID(HttpStatus.BAD_REQUEST, "7002", "유효하지 않은 시험 ID 입니다."),
+	STATISTICS_EMPTY_DATA(HttpStatus.BAD_REQUEST, "7003", "응시자 수가 없거나 평균 점수가 없어 공개할 수 없습니다."),
+	STATISTICS_NOT_PUBLIC(HttpStatus.FORBIDDEN, "7004", "이 시험 통계는 비공개 상태입니다."),
 	;
 
 
@@ -77,19 +77,19 @@ public enum ErrorStatus implements BaseErrorCode {
 
 	public ErrorReasonDto getReason() {
 		return ErrorReasonDto.builder()
-			.isSuccess(false)
-			.code(code)
-			.message(message)
-			.build();
+				.isSuccess(false)
+				.code(code)
+				.message(message)
+				.build();
 	}
 
 	public ErrorReasonDto getReasonHttpStatus() {
 		return ErrorReasonDto.builder()
-			.isSuccess(false)
-			.httpStatus(httpStatus)
-			.code(code)
-			.message(message)
-			.build();
+				.isSuccess(false)
+				.httpStatus(httpStatus)
+				.code(code)
+				.message(message)
+				.build();
 	}
 
 }
