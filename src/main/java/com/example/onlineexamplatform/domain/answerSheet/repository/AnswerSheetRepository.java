@@ -15,4 +15,6 @@ public interface AnswerSheetRepository extends JpaRepository<AnswerSheet, Long> 
     Optional<AnswerSheet> findByExamAndUser(Exam exam, User user);
     List<AnswerSheet> findByExamIdAndStatusNotIn(Long examId, List<AnswerSheetStatus> statuses);
     List<AnswerSheet> findByExamIdAndStatusNot(Long examId, AnswerSheetStatus status);
+
+    boolean existsByExamAndUser(Exam exam, User user);
 }

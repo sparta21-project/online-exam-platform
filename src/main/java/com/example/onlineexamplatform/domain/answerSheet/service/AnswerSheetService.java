@@ -70,7 +70,17 @@ public class AnswerSheetService {
         List<ExamCategory> examCategories = examCategoryRepository.findAllByExamId(examId);
         List<UserCategory> userCategories = userCategoryRepository.findByUserId(userId);
 
+        //답안지 생성을 하나로 제한
+        boolean exists = answerSheetRepository.existsByExamAndUser(exam, user);
+        if (exists) {
+            throw new ApiException(ErrorStatus.ANSWER_SHEET_ALREADY_EXISTS);
+        }
+
         boolean hasCategory = false;
+        //카테고리가 없으면 누구든 응시 가능
+        if(examCategories.isEmpty()) {
+            hasCategory = true;
+        }
         for (ExamCategory examCategory : examCategories) {
             for (UserCategory userCategory : userCategories) {
                 if (examCategory.getCategory().getId().equals(userCategory.getCategory().getId())) {
@@ -166,7 +176,7 @@ public class AnswerSheetService {
             throw new ApiException(ErrorStatus.ACCESS_DENIED);
         }
 
-        userAnswerRepository.deleteAllByAnswerSheet(answerSheet);
+        // userAnswerRepository.deleteAllByAnswerSheet(answerSheet);
         answerSheetRepository.delete(answerSheet);
     }
 
