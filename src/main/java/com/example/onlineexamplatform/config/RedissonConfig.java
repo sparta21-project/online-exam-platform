@@ -17,13 +17,17 @@ public class RedissonConfig {
     public RedissonClient redissonClient() {
         Config config = new Config();
 
+        // 1번만 호출
+        var clusterConfig = config.useClusterServers();
+
+        // add all nodes
         String[] nodes = redisNodes.split(",");
         for (String node : nodes) {
-            config.useClusterServers().addNodeAddress("redis://" + node.trim());
+            clusterConfig.addNodeAddress("redis://" + node.trim());
         }
 
-        config.useClusterServers()
-                .setScanInterval(2000)
+        // 나머지 설정
+        clusterConfig.setScanInterval(2000)
                 .setIdleConnectionTimeout(10000)
                 .setConnectTimeout(10000)
                 .setTimeout(3000)
