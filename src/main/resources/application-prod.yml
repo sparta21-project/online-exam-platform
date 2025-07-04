@@ -30,6 +30,11 @@ redisson:
       connectionPoolSize: 64
       connectionMinimumIdleSize: 24
 
+solapi:
+  api-key: ${SOLAPI_API_KEY}
+  api-secret: ${SOLAPI_API_SECRET}
+  from: ${SOLAPI_FROM}
+
 aws:
   s3:
     access-key: ${AWS_ACCESS_KEY}

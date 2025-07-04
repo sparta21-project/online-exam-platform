@@ -89,6 +89,8 @@ jobs:
           aws.s3.secret-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws.s3.bucket-name: ${{ secrets.AWS_S3_BUCKET }}
           aws.region: ${{ secrets.AWS_REGION }}
+          SOLAPI_API_KEY: ${{ secrets.SOLAPI_API_KEY }}
+          SOLAPI_API_SECRET: ${{ secrets.SOLAPI_API_SECRET }}
 
       - name: Install Docker Compose
         run: |
