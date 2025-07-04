@@ -22,10 +22,22 @@ spring:
       max-file-size: 100MB
       max-request-size: 100MB
 
-  data:
-    redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
+  redis:
+    redisson:
+      config: |
+        clusterServersConfig:
+          nodeAddresses:
+            - "redis://${REDIS_HOST}:${REDIS_PORT}"
+          scanInterval: 2000
+          idleConnectionTimeout: 10000
+          connectTimeout: 10000
+          timeout: 3000
+          retryAttempts: 3
+          retryInterval: 1500
+          failedSlaveReconnectionInterval: 3000
+          failedSlaveCheckInterval: 60000
+        threads: 4
+        nettyThreads: 4
 
 aws:
   s3:
