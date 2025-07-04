@@ -1,11 +1,9 @@
 package com.example.onlineexamplatform.common.code;
 
-import org.springframework.http.HttpStatus;
-
 import com.example.onlineexamplatform.common.dto.ReasonDto;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
@@ -74,7 +72,6 @@ public enum SuccessStatus implements BaseCode {
 	USERCATEGORY_GET_SUCCESS(HttpStatus.OK, "9002", "응시 권한 목록 조회에 성공했습니다."),
 	USERCATEGORY_DELETE_SUCCESS(HttpStatus.OK, "9003", "응시 권한 삭제에 성공했습니다."),
 	USERCATEGORY_GET_USERS_BY_CATEGORY_SUCCESS(HttpStatus.OK, "9004", "응시 권한 보유 사용자 목록 조회 성공"),
-	USERCATEGORY_GET_USERS_BY_CATEGORY_SUCCESS(HttpStatus.OK,"9004", "응시 권한 보유 사용자 목록 조회 성공"),
 
 	// 10000 : 통계 성공 코드
 	STATISTICS_GET_SUCCESS(HttpStatus.OK, "10001", "통계 조회에 성공했습니다."),
@@ -87,18 +84,18 @@ public enum SuccessStatus implements BaseCode {
 
 	public ReasonDto getReason() {
 		return ReasonDto.builder()
-			.isSuccess(true)
-			.code(code)
-			.message(message)
-			.build();
+				.isSuccess(true)
+				.code(code)
+				.message(message)
+				.build();
 	}
 
 	public ReasonDto getReasonHttpStatus() {
 		return ReasonDto.builder()
-			.isSuccess(true)
-			.httpStatus(httpStatus)
-			.code(code)
-			.message(message)
-			.build();
+				.isSuccess(true)
+				.httpStatus(httpStatus)
+				.code(code)
+				.message(message)
+				.build();
 	}
 }
