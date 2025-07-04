@@ -1,3 +1,5 @@
+package com.example.onlineexamplatform.config;
+
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -8,14 +10,19 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RedissonConfig {
 
-    @Value("${REDIS_NODE_1}")
-    private String redisNode1;
+    @Value("${REDIS_NODES}")
+    private String redisNodes;
 
     @Bean(destroyMethod = "shutdown")
     public RedissonClient redissonClient() {
         Config config = new Config();
+
+        String[] nodes = redisNodes.split(",");
+        for (String node : nodes) {
+            config.useClusterServers().addNodeAddress("redis://" + node.trim());
+        }
+
         config.useClusterServers()
-                .addNodeAddress("redis://" + redisNode1)
                 .setScanInterval(2000)
                 .setIdleConnectionTimeout(10000)
                 .setConnectTimeout(10000)
@@ -24,6 +31,7 @@ public class RedissonConfig {
                 .setRetryInterval(1500)
                 .setFailedSlaveReconnectionInterval(3000)
                 .setFailedSlaveCheckInterval(60000);
+
         return Redisson.create(config);
     }
 }
