@@ -84,8 +84,8 @@ jobs:
           spring.data.redis.host: ${{ secrets.REDIS_HOST }}
           spring.data.redis.port: ${{ secrets.REDIS_PORT }}
           aws.s3.access-key: ${{ secrets.AWS_ACCESS_KEY }}
-          aws.s3.secret-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws.s3.bucket-name: ${{ secrets.AWS_BUCKET_NAME }}
+          aws.s3.secret-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws.s3.bucket-name: ${{ secrets.AWS_S3_BUCKET }}
           aws.region: ${{ secrets.AWS_REGION }}
 
       - name: Install Docker Compose
