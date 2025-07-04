@@ -13,6 +13,7 @@ public class RedissonConfig {
 
     @Bean(destroyMethod = "shutdown")
     public RedissonClient redissonClient(RedissonCustomProperties properties) {
+        System.out.println("⛳️ REDIS ADDRESS = " + properties.getConfig().getSingleServerConfig().getAddress());
         Config config = new Config();
         config.useSingleServer()
                 .setAddress(properties.getConfig().getSingleServerConfig().getAddress())
