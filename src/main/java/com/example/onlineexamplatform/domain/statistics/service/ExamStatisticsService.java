@@ -19,6 +19,7 @@ import com.example.onlineexamplatform.domain.statistics.repository.ExamStatistic
 import com.example.onlineexamplatform.domain.statistics.repository.QuestionStatisticsRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * 시험 통계와 관련된 비즈니스 로직 처리 서비스. 시험 통계 저장 및 갱신 , 관리자/사용자용 통계 단건 조회 및 조건 검색 , 문제별 정답률 계산 , 통계 공개 여부 변경
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ExamStatisticsService {
@@ -45,7 +47,7 @@ public class ExamStatisticsService {
 	public AdminExamStatisticsResponse getExamStatistics(Long examId) {
 		var exam = examRepository.findByIdOrElseThrow(examId);
 
-		// 통계 row가 없을 수 있으므로 먼저 확인
+		// 통계 데이터가 없을 수 있으므로 먼저 확인
 		var statsOpt = examStatisticsJpaRepository.findByExamId(examId);
 
 		if (statsOpt.isEmpty()) {
@@ -121,12 +123,13 @@ public class ExamStatisticsService {
 
 		// 신규 통계 데이터 계산
 		Double averageScoreRaw = statisticsqueryRepository.getAverageScoreByExam(examId);
-		if (averageScoreRaw == null) {
+		int participantCount = statisticsqueryRepository.countGradedParticipants(examId);
+		if (averageScoreRaw == null || participantCount == 0) {
+			log.warn("통계 생략 - 채점된 응시자가 없음 (examId: {})", examId);
 			return;
 		}
 
 		int averageScore = (int) Math.round(averageScoreRaw);
-		int participantCount = statisticsqueryRepository.countGradedParticipants(examId);
 		List<QuestionCorrectRateResponse> newCorrectRates = statisticsqueryRepository.getCorrectRatePerQuestion(
 				examId);
 
