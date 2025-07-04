@@ -81,7 +81,8 @@ jobs:
           spring.datasource.url: ${{ secrets.MYSQL_URL }}
           spring.datasource.username: ${{ secrets.DB_USERNAME }}
           spring.datasource.password: ${{ secrets.DB_PASSWORD }}
-          redisson.config.singleServerConfig.address: redis://${{ secrets.REDIS_HOST }}:${{ secrets.REDIS_PORT }}
+          REDIS_HOST: ${{ secrets.REDIS_HOST }}
+          REDIS_PORT: ${{ secrets.REDIS_PORT }}
           aws.s3.access-key: ${{ secrets.AWS_ACCESS_KEY }}
           aws.s3.secret-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws.s3.bucket-name: ${{ secrets.AWS_S3_BUCKET }}
