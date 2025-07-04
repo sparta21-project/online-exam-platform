@@ -26,6 +26,9 @@ spring:
     redis:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
+      cluster:
+        nodes:
+          - ${REDIS_NODE_1}
 
 aws:
   s3:
