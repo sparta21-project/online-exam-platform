@@ -39,6 +39,10 @@ solapi:
   api-secret: ${SOLAPI_API_SECRET}
   from: ${SOLAPI_FROM}
 
+kakao:
+  client_id: ${REST_API_KEY}
+  redirect_uri: ${REDIRECT_URI}
+
 aws:
   s3:
     access-key: ${AWS_ACCESS_KEY}

@@ -96,6 +96,8 @@ jobs:
           solapi.api-secret: ${{ secrets.SOLAPI_API_SECRET }}
           solapi.from: ${{ secrets.SOLAPI_FROM }}
 
+          kakao.client_id: ${{ secrets.REST_API_KEY }}
+          kakao.redirect_uri: ${{ secrets.REDIRECT_URI }}
 
       - name: Install Docker Compose
         run: |
