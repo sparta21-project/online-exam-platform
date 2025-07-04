@@ -274,6 +274,7 @@ public class AnswerSheetService {
             }
         }
         answerSheet.grade(score);
+        answerSheetRepository.save(answerSheet);
 
         // sms 저장 및 전송 호출
         smsService.createSms(
