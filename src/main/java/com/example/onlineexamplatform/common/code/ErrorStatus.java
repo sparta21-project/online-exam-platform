@@ -52,7 +52,7 @@ public enum ErrorStatus implements BaseErrorCode {
 	ANSWER_SUBMITTED(HttpStatus.BAD_REQUEST, "3003", "이미 제출된 답안지입니다."),
 	CATEGORY_NOT_MATCHED(HttpStatus.UNAUTHORIZED, "3004", "답안지 생성 권한이 없습니다."),
 	USER_SESSION_NOT_FOUND(HttpStatus.UNAUTHORIZED, "3005", "유저 세션 정보가 없습니다."),
-	ANSWER_SHEET_ALREADY_EXISTS(HttpStatus.CONFLICT, "3006", "이미 답안지가 존재합니다." ),
+	ANSWER_SHEET_ALREADY_EXISTS(HttpStatus.CONFLICT, "3006", "이미 답안지가 존재합니다."),
 
 	// userAnswer 에러
 	DUPLICATE_QUESTION_NUMBER(HttpStatus.CONFLICT, "8001", "중복된 문제 번호가 존재합니다."),
@@ -61,11 +61,10 @@ public enum ErrorStatus implements BaseErrorCode {
 	// examAnswer 에러
 	DUPLICATE_EXAM_ANSWER(HttpStatus.CONFLICT, "9001", "답안이 이미 존재합니다."),
 	EXAM_ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "9002", "답안이 없습니다."),
-	DUPLICATE_EXAM_CATEGORY(HttpStatus.CONFLICT, "9003", "이미 등록된 응시 권한입니다.")
+	DUPLICATE_EXAM_CATEGORY(HttpStatus.CONFLICT, "9003", "이미 등록된 응시 권한입니다."),
 
 	// statistics 에러
 	STATISTICS_NOT_FOUND(HttpStatus.NOT_FOUND, "7001", "통계 정보를 찾을 수 없습니다."),
-	INVALID_EXAM_ID(HttpStatus.BAD_REQUEST, "7002", "유효하지 않은 시험 ID 입니다."),
 	STATISTICS_EMPTY_DATA(HttpStatus.BAD_REQUEST, "7003", "응시자 수가 없거나 평균 점수가 없어 공개할 수 없습니다."),
 	STATISTICS_NOT_PUBLIC(HttpStatus.FORBIDDEN, "7004", "이 시험 통계는 비공개 상태입니다."),
 	;
