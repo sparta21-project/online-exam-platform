@@ -50,7 +50,6 @@ public class AnswerSheetConcurrencyTest {
     @Autowired
     private ExamCategoryRepository examCategoryRepository;
 
-
     private Long examId;
 
     @PersistenceContext
