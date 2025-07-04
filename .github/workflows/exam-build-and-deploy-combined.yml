@@ -83,6 +83,7 @@ jobs:
           spring.datasource.password: ${{ secrets.DB_PASSWORD }}
           spring.data.redis.host: ${{ secrets.REDIS_HOST }}
           spring.data.redis.port: ${{ secrets.REDIS_PORT }}
+          REDIS_NODES: "['${{ secrets.REDIS_NODE_1 }}']"
           aws.s3.access-key: ${{ secrets.AWS_ACCESS_KEY }}
           aws.s3.secret-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws.s3.bucket-name: ${{ secrets.AWS_S3_BUCKET }}
