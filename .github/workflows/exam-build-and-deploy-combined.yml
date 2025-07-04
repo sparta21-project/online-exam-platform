@@ -116,8 +116,10 @@ jobs:
         if: always()
         run: docker-compose down
 
-      - name: Make Zip file
-        run: zip -r $GITHUB_SHA.zip build/libs/*.jar appspec.yml scripts/deploy.sh
+      - name: Make Zip file (exclude plain.jar)
+        run: |
+          JAR_FILE=$(ls build/libs/*SNAPSHOT.jar | grep -v plain)
+          zip -r $GITHUB_SHA.zip $JAR_FILE appspec.yml scripts/deploy.sh
 
       - name: AWS credential setting
         uses: aws-actions/configure-aws-credentials@v3
