@@ -7,6 +7,7 @@ import com.example.onlineexamplatform.config.session.SessionUser;
 import com.example.onlineexamplatform.config.session.UserSession;
 import com.example.onlineexamplatform.domain.answerSheet.dto.request.AnswerSheetRequestDto;
 import com.example.onlineexamplatform.domain.answerSheet.dto.response.AnswerSheetResponseDto;
+import com.example.onlineexamplatform.domain.answerSheet.service.AnswerSheetLockService;
 import com.example.onlineexamplatform.domain.answerSheet.service.AnswerSheetService;
 import com.example.onlineexamplatform.domain.user.entity.Role;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,6 +27,8 @@ public class AnswerSheetController {
 
     private final AnswerSheetService answerSheetService;
 
+    private final AnswerSheetLockService answerSheetLockService;
+
     // 빈 답안지 생성
     @CheckAuth(Role.USER)
     @Operation(summary = "빈 답안지 생성", description = "STARTED 상태의 빈 답안지를 생성합니다.")
@@ -36,7 +39,7 @@ public class AnswerSheetController {
             @UserSession SessionUser sessionUser
     ) {
 
-        answerSheetService.createAnswerSheet(examId, sessionUser.getUserId());
+        answerSheetLockService.createAnswerSheetWithLock(examId, sessionUser.getUserId());
         return ApiResponse.onSuccess(SuccessStatus.CREATE_ANSWER_SHEET_SUCCESS);
     }
 
