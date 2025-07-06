@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
-import com.example.onlineexamplatform.domain.password.PasswordUtil;
+import com.example.onlineexamplatform.config.password.PasswordUtil;
 import com.example.onlineexamplatform.config.session.SessionUser;
 import com.example.onlineexamplatform.domain.user.dto.AuthLoginRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthLoginResult;

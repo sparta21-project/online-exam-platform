@@ -3,7 +3,7 @@ package com.example.onlineexamplatform.domain.user.entity;
 import java.time.LocalDateTime;
 
 import com.example.onlineexamplatform.common.entity.BaseEntity;
-import com.example.onlineexamplatform.domain.password.PasswordUtil;
+import com.example.onlineexamplatform.config.password.PasswordUtil;
 import com.example.onlineexamplatform.domain.user.dto.KakaoUserInfoResponse;
 
 import jakarta.persistence.Column;

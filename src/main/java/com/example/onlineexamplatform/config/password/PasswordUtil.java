@@ -1,4 +1,4 @@
-package com.example.onlineexamplatform.domain.password;
+package com.example.onlineexamplatform.config.password;
 
 
 import org.mindrot.jbcrypt.BCrypt;
