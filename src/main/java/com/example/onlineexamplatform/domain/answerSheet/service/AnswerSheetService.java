@@ -1,5 +1,7 @@
 package com.example.onlineexamplatform.domain.answerSheet.service;
 
+import static com.example.onlineexamplatform.domain.answerSheet.enums.AnswerSheetStatus.STARTED;
+
 import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
 import com.example.onlineexamplatform.domain.answerSheet.dto.request.AnswerSheetRequestDto;
@@ -23,19 +25,17 @@ import com.example.onlineexamplatform.domain.userAnswer.entity.UserAnswer;
 import com.example.onlineexamplatform.domain.userAnswer.repository.UserAnswerRepository;
 import com.example.onlineexamplatform.domain.userCategory.entity.UserCategory;
 import com.example.onlineexamplatform.domain.userCategory.repository.UserCategoryRepository;
+import java.util.Comparator;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static com.example.onlineexamplatform.domain.answerSheet.enums.AnswerSheetStatus.STARTED;
 
 @Slf4j
 @Service
@@ -81,8 +81,9 @@ public class AnswerSheetService {
                     break;
                 }
             }
-            if (hasCategory)
+            if (hasCategory) {
                 break;
+            }
         }
 
         if (hasCategory) {
@@ -95,7 +96,8 @@ public class AnswerSheetService {
 
     //답안지 수정 (임시 저장 포함)
     @Transactional
-    public AnswerSheetResponseDto.Update updateAnswerSheet(Long examId, AnswerSheetRequestDto requestDto, Long userId) {
+    public AnswerSheetResponseDto.Update updateAnswerSheet(Long examId,
+                                                           AnswerSheetRequestDto requestDto, Long userId) {
         Exam exam = examRepository.findByIdOrElseThrow(examId);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
@@ -150,7 +152,8 @@ public class AnswerSheetService {
 
         //본인이나 관리자가 아니면 에러
         if (!answerSheet.getExam().getId().equals(exam.getId()) ||
-                !(answerSheet.getUser().getId().equals(user.getId()) || user.getRole().equals(Role.ADMIN))) {
+                !(answerSheet.getUser().getId().equals(user.getId()) || user.getRole()
+                        .equals(Role.ADMIN))) {
             throw new ApiException(ErrorStatus.ACCESS_DENIED);
         }
 
@@ -207,7 +210,8 @@ public class AnswerSheetService {
 
         //본인이나 관리자가 아니면 에러
         if (!answerSheet.getExam().getId().equals(exam.getId()) ||
-                !(answerSheet.getUser().getId().equals(user.getId()) || user.getRole().equals(Role.ADMIN))) {
+                !(answerSheet.getUser().getId().equals(user.getId()) || user.getRole()
+                        .equals(Role.ADMIN))) {
             throw new ApiException(ErrorStatus.ACCESS_DENIED);
         }
 
