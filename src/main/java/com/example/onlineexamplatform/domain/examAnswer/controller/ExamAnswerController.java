@@ -59,7 +59,7 @@ public class ExamAnswerController {
 	@CheckAuth(Role.ADMIN)
 	@Operation(summary = "답안 조회(전체)", description = "특정 시험의 답안을 전체 조회합니다")
 	@Parameter(description = "해당 시험의 ID 입니다.")
-	@GetMapping("/{examId}")
+	@GetMapping("/{examId}/exams")
 	public ResponseEntity<ApiResponse<Page<ExamAnswerResponseDto>>> getAllExamAnswer(@PathVariable Long examId,
 		@PageableDefault Pageable pageable) {
 		Page<ExamAnswerResponseDto> responseDtos = examAnswerService.getAllExamAnswer(examId, pageable);
