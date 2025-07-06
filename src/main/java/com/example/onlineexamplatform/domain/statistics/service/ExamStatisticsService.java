@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ExamStatisticsService {
 
+	// QueryDSL 기반 통계 쿼리 구현체 주입
 	@Qualifier("examStatisticsQueryRepositoryImpl")
 	private final ExamStatisticsQueryRepository statisticsqueryRepository;
 	private final QuestionStatisticsRepository detailRepository;
@@ -120,12 +121,13 @@ public class ExamStatisticsService {
 	@Transactional
 	public void saveStatistics(Long examId) {
 		var exam = examRepository.findByIdOrElseThrow(examId);
+		log.info("[examId={}] 통계 계산 시도", examId);
 
 		// 신규 통계 데이터 계산
 		Double averageScoreRaw = statisticsqueryRepository.getAverageScoreByExam(examId);
 		int participantCount = statisticsqueryRepository.countGradedParticipants(examId);
 		if (averageScoreRaw == null || participantCount == 0) {
-			log.warn("통계 생략 - 채점된 응시자가 없음 (examId: {})", examId);
+			log.warn("[examId={}] 통계 계산 생략 - 채점된 응시자 없음", examId);
 			return;
 		}
 
@@ -138,7 +140,7 @@ public class ExamStatisticsService {
 		if (existingOpt.isPresent()) {
 			ExamStatistics existing = existingOpt.get();
 
-			// 평균, 인원수 비교
+			// 평균, 응시자수 비교
 			boolean isScoreChanged = existing.getAverageScore() != averageScore;
 			boolean isParticipantChanged = existing.getParticipantCount() != participantCount;
 
@@ -149,6 +151,7 @@ public class ExamStatisticsService {
 
 			// 변경사항 없으면 저장 안함
 			if (!isScoreChanged && !isParticipantChanged && !isCorrectRateChanged) {
+				log.info("[examId={}] 통계 저장 생략 - 기존 통계와 동일", examId);
 				return;
 			}
 
@@ -174,6 +177,8 @@ public class ExamStatisticsService {
 						dto.correctRate()))
 				.toList();
 		detailRepository.saveAll(detailList);
+		log.info("[examId={}] 통계 저장 완료 - 평균 점수={}, 응시자 수={}",
+				examId, averageScore, participantCount);
 	}
 
 	/**

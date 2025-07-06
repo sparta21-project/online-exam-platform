@@ -31,14 +31,14 @@ public class UserStatisticsController {
 	private final ExamStatisticsService statisticsService;
 
 	@GetMapping("/{examId}")
-	@Operation(summary = "공개된 시험 통계 조회", description = "공개된 시험 통계만 조회 가능합니다.")
+	@Operation(summary = "공개된 시험 통계 조회", description = "공개된 특정 시험의 통계정보를 단건 조회합니다.")
 	public ResponseEntity<ApiResponse<UserExamStatisticsResponse>> getUserExamStatistics(
 			@PathVariable Long examId) {
 		return ApiResponse.onSuccess(SuccessStatus.STATISTICS_GET_SUCCESS,
 				statisticsService.getUserExamStatistics(examId));
 	}
 
-	@Operation(summary = "공개된 시험의 문제 조건 검색", description = "조건이 있으면 전체, 조건이 있으면 필터링(기간, 제목, 정답률)하여 공개된 시험의 문제 목록을 조회합니다.")
+	@Operation(summary = "공개된 시험의 문제 조건 검색", description = "조건이 없으면 전체, 조건이 있으면 필터링(기간, 제목, 정답률)하여 공개된 시험의 문제 목록을 조회합니다.")
 	@GetMapping("/questions")
 	public ResponseEntity<ApiResponse<List<QuestionCorrectRateSearchResponse>>> searchQuestionsByCondition(
 			@ParameterObject QuestionSearchRequest condition) {

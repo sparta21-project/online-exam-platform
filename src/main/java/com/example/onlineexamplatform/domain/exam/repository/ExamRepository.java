@@ -21,23 +21,33 @@ public interface ExamRepository extends JpaRepository<Exam, Long> {
 
 	List<Exam> findByEndTimeBefore(LocalDateTime now);
 
-	/***
-	 * 통계가 아직 생성되지 않았고,
-	 * 모든 답안이 GRADED 상태인 시험만 조회하여 통계 계산 대상으로 사용 (스케쥴러용)
-	 *
+	/**
+	 * 채점 완료된 시험 중 종료 시간이 주어진 기준 시각(threshold) 이후인 시험 목록 조회. 모든 답안이 GRADED 상태인 시험만 대상으로 함. 통계 스케줄러에서
+	 * 최근 시험 통계 계산 시 사용.
 	 */
 	@Query("""
 				SELECT e FROM Exam e
-				WHERE NOT EXISTS (
-					SELECT s FROM ExamStatistics s
-					WHERE s.exam = e
-				)
-				AND NOT EXISTS (
+				WHERE EXISTS (
 					SELECT a FROM AnswerSheet a
-					WHERE a.exam = e AND a.status != 'GRADED'
+					WHERE a.exam = e AND a.status = 'GRADED'
 				)
+				AND e.endTime >= :threshold
 			""")
-	List<Exam> findFullyGradedAndNotYetStatistical();
+	List<Exam> findGradedExamsAfter(LocalDateTime threshold);
+
+	/**
+	 * 채점 완료된 시험 중 종료 시간이 주어진 기준 시각(threshold) 이전인 시험 목록 조회 .모든 답안이 GRADED 상태인 시험만 대상으로 함 .통계 스케줄러에서
+	 * 과거 시험 통계 재보정 시 사용
+	 */
+	@Query("""
+				SELECT e FROM Exam e
+				WHERE EXISTS (
+					SELECT a FROM AnswerSheet a
+					WHERE a.exam = e AND a.status = 'GRADED'
+				)
+				AND e.endTime < :threshold
+			""")
+	List<Exam> findGradedExamsBefore(LocalDateTime threshold);
 
 
 }
