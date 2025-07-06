@@ -1,7 +1,5 @@
 package com.example.onlineexamplatform.domain.user.controller;
 
-import java.time.Duration;
-
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -50,7 +48,6 @@ import reactor.core.publisher.Mono;
 public class AuthController {
 
 	private static final String SESSION_COOKIE_NAME = "SESSION";
-	private static final Duration SESSION_TTL = Duration.ofHours(24);
 	private final KakaoOauthService kakaoOauthService;
 	private final UserService userService;
 	private final RedisTemplate<String, SessionUser> redisTemplate;
@@ -147,7 +144,6 @@ public class AuthController {
 	@Operation(summary = "로그아웃", description = "현재 세션을 무효화하여 로그아웃 처리합니다.")
 	@DeleteMapping("/logout")
 	public ResponseEntity<ApiResponse<Void>> logout(
-		@UserSession SessionUser sessionUser,
 		HttpServletRequest httpRequest,
 		HttpServletResponse httpResponse) {
 
