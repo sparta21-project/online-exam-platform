@@ -40,6 +40,8 @@ public class ExamDetailResponseDto {
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private final LocalDateTime updatedAt;
 
+	private final Integer remainUsers;
+
 	public static ExamDetailResponseDto of(Exam exam, List<ExamFileS3PreSignedURLDto> examFileS3PreSignedURLs) {
 		return new ExamDetailResponseDto(
 			exam.getId(),
@@ -51,7 +53,8 @@ public class ExamDetailResponseDto {
 			exam.getEndTime(),
 			examFileS3PreSignedURLs,
 			exam.getCreatedAt(),
-			exam.getUpdatedAt()
+			exam.getUpdatedAt(),
+			exam.getRemainUsers()
 		);
 	}
 

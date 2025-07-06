@@ -72,6 +72,7 @@ public class Exam extends BaseEntity {
 		this.description = requestDto.getDescription();
 		this.startTime = requestDto.getStartTime();
 		this.endTime = requestDto.getEndTime();
+		this.remainUsers = requestDto.getRemainUsers();
 	}
 
 	public void decreaseRemainUsers() {
