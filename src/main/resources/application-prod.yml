@@ -1,6 +1,4 @@
 spring:
-  profiles:
-    active: prod
   datasource:
     url: ${MYSQL_URL}
     username: ${DB_USERNAME}
@@ -9,7 +7,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create
     show-sql: true
     properties:
       hibernate:
@@ -24,10 +22,13 @@ spring:
       max-file-size: 100MB
       max-request-size: 100MB
 
-  data:
-    redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
+redisson:
+  config:
+    singleServerConfig:
+      address: "redis://${REDIS_HOST}:${REDIS_PORT}"
+      timeout: 3000
+      connectionPoolSize: 64
+      connectionMinimumIdleSize: 24
 
 aws:
   s3:

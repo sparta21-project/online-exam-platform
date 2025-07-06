@@ -48,7 +48,6 @@ public class ExamService {
 	private final ExamFileRepository examFileRepository;
 	private final UserCategoryRepository userCategoryRepository;
 	private final ExamCategoryRepository examCategoryRepository;
-	private final AnswerSheetRepository answerSheetRepository;
 
 	@Transactional
 	public ExamResponseDto<ExamFileResponseDto> createExam(CreateExamRequestDto requestDto, Long userId) {
@@ -118,7 +117,7 @@ public class ExamService {
 
 	@Transactional(readOnly = true)
 	public ExamDetailResponseDto getExamDetail(Long userId, Long examId) {
-		User user = userRepository.findById(userId).orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
+		userRepository.findById(userId).orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 		Exam exam = examRepository.findByIdOrElseThrow(examId);
 
 		List<UserCategory> userCategories = userCategoryRepository.findByUserId(userId);
@@ -140,13 +139,6 @@ public class ExamService {
 			}
 			if (hasCategory)
 				break;
-		}
-
-		if (hasCategory) {
-			AnswerSheet answerSheet = new AnswerSheet(exam, user, STARTED);
-			answerSheetRepository.save(answerSheet);
-		} else {
-			throw new ApiException(ErrorStatus.CATEGORY_NOT_MATCHED);
 		}
 
 		boolean anyMatch = userCategories.stream().anyMatch(userCategory ->
