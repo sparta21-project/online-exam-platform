@@ -24,13 +24,9 @@ public class AnswerSheetScheduler {
     private final ExamRepository examRepository;
 
     //종료된 시험의 답안지들 채점
-<<<<<<< HEAD
     //TODO: 시간 변경
     //@Scheduled(cron = "0 0 * * * *")
     @Scheduled(cron = "0 */5 * * * *")
-=======
-    @Scheduled(cron = "0 0 * * * *")
->>>>>>> 1adfd0e5fdaef02938281b017f5e673081e04bdd
     public void gradeAnswerSheet() {
         List<Exam> endedExams = examRepository.findByEndTimeBefore(LocalDateTime.now());
 
