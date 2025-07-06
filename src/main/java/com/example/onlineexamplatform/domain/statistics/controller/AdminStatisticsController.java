@@ -56,7 +56,7 @@ public class AdminStatisticsController {
 	}
 
 	@CheckAuth(Role.ADMIN)
-	@Operation(summary = "문제 조건 검색", description = "조건이 있으면 전체, 조건이 있으면 필터링(기간, 제목, 정답률)하여 문제 목록을 조회합니다.")
+	@Operation(summary = "문제 조건 검색", description = "조건이 없으면 전체, 조건이 있으면 필터링(기간, 제목, 정답률)하여 문제 목록을 조회합니다.")
 	@GetMapping("/questions")
 	public ResponseEntity<ApiResponse<List<QuestionCorrectRateSearchResponse>>> searchQuestionsByCondition(
 			@ParameterObject QuestionSearchRequest condition) {
