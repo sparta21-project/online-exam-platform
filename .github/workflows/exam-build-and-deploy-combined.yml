@@ -3,7 +3,7 @@ name: ExamBuildAndDeployCombined
 on:
   push:
     branches:
-      - feat/SaltBr # main 브랜치 push 트리거
+      - main # main 브랜치 push 트리거
       #나중에 메인으로 변경
     pull_request:
       branches:
@@ -56,7 +56,7 @@ jobs:
 
   deploy:
     name: Deploy to EC2
-    if: github.event_name == 'push' && github.ref == 'refs/heads/feat/SaltBr'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: build-and-test
     permissions:
