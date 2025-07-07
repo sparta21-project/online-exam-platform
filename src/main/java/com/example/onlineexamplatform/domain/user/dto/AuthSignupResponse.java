@@ -23,4 +23,7 @@ public class AuthSignupResponse {
 
 	@Schema(description = "사용자 권한", example = "USER")
 	private Role role;
+
+	@Schema(description = "사용자 전화번호", example = "01067776264")
+	private String phoneNumber;
 }

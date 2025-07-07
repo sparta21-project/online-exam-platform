@@ -6,6 +6,7 @@ import java.util.List;
 import com.example.onlineexamplatform.domain.exam.entity.Exam;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -33,25 +34,14 @@ public class ExamResponseDto<T> {
 
 	private final List<T> examFiles;
 
+	@Schema(description = "생성일")
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private final LocalDateTime createdAt;
 
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private final LocalDateTime updatedAt;
 
-	public static ExamResponseDto from(Exam exam) {
-		return ExamResponseDto.builder()
-				.id(exam.getId())
-				.userId(exam.getUser().getId())
-				.title(exam.getTitle())
-				.description(exam.getDescription())
-				.startTime(exam.getStartTime())
-				.endTime(exam.getEndTime())
-				.createdAt(exam.getCreatedAt())
-				.updatedAt(exam.getUpdatedAt())
-				.build();
-
-	}
+	private final Integer remainUsers;
 
 	public static <T> ExamResponseDto<T> of(Exam exam, List<T> examFiles) {
 		return new ExamResponseDto<>(
@@ -64,7 +54,8 @@ public class ExamResponseDto<T> {
 			exam.getEndTime(),
 			examFiles,
 			exam.getCreatedAt(),
-			exam.getUpdatedAt()
+			exam.getUpdatedAt(),
+			exam.getRemainUsers()
 		);
 	}
 

@@ -22,4 +22,7 @@ public class UserProfileModifyResponse {
 
 	@Schema(description = "사용자 권한", example = "USER")
 	private Role role;
+
+	@Schema(description = "사용자 전화번호", example = "01012345678")
+	private String phoneNumber;
 }

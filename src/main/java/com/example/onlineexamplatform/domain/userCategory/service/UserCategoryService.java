@@ -1,5 +1,10 @@
 package com.example.onlineexamplatform.domain.userCategory.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
 import com.example.onlineexamplatform.domain.category.entity.Category;
@@ -12,10 +17,8 @@ import com.example.onlineexamplatform.domain.userCategory.dto.UserCategoryReques
 import com.example.onlineexamplatform.domain.userCategory.dto.UserCategoryResponse;
 import com.example.onlineexamplatform.domain.userCategory.entity.UserCategory;
 import com.example.onlineexamplatform.domain.userCategory.repository.UserCategoryRepository;
-import java.util.List;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 이 서비스 클래스는 사용자(User)와 카테고리(Category) 간의 관계를 관리
@@ -31,6 +34,7 @@ public class UserCategoryService {
 	private final UserCategoryRepository userCategoryRepository;
 	private final UserRepository userRepository;
 	private final CategoryRepository categoryRepository;
+
 	/**
 	 * 관리자 전용
 	 * 특정 사용자에게 특정 시험 카테고리 응시 권한을 부여
@@ -39,11 +43,11 @@ public class UserCategoryService {
 	@Transactional
 	public UserCategoryResponse create(Long userId, UserCategoryRequest request) {
 		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
+			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 
 		CategoryType categoryType = CategoryType.valueOf(request.categoryType());
 		Category category = categoryRepository.findByCategoryType(categoryType)
-				.orElseThrow(() -> new ApiException(ErrorStatus.CATEGORY_NOT_FOUND));
+			.orElseThrow(() -> new ApiException(ErrorStatus.CATEGORY_NOT_FOUND));
 
 		if (userCategoryRepository.findByUserIdAndCategory(userId, category).isPresent()) {
 			throw new ApiException(ErrorStatus.DUPLICATE_USER_CATEGORY);
@@ -52,6 +56,7 @@ public class UserCategoryService {
 		UserCategory saved = userCategoryRepository.save(new UserCategory(user, category));
 		return new UserCategoryResponse(saved.getId(), user.getId(), category.getCategoryType());
 	}
+
 	/**
 	 * 사용자 본인 또는 관리자
 	 * 특정 사용자의 응시 권한 목록을 조회
@@ -59,13 +64,14 @@ public class UserCategoryService {
 	@Transactional(readOnly = true)
 	public List<UserCategoryResponse> getByUser(Long userId) {
 		return userCategoryRepository.findByUserId(userId).stream()
-				.map(uc -> new UserCategoryResponse(
-						uc.getId(),
-						uc.getUser().getId(),
-						uc.getCategory().getCategoryType()
-				))
-				.toList();
+			.map(uc -> new UserCategoryResponse(
+				uc.getId(),
+				uc.getUser().getId(),
+				uc.getCategory().getCategoryType()
+			))
+			.toList();
 	}
+
 	/**
 	 * 관리자 전용
 	 * 특정 사용자에게 부여된 응시 권한을 삭제
@@ -74,10 +80,11 @@ public class UserCategoryService {
 	@Transactional
 	public void delete(Long userCategoryId) {
 		UserCategory userCategory = userCategoryRepository.findById(userCategoryId)
-				.orElseThrow(() -> new ApiException(ErrorStatus.USER_CATEGORY_NOT_FOUND));
+			.orElseThrow(() -> new ApiException(ErrorStatus.USER_CATEGORY_NOT_FOUND));
 
 		userCategoryRepository.delete(userCategory);
 	}
+
 	/**
 	 * 관리자 전용
 	 * 특정 응시권한을 보유한 사용자 목록 조회
@@ -93,20 +100,21 @@ public class UserCategoryService {
 		}
 
 		Category category = categoryRepository.findByCategoryType(categoryType)
-				.orElseThrow(() -> new ApiException(ErrorStatus.CATEGORY_NOT_FOUND));
+			.orElseThrow(() -> new ApiException(ErrorStatus.CATEGORY_NOT_FOUND));
 
 		List<UserCategory> userCategories = userCategoryRepository.findByCategory(category);
 
 		return userCategories.stream()
-				.map(uc -> {
-					User user = uc.getUser();
-					return new UserProfileResponse(
-							user.getId(),
-							user.getEmail(),
-							user.getUsername(),
-							user.getRole()
-					);
-				})
-				.toList();
+			.map(uc -> {
+				User user = uc.getUser();
+				return new UserProfileResponse(
+					user.getId(),
+					user.getEmail(),
+					user.getUsername(),
+					user.getRole(),
+					user.getPhoneNumber()
+				);
+			})
+			.toList();
 	}
 }

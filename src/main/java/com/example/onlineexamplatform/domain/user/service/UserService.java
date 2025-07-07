@@ -1,22 +1,28 @@
 package com.example.onlineexamplatform.domain.user.service;
 
+import java.time.Duration;
 import java.util.List;
-import org.springframework.stereotype.Service;
+import java.util.UUID;
 
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.example.onlineexamplatform.common.code.ErrorStatus;
 import com.example.onlineexamplatform.common.error.ApiException;
+import com.example.onlineexamplatform.domain.password.PasswordUtil;
+import com.example.onlineexamplatform.config.session.SessionUser;
 import com.example.onlineexamplatform.domain.user.dto.AuthLoginRequest;
-import com.example.onlineexamplatform.domain.user.dto.AuthLoginResponse;
+import com.example.onlineexamplatform.domain.user.dto.AuthLoginResult;
 import com.example.onlineexamplatform.domain.user.dto.AuthPasswordRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthSignupRequest;
 import com.example.onlineexamplatform.domain.user.dto.AuthSignupResponse;
 import com.example.onlineexamplatform.domain.user.dto.UserProfileModifyRequest;
 import com.example.onlineexamplatform.domain.user.dto.UserProfileModifyResponse;
 import com.example.onlineexamplatform.domain.user.dto.UserProfileResponse;
+import com.example.onlineexamplatform.domain.user.entity.LoginProvider;
 import com.example.onlineexamplatform.domain.user.entity.Role;
 import com.example.onlineexamplatform.domain.user.entity.User;
 import com.example.onlineexamplatform.domain.user.repository.UserRepository;
-import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserService {
 	private final UserRepository userRepository;
+	private final RedisTemplate<String, SessionUser> redisTemplate;
 
 	// 유저 회원가입
 	public AuthSignupResponse signup(AuthSignupRequest request) {
@@ -33,15 +40,16 @@ public class UserService {
 			throw new ApiException(ErrorStatus.DUPLICATE_EMAIL);
 		}
 
-		// 비밀번호 암호화
-		// String encodedPassword = encoder.encode(request.getPassword());
 
 		// jpa에 저장할 user 엔티티 객체
 		User user = new User(
+			null,
 			request.getEmail(),
-			request.getPassword(),
+			request.getPassword(), //평문
 			request.getUsername(),
-			Role.USER
+			request.getPhoneNumber(),
+			Role.USER,
+			LoginProvider.LOCAL
 		);
 
 		// 엔티티에 저장
@@ -52,7 +60,8 @@ public class UserService {
 			saved.getId(),
 			saved.getEmail(),
 			saved.getUsername(),
-			saved.getRole()
+			saved.getRole(),
+			saved.getPhoneNumber()
 		);
 
 	}
@@ -64,10 +73,13 @@ public class UserService {
 		}
 
 		User user = new User(
+			null,
 			request.getEmail(),
 			request.getPassword(),
 			request.getUsername(),
-			Role.ADMIN
+			request.getPhoneNumber(),
+			Role.ADMIN,
+			LoginProvider.LOCAL
 		);
 
 		User saved = userRepository.save(user);
@@ -76,12 +88,13 @@ public class UserService {
 			saved.getId(),
 			saved.getEmail(),
 			saved.getUsername(),
-			saved.getRole()
+			saved.getRole(),
+			saved.getPhoneNumber()
 		);
 	}
 
 	// 로그인
-	public AuthLoginResponse login(AuthLoginRequest request) {
+	public AuthLoginResult login(AuthLoginRequest request) {
 		User user = userRepository.findByEmail(request.getEmail())
 			.orElseThrow(() -> new ApiException(ErrorStatus.USER_NOT_FOUND));
 
@@ -89,15 +102,25 @@ public class UserService {
 			throw new ApiException(ErrorStatus.USER_DEACTIVATE);
 		}
 
-		if (!request.getPassword().equals(user.getPassword())) {
+		// BCrypt를 사용한 비밀번호 검증
+		if (!user.checkPassword(request.getPassword())) {
 			throw new ApiException(ErrorStatus.USER_NOT_MATCH);
 		}
 
-		return new AuthLoginResponse(
+		SessionUser sessionUser = new SessionUser(user.getId(), user.getEmail(), user.getRole(),
+			user.getLoginProvider());
+		String sessionId = UUID.randomUUID().toString();
+		String redisKey = "SESSION:" + sessionId;
+		redisTemplate.opsForValue().set(redisKey, sessionUser, Duration.ofHours(24));
+
+		return new AuthLoginResult(
 			user.getId(),
+			null,
 			user.getEmail(),
 			user.getUsername(),
-			user.getRole()
+			user.getRole(),
+			user.getLoginProvider(),
+			sessionId
 		);
 	}
 
@@ -112,12 +135,13 @@ public class UserService {
 		}
 
 		// 현재 비밀번호 검증
-		if (!dto.getOldPassword().equals(user.getPassword())) {
+		if (!PasswordUtil.checkPassword(dto.getOldPassword(), user.getPassword())) {
 			throw new ApiException(ErrorStatus.INVALID_PASSWORD);
 		}
 
-		// 비밀번호 변경
-		user.setPassword(dto.getNewPassword());
+		// 새 비밀번호를 해시화하여 저장
+		String hashedNewPassword = PasswordUtil.hash(dto.getNewPassword());
+		user.setPassword(hashedNewPassword);
 		userRepository.save(user);
 	}
 
@@ -134,7 +158,8 @@ public class UserService {
 			user.getId(),
 			user.getEmail(),
 			user.getUsername(),
-			user.getRole()
+			user.getRole(),
+			user.getPhoneNumber()
 		);
 	}
 
@@ -150,6 +175,7 @@ public class UserService {
 
 		user.updateEmail(request.getEmail());
 		user.updateUsername(request.getUsername());
+		user.updatePhoneNumber(request.getPhoneNumber());
 
 		User saved = userRepository.save(user);
 
@@ -157,7 +183,9 @@ public class UserService {
 			saved.getId(),
 			saved.getEmail(),
 			saved.getUsername(),
-			saved.getRole()
+			saved.getRole(),
+			saved.getPhoneNumber()
+
 		);
 	}
 
@@ -173,6 +201,7 @@ public class UserService {
 		user.withdraw();
 		userRepository.save(user);
 	}
+
 	// 사용자 목록조회 및 검색 (관리자 전용)
 	@Transactional(readOnly = true)
 	public List<UserProfileResponse> getUsersByFilter(String name, String email) {
@@ -182,12 +211,13 @@ public class UserService {
 		List<User> users = userRepository.findByUsernameContainingAndEmailContaining(nameFilter, emailFilter);
 
 		return users.stream()
-				.map(user -> new UserProfileResponse(
-						user.getId(),
-						user.getEmail(),
-						user.getUsername(),
-						user.getRole()
-				))
-				.toList();
+			.map(user -> new UserProfileResponse(
+				user.getId(),
+				user.getEmail(),
+				user.getUsername(),
+				user.getRole(),
+				user.getPhoneNumber()
+			))
+			.toList();
 	}
 }

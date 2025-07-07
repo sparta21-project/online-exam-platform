@@ -3,13 +3,12 @@ package com.example.onlineexamplatform.domain.examCategory.entity;
 import com.example.onlineexamplatform.domain.category.entity.Category;
 import com.example.onlineexamplatform.domain.exam.entity.Exam;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "exam_category")
+@Table(name = "exam_category", uniqueConstraints = {@UniqueConstraint(columnNames = {"exam_id", "category_id"})})
 @NoArgsConstructor
 public class ExamCategory {
 
