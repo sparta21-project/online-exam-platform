@@ -38,7 +38,8 @@ public class User extends BaseEntity {
 
 	@Column(nullable = false, length = 20)
 	private String username;
-	@Column(nullable = false)
+
+	@Column
 	private String phoneNumber;
 
 	@Enumerated(EnumType.STRING)
@@ -59,7 +60,7 @@ public class User extends BaseEntity {
 		LoginProvider loginProvider) {
 		this.vendorId = vendorId;
 		this.email = email;
-		this.password = PasswordUtil.hash(password); // BCrypt로 자동 암호화
+		this.password = (password != null) ? PasswordUtil.hash(password) : null; // BCrypt로 자동 암호화
 		this.username = username;
 		this.phoneNumber = phoneNumber;
 		this.role = role;
