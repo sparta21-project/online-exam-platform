@@ -75,9 +75,11 @@
 
 <br>
 
-## 📄 API 명세서
+## 📄 [API 명세서](https://jyeonv.com/swagger-ui/index.html)
 
-## 주요 기능
+<br>
+
+## 📍 주요 기능
 
 <details>
 <summary>인증/인가</summary>
@@ -193,7 +195,7 @@
 
 - 유저 답안지 CRUD
 - 시험 응시자 조회
-- 답안지 채점 & 최종 제출(Scheduler)
+- 답안지 자동 채점 & 최종 제출(Scheduler)
 - CI/CD(Github Actions)
 
 ### 김태형 [팀원]
@@ -378,7 +380,6 @@ Cannot invoke "SessionUser.getUserId()"because "sessionUser"is null
   사실은 Filter와 ArgumentResolvert 실행 순서의 시작된 문제였다
 - Spring에서 Filter를 직접 등록할경우 DispatcherServlet보다 먼저 실행 되도록 순서를 지정하지 않으면 Filter가 의도한 대로 작동하지 않을수가 있다
 - Filter → DispatcherServlet → ArgumentResolver → Controller 이 순서가 반드시 보장되어야한다
-  이
 - 이번 프로젝트를 통해 Spring의 내부 실행 순서를 경험했고 Filter를 직접 등록할때 순서 조정이 필수적임을 기억해야겠다
 
 </details>
