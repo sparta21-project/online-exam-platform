@@ -39,7 +39,7 @@ public class User extends BaseEntity {
 	@Column(nullable = false, length = 20)
 	private String username;
 
-	@Column
+	@Column(nullable = true)
 	private String phoneNumber;
 
 	@Enumerated(EnumType.STRING)

@@ -33,6 +33,8 @@ public class UpdateExamResponseDto {
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private final LocalDateTime updatedAt;
 
+	private final Integer remainUsers;
+
 	public static UpdateExamResponseDto from(Exam exam) {
 		return UpdateExamResponseDto.builder()
 			.id(exam.getId())
@@ -43,6 +45,7 @@ public class UpdateExamResponseDto {
 			.startTime(exam.getStartTime())
 			.endTime(exam.getEndTime())
 			.updatedAt(exam.getUpdatedAt())
+			.remainUsers(exam.getRemainUsers())
 			.build();
 
 	}

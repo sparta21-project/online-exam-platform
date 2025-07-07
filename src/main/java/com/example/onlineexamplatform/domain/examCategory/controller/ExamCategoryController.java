@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "06ExamCategory", description = "사용자(Admin)가 생성하는 시험 권한 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/exam-category")
+@RequestMapping("/api/exam-category")
 
 public class ExamCategoryController {
 

@@ -135,7 +135,6 @@ public class AuthController {
 		@RequestBody @Valid AuthPasswordRequest request,
 		@UserSession SessionUser sessionUser
 	) {
-
 		userService.changePassword(sessionUser.getUserId(), request);
 		return ApiResponse.onSuccess(SuccessStatus.UPDATE_PASSWORD);
 	}

@@ -36,7 +36,7 @@ public class ExamAnswerController {
 
 	private final ExamAnswerService examAnswerService;
 
-	@CheckAuth(Role.USER)
+	@CheckAuth(Role.ADMIN)
 	@Operation(summary = "답안 입력(UPSERT)", description = "Dto로 입력받은 문제 번호와 답안을 저장합니다.")
 	@Parameter(description = "시험에 대한 ID입니다.")
 	@PostMapping("/{examId}")
@@ -47,7 +47,7 @@ public class ExamAnswerController {
 		return ApiResponse.onSuccess(SuccessStatus.SAVE_EXAM_ANSWER_SUCCESS);
 	}
 
-	@CheckAuth(Role.USER)
+	@CheckAuth(Role.ADMIN)
 	@Operation(summary = "답안 조회(단일)", description = "특정 문항의 답안을 조회합니다")
 	@Parameter(description = "해당 문항의 ID 입니다.")
 	@GetMapping("/{examAnswerId}")
@@ -56,7 +56,7 @@ public class ExamAnswerController {
 		return ApiResponse.onSuccess(SuccessStatus.GET_EXAM_ANSWER_SUCCESS, responseDto);
 	}
 
-	@CheckAuth(Role.USER)
+	@CheckAuth(Role.ADMIN)
 	@Operation(summary = "답안 조회(전체)", description = "특정 시험의 답안을 전체 조회합니다")
 	@Parameter(description = "해당 시험의 ID 입니다.")
 	@GetMapping("/{examId}/exams")
@@ -66,7 +66,7 @@ public class ExamAnswerController {
 		return ApiResponse.onSuccess(SuccessStatus.GET_EXAM_ANSWER_SUCCESS, responseDtos);
 	}
 
-	@CheckAuth(Role.USER)
+	@CheckAuth(Role.ADMIN)
 	@Operation(summary = "답안 삭제", description = "특정 문항의 답안을 삭제합니다")
 	@Parameter(description = "해당 문항의 ID 입니다.")
 	@DeleteMapping("/{examAnswerId}")

@@ -25,7 +25,7 @@ public class AnswerSheetLockService {
         try {
             boolean acquired = lock.tryLock(3, 10, TimeUnit.SECONDS);
             if (!acquired) {
-                throw new ApiException(ErrorStatus.USER_NOT_FOUND);
+                throw new ApiException(ErrorStatus.LOCK_ACQUISITION_FAILED);
             }
             log.info("✅ [User {}] 락 획득", userId);
             // 임계 영역, Transactional 수행
@@ -33,7 +33,7 @@ public class AnswerSheetLockService {
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new ApiException(ErrorStatus.USER_NOT_FOUND);
+            throw new ApiException(ErrorStatus.LOCK_ACQUISITION_FAILED);
         } finally {
             if (lock.isHeldByCurrentThread()) {
                 lock.unlock();

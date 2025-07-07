@@ -1,3 +1,4 @@
+//
 //package com.example.onlineexamplatform.domain.AnswerSheet;
 //
 //import com.example.onlineexamplatform.domain.answerSheet.repository.AnswerSheetRepository;
@@ -9,13 +10,16 @@
 //import com.example.onlineexamplatform.domain.exam.repository.ExamRepository;
 //import com.example.onlineexamplatform.domain.examCategory.entity.ExamCategory;
 //import com.example.onlineexamplatform.domain.examCategory.repository.ExamCategoryRepository;
+//import com.example.onlineexamplatform.domain.examFile.entity.ExamFile;
+//import com.example.onlineexamplatform.domain.examFile.repository.ExamFileRepository;
+//import com.example.onlineexamplatform.domain.password.PasswordUtil;
+//import com.example.onlineexamplatform.domain.user.entity.LoginProvider;
 //import com.example.onlineexamplatform.domain.user.entity.Role;
 //import com.example.onlineexamplatform.domain.user.entity.User;
 //import com.example.onlineexamplatform.domain.user.repository.UserRepository;
 //import com.example.onlineexamplatform.domain.userCategory.entity.UserCategory;
 //import com.example.onlineexamplatform.domain.userCategory.repository.UserCategoryRepository;
-//import jakarta.persistence.EntityManager;
-//import jakarta.persistence.PersistenceContext;
+//import jakarta.persistence.*;
 //import org.junit.jupiter.api.BeforeAll;
 //import org.junit.jupiter.api.DisplayName;
 //import org.junit.jupiter.api.Test;
@@ -24,6 +28,8 @@
 //import org.springframework.boot.test.context.SpringBootTest;
 //
 //import java.time.LocalDateTime;
+//import java.util.ArrayList;
+//import java.util.List;
 //import java.util.concurrent.CountDownLatch;
 //import java.util.concurrent.ExecutorService;
 //import java.util.concurrent.Executors;
@@ -44,11 +50,7 @@
 //    @Autowired
 //    private AnswerSheetRepository answerSheetRepository;
 //    @Autowired
-//    private CategoryRepository categoryRepository;
-//    @Autowired
-//    private UserCategoryRepository userCategoryRepository;
-//    @Autowired
-//    private ExamCategoryRepository examCategoryRepository;
+//    private ExamFileRepository examFileRepository;
 //
 //
 //    private Long examId;
@@ -58,17 +60,14 @@
 //
 //    @BeforeAll
 //    void init() {
-//        Category category = categoryRepository.findByCategoryType(CategoryType.MATH)
-//                .orElseGet(() -> categoryRepository.save(new Category(CategoryType.MATH)));
-//
 //        for (long i = 1; i <= 60; i++) {
 //            String email = "test" + i + "@test.com";
-//            User user = new User(email, "TestPassword123!", "testUser", Role.USER);
+//            User user = new User(null, email, "TestPassword123!", "testUser", "01012341234", Role.USER, null);
 //            userRepository.save(user);
-//
-//            userCategoryRepository.save(new UserCategory(user, category));
 //        }
-//        User admin = userRepository.save(new User("admin@admin.com", "TestPassword123!", "testAdmin", Role.ADMIN));
+//        User admin = userRepository.save(new User(null, "admin@admin.com", "TestPassword123!", "testAdmin", "01012341234", Role.ADMIN, null));
+//
+//        ExamFile examFile = examFileRepository.save(new ExamFile(1L, "testFileName1","testPath","testType",123L,null));
 //
 //        Exam exam = examRepository.save(Exam.builder()
 //                .user(admin)
@@ -78,9 +77,9 @@
 //                .startTime(LocalDateTime.now())
 //                .endTime(LocalDateTime.now().plusHours(1))
 //                .remainUsers(50)
+//                .examFiles(List.of(examFile))
+//                .examAnswers(new ArrayList<>())
 //                .build());
-//
-//        examCategoryRepository.save(new ExamCategory(exam, category));
 //
 //        examId = exam.getId();
 //    }
