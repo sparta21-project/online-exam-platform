@@ -24,7 +24,7 @@ public class StatisticsScheduler {
 	/**
 	 * [1] 최근 종료된 시험 (3일 이내) → 매시간 21분마다 실행
 	 */
-	@Scheduled(cron = "0 21 * * * *")
+	@Scheduled(cron = "0 */5 * * * *")
 	public void calculateRecentExamStatistics() {
 
 		LocalDateTime recentThreshold = LocalDateTime.now().minusDays(3);
